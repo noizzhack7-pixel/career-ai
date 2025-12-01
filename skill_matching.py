@@ -1,6 +1,16 @@
 import pandas as pd
 import numpy as np
 
+## the system gets as of now predefined set of job and employee dfs and calculates the match
+## between them using cosine similarity.
+## 1. the weight of calculations between soft skills and hard skills is dynamic for each job (with default enabled)
+## 2. unified vector store has been calculated
+## 3. top employees for job has been made
+## next steps:
+## 1. generate data using datage.py and test it on larger set of employees
+## 2. build the structure engine
+## 3. 
+
 # -------------------------------------------------------------------
 # 1. Helpers to safely extract skills
 # -------------------------------------------------------------------
