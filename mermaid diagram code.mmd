@@ -1,0 +1,48 @@
+flowchart LR
+
+    %% COLUMN 1: 1a, 1b
+    subgraph COL1[ ]
+        direction TB
+        HR[1a. HR]
+        EMP[1b. Employee]
+    end
+
+    %% COLUMN 2: 2b
+    subgraph COL2[ ]
+        direction TB
+        ENGINE[2b. Structure engine]
+    end
+
+    %% COLUMN 3: 3a, 3b
+    subgraph COL3[ ]
+        direction TB
+        JOB_DATA[3a. df_job_HardSkills<br/>df_job_SoftSkills]
+        EMP_DATA[3b. df_emp_HardSkills<br/>df_emp_SoftSkills]
+    end
+
+    %% COLUMN 4: 4
+    subgraph COL4[ ]
+        direction TB
+        VEC[4. Unified vector store]
+    end
+
+    %% COLUMN 5: 5a, 5b
+    subgraph COL5[ ]
+        direction TB
+        HR_UI[5a. HR UI<br/>configure jobs & view matches]
+        EMP_UI[5b. Employee UI<br/>soft skill test & updates]
+    end
+
+
+    %% HR LOOP: 1a → 3a → 4 → 5a → 1a
+    HR --> JOB_DATA
+    JOB_DATA --> VEC
+    VEC --> HR_UI
+    HR_UI --> HR
+
+    %% EMPLOYEE LOOP: 1b → 2b → 3b → 4 → 5b → 1b
+    EMP --> ENGINE
+    ENGINE --> EMP_DATA
+    EMP_DATA --> VEC
+    VEC --> EMP_UI
+    EMP_UI --> EMP

@@ -1,114 +1,79 @@
 import marvin
 from pydantic import BaseModel, Field
-from typing import List
+from typing import Dict, List
 import pandas as pd
 
-# ---------- 1. Define structured schema for Marvin ----------
+
+# ---------- 1. Schema ----------
 
 class Employee(BaseModel):
     """
-    Synthetic employee with coherent skills.
+    Synthetic employee with coherent skill ratings.
     """
-    name: str = Field(
-        description="Realistic first name (e.g. Alice, Amir, Chen, Dana)"
+    name: str
+    hard_skills: Dict[str, int] = Field(
+        description="Mapping of hard skill -> score from 0 to 6"
     )
-    hard_skills: List[str] = Field(
-        description="List of technical skills from the allowed list"
-    )
-    soft_skills: List[str] = Field(
-        description="List of soft skills from the allowed list"
+    soft_skills: Dict[str, int] = Field(
+        description="Mapping of soft skill -> score from 0 to 6"
     )
 
-# ---------- 2. Instructions for Marvin (skill constraints) ----------
+
+# ---------- 2. Instructions for Marvin ----------
 
 GEN_INSTRUCTIONS = """
-You generate synthetic employees for a tech / data company.
+Generate synthetic employees with hard and soft skills, each assigned a score from 0–6.
 
-Return only JSON objects matching the Employee schema:
-- name: a realistic first name (any gender, any locale)
-- hard_skills: a list of 3-8 strings
-- soft_skills: a list of 2-6 strings
+VALID HARD SKILLS (only these exact strings allowed):
+"Python", "Pandas", "Numpy", "Scikit-learn", "SQL", "DB", "NoSQL",
+"Data Modeling", "ETL", "Airflow", "Spark", "Excel", "Power BI",
+"Tableau", "Git", "Docker", "Kubernetes"
 
-VALID HARD SKILLS (use ONLY these exact strings):
-- "Python"
-- "Pandas"
-- "Numpy"
-- "Scikit-learn"
-- "SQL"
-- "DB"
-- "NoSQL"
-- "Data Modeling"
-- "ETL"
-- "Airflow"
-- "Spark"
-- "Excel"
-- "Power BI"
-- "Tableau"
-- "Git"
-- "Docker"
-- "Kubernetes"
+VALID SOFT SKILLS:
+"Communication", "Teamwork", "Problem Solving", "Ownership", "Leadership",
+"Adaptability", "Time Management", "Attention to Detail", "Mentoring",
+"Stakeholder Management"
 
-VALID SOFT SKILLS (use ONLY these exact strings):
-- "Communication"
-- "Teamwork"
-- "Problem Solving"
-- "Ownership"
-- "Leadership"
-- "Adaptability"
-- "Time Management"
-- "Attention to Detail"
-- "Mentoring"
-- "Stakeholder Management"
-
-NON-CONTRADICTION RULES (MUST ALWAYS HOLD):
-1. If "Pandas" is in hard_skills, "Python" MUST also be in hard_skills.
-2. If "Numpy" is in hard_skills, "Python" MUST also be in hard_skills.
-3. If "Scikit-learn" is in hard_skills, "Python" MUST also be in hard_skills.
-4. If "SQL" is in hard_skills, "DB" MUST also be in hard_skills.
-5. If "Spark" or "Airflow" or "ETL" is in hard_skills, then "Python" MUST also be in hard_skills.
-6. Do NOT create logically inconsistent combinations like:
-   - Advanced tools without the basics, e.g. "Pandas" without "Python",
-     or "SQL" without "DB", or "Spark" without "Python".
-7. Avoid obvious duplicates or near-duplicates in the same list.
-
-The distribution should mix:
-- Data analysts (Excel, Power BI, SQL, DB, Tableau)
-- Data scientists (Python, Pandas, Numpy, Scikit-learn, SQL, DB)
-- Data / ML engineers (Python, DB, SQL, ETL, Airflow, Spark, Docker, Kubernetes)
-- Less technical people with fewer hard skills and stronger soft skills.
+RULES:
+1. Each skill score must be an integer between 0 and 6.
+2. Use 3–8 hard skills and 2–6 soft skills.
+3. NON-CONTRADICTION LOGIC:
+   - If "Pandas" or "Numpy" or "Scikit-learn" is present → "Python" must be present.
+   - If "SQL" is present → "DB" must be present.
+   - If "Spark" or "ETL" or "Airflow" is present → "Python" must be present.
+4. Skills must not contradict each other.
+5. The scores should make sense:
+   - If an advanced tool appears (Spark, Airflow, ETL), Python should have score ≥ 3.
+   - If SQL score ≥ 4, DB must also be ≥ 3.
+6. Output must match the Employee schema exactly.
 """
 
-# ---------- 3. Wrapper to generate a pandas DataFrame ----------
 
-def generate_employee_df(n: int = 10_000) -> pd.DataFrame:
-    # Use Marvin to generate structured synthetic employees
+# ---------- 3. DataFrame generator ----------
+
+def generate_employee_df(n=10_000) -> pd.DataFrame:
     employees: List[Employee] = marvin.generate(
         n=n,
         target=Employee,
         instructions=GEN_INSTRUCTIONS,
     )
 
-    records = []
-    for idx, e in enumerate(employees, start=1):
-        records.append(
-            {
-                "id": idx,
-                "name": e.name,
-                "Skills": {
-                    "Hard Skills": e.hard_skills,
-                    "Soft Skills": e.soft_skills,
-                },
+    rows = []
+    for idx, emp in enumerate(employees, start=1):
+        rows.append({
+            "id": idx,
+            "name": emp.name,
+            "Skills": {
+                "Hard Skills": emp.hard_skills,
+                "Soft Skills": emp.soft_skills,
             }
-        )
+        })
 
-    df = pd.DataFrame(records)
-    return df
+    return pd.DataFrame(rows)
 
-# ---------- 4. Example usage ----------
+
+# ---------- 4. Example ----------
 
 if __name__ == "__main__":
     df_emp = generate_employee_df(10_000)
     print(df_emp.head())
-    # df_emp now looks like:
-    #    id   name                                             Skills
-    # 0   1  Alice  {'Hard Skills': ['Python', 'SQL', 'DB'], 'Soft ...
