@@ -31,3 +31,12 @@ example jobs that will be used:
 
 8\. Material engineer - something that without the hardskill (relevant degree) no one will be able to match
 
+## the system gets as of now predefined set of job and employee dfs and calculates the match
+## between them using cosine similarity.
+## 1. the weight of calculations between soft skills and hard skills is dynamic for each job (with default enabled)
+## 2. unified vector store has been calculated
+## 3. top employees for job has been made
+## next steps:
+## 1. generate data using datage.py and test it on larger set of employees
+## 2. build the structure engine to structure employee data from APIS after getting data examples
+## 3. create more functions and integrate them with UI + enabling edit of df from UI
