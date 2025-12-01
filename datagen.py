@@ -1,4 +1,6 @@
 import marvin
+import os
+os.environ["OPENAI_API_KEY"] = "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"
 from pydantic import BaseModel, Field
 from typing import Dict, List
 import pandas as pd
@@ -51,7 +53,7 @@ RULES:
 
 # ---------- 3. DataFrame generator ----------
 
-def generate_employee_df(n=10_000) -> pd.DataFrame:
+def generate_employee_df(n=5) -> pd.DataFrame:
     employees: List[Employee] = marvin.generate(
         n=n,
         target=Employee,
@@ -75,5 +77,5 @@ def generate_employee_df(n=10_000) -> pd.DataFrame:
 # ---------- 4. Example ----------
 
 if __name__ == "__main__":
-    df_emp = generate_employee_df(10_000)
+    df_emp = generate_employee_df(5)
     print(df_emp.head())
