@@ -1,65 +1,121 @@
 # Career AI
 
-## Project Description
-Career-AI is a service that offers positions/candidates ingestion, structuring, vecorization and useful functionalities (e.g: matching positions to candidates and vice versa)
+## 🧠 Overview
 
-## Routes
-### /skills
-- POST /add_skills
-- PUT /update_skills
-- GET /get_all_skills
-- DELETE /delete_skills
-- DELETE /delete_all_skills
-### /data 
-- POST add_positions
-- PUT edit_positions
-- GET add_candidates
-- GET get_top_candidates
-- GET get_top_positions
+**Career-AI** is an intelligent backend service for managing and analyzing **positions**, **candidates**, and **skills**.
 
+It provides:
 
+- Ingestion and structuring of positions, candidates, and skills  
+- Vectorization (embeddings) of entities  
+- Smart matching between candidates and positions  
+- Similarity search (similar candidates / similar positions)  
+- Gap analysis between required and existing skills  
 
-## Architecture
+This service is designed to be the “AI brain” behind HR platforms, talent marketplaces, and internal mobility systems.
 
+---
 
+## ✨ Features
 
+- 🔄 **CRUD APIs** for skills, positions, and candidates  
+- 🧮 **Vectorization engine** for embeddings-based similarity search  
+- 🎯 **Smart matching APIs**:
+  - Top candidates for a position
+  - Top positions for a candidate
+  - Similar candidates / positions
+  - Skill gaps between candidate and job
+- 🧱 **Extensible architecture**, suitable for plugging into existing HRIS / ATS systems
 
+---
 
-1. creating the workflow - **done**
-2. understanding the data received and formats and the wanted data - **irrelevant as of now (first attempt to use synthetic data then continue)**
-3. creating APIs for the receiving the data. **- irrelevant as of now**
-4. extracting and restructuring it based on our schema into two dfs (jobs and employees) while separating it into hard and soft skills in each one - **irrelevant as of now, instead we will synthesis data using marvin (need api key for LLM to generate), managed to synthesis job data for now for the 8 example jobs below**
-5. transforming it into vectors
-6. creating a unified vector store to query from for the ui
-7. feeding the database from the UI in addition to the
+## 📌 API Endpoints
 
+> All endpoints return the requested object(s) on success, or an `Error` object on failure.
 
+### `/skills`
 
-\#used the chat to extract skills and level for each and defined as static for now in the code.
+| Method | Route         | Body           | Returns        |
+|--------|---------------|----------------|----------------|
+| POST   | `/skills/add`        | `List[Skill]`    | `List[Skill]`  |
+| PUT    | `/skills/update`     | `List[Skill]`    | `List[Skill]`  |
+| GET    | `/skills/get_all`    | —                | `List[Skill]`  |
+| DELETE | `/skills/delete`     | `List[Skill]`    | `List[Skill]`  |
+| DELETE | `/skills/delete_all` | —                | `bool`         |
 
-example jobs that will be used:
-1. HR
+---
 
-2\. Finances
+### `/positions`
 
-3\. Diplomat
+| Method | Route             | Body              | Returns           |
+|--------|-------------------|-------------------|-------------------|
+| POST   | `/positions/add`        | `List[Position]`   | `List[Position]` |
+| PUT    | `/positions/update`     | `List[Position]`   | `List[Position]` |
+| GET    | `/positions/get_all`    | —                 | `List[Position]` |
+| DELETE | `/positions/delete`     | `List[Position]`   | `List[Position]` |
+| DELETE | `/positions/delete_all` | —                 | `bool`           |
 
-4\. Fullstack Developer
+---
 
-5\. AI engineer
+### `/candidates`
 
-6\. Penetration tester
+| Method | Route              | Body                 | Returns              |
+|--------|--------------------|----------------------|----------------------|
+| POST   | `/candidates/add`        | `List[Candidate]`    | `List[Candidate]`    |
+| PUT    | `/candidates/update`     | `List[Candidate]`    | `List[Candidate]`    |
+| GET    | `/candidates/get_all`    | —                    | `List[Candidate]`    |
+| DELETE | `/candidates/delete`     | `List[Candidate]`    | `List[Candidate]`    |
+| DELETE | `/candidates/delete_all` | —                    | `bool`               |
 
-7\. Strategic consultant
+---
 
-8\. Material engineer - something that without the hardskill (relevant degree) no one will be able to match
+### `/smart` (AI-Powered)
 
-## the system gets as of now predefined set of job and employee dfs and calculates the match
-## between them using cosine similarity.
-## 1. the weight of calculations between soft skills and hard skills is dynamic for each job (with default enabled)
-## 2. unified vector store has been calculated
-## 3. top employees for job has been made
-## next steps:
-## 1. generate data using datage.py and test it on larger set of employees
-## 2. build the structure engine to structure employee data from APIS after getting data examples
-## 3. create more functions and integrate them with UI + enabling edit of df from UI
+These endpoints expose the main intelligence layer of the system.
+
+> Exact request/response schemas depend on your implementation and can be documented in OpenAPI/Swagger.
+
+| Method | Route                         | Description |
+|--------|-------------------------------|-------------|
+| GET    | `/smart/get_top_candidates`      | Get top-matching candidates for a given position |
+| GET    | `/smart/get_simillar_candidates` | Get candidates similar to a given candidate |
+| GET    | `/smart/get_top_positions`       | Get top-matching positions for a given candidate |
+| GET    | `/smart/get_simillar_positions`  | Get positions similar to a given position |
+| GET    | `/smart/get_gaps`                | Get missing skills / gaps between a candidate and a position |
+
+---   
+
+## 🏗️ Architecture
+
+At a high level, Career-AI sits between your **client applications** (HR portals, employee portals, ATS, etc.) and your **data layer** (databases + vector store).
+
+```mermaid
+flowchart LR
+  subgraph Clients[Client Applications]
+    HR[HR System / Admin UI]
+    EMP[Employee Portal / Career App]
+  end
+
+  subgraph CareerAI[Career-AI Service]
+    API[REST API Layer<br/>(/skills, /positions, /candidates, /smart)]
+    INGEST[Ingestion & Validation<br/>(schema, cleaning, normalization)]
+    VEC[Vectorization Engine<br/>(embeddings)]
+    MATCH[Matching & Gap Engine<br/>(similarity, ranking)]
+  end
+
+  subgraph DataLayer[Data Layer]
+    DB[(Operational DB<br/>skills / candidates / positions)]
+    VS[(Vector Store<br/>embeddings)]
+  end
+
+  HR --> API
+  EMP --> API
+
+  API --> INGEST
+  INGEST --> DB
+
+  API --> MATCH
+  MATCH --> DB
+  MATCH --> VEC
+  VEC --> VS
+  VS --> MATCH
