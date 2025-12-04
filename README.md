@@ -48,7 +48,7 @@ flowchart LR
     ING["Ingestion"]
     VEC["Vectorization"]
     VS["Vector Store"]
-
+ 
     HR --> API
     EMP --> API
 
