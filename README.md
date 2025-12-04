@@ -1,4 +1,27 @@
-# Career Ai official git repo
+# Career AI
+
+## Project Description
+Career-AI is a service that offers positions/candidates ingestion, structuring, vecorization and useful functionalities (e.g: matching positions to candidates and vice versa)
+
+## Routes
+### /skills
+- POST /add_skills
+- PUT /update_skills
+- GET /get_all_skills
+- DELETE /delete_skills
+- DELETE /delete_all_skills
+### /data 
+- POST add_positions
+- PUT edit_positions
+- GET add_candidates
+- GET get_top_candidates
+- GET get_top_positions
+
+
+
+## Architecture
+
+
 
 
 
