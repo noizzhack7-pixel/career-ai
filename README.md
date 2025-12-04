@@ -7,7 +7,7 @@
 It provides:
 
 - Ingestion and structuring of positions, candidates, and skills  
-- Vectorization (embeddings)  
+- Vectorization (embeddings) of employee data  
 - Smart matching between candidates and positions  
 - Similarity search (similar candidates / similar positions)  
 - Gap analysis between required and existing skills  
@@ -38,21 +38,21 @@ This service acts as the “AI brain” behind HR platforms and internal mobilit
 |--------|-------------------------|--------------------|------------------|
 | POST   | `/positions/add`        | `List[Position]`   | `List[Position]` |
 | PUT    | `/positions/update`     | `List[Position]`   | `List[Position]` |
-| GET    | `/positions/get_all`    | —                 | `List[Position]` |
+| GET    | `/positions/get_all`    | —                  | `List[Position]` |
 | DELETE | `/positions/delete`     | `List[Position]`   | `List[Position]` |
-| DELETE | `/positions/delete_all` | —                 | `bool`           |
+| DELETE | `/positions/delete_all` | —                  | `bool`           |
 
 ---
 
 ### `/candidates`
 
 | Method | Route                    | Body                 | Returns            |
-|--------|---------------------------|----------------------|--------------------|
-| POST   | `/candidates/add`         | `List[Candidate]`    | `List[Candidate]`  |
-| PUT    | `/candidates/update`      | `List[Candidate]`    | `List[Candidate]`  |
-| GET    | `/candidates/get_all`     | —                    | `List[Candidate]`  |
-| DELETE | `/candidates/delete`      | `List[Candidate]`    | `List[Candidate]`  |
-| DELETE | `/candidates/delete_all`  | —                    | `bool`             |
+|--------|--------------------------|----------------------|--------------------|
+| POST   | `/candidates/add`        | `List[Candidate]`    | `List[Candidate]`  |
+| PUT    | `/candidates/update`     | `List[Candidate]`    | `List[Candidate]`  |
+| GET    | `/candidates/get_all`    | —                    | `List[Candidate]`  |
+| DELETE | `/candidates/delete`     | `List[Candidate]`    | `List[Candidate]`  |
+| DELETE | `/candidates/delete_all` | —                    | `bool`             |
 
 ---
 
@@ -70,36 +70,39 @@ This service acts as the “AI brain” behind HR platforms and internal mobilit
 
 ## 🏗️ Architecture
 
+This diagram reflects the core components you requested:
+
+1. Ingestion  
+2. Vectorization  
+3. Vector Store  
+4. HR UI  
+5. Employee UI  
+6. REST API Layer  
+
+- **Employee data**:  
+  HR UI / Employee UI → REST API Layer → Ingestion → Vectorization → Vector Store  
+
+- **Positions data**:  
+  HR UI → REST API Layer → Ingestion → Vector Store (no vectorization step here)
+
 ### High-Level System Diagram (GitHub-compatible)
 
 ```mermaid
 flowchart LR
 
-    subgraph Clients["Client Applications"]
-        HR["HR Admin UI"]
-        EMP["Employee Portal"]
-    end
-
-    subgraph CareerAI["Career-AI Service"]
-        API["REST API Layer (/skills, /positions, /candidates, /smart)"]
-        INGEST["Ingestion & Validation"]
-        VEC["Vectorization Engine"]
-        MATCH["Matching & Gap Engine"]
-    end
-
-    subgraph DataLayer["Data Layer"]
-        DB["Operational Database"]
-        VS["Vector Store (Embeddings)"]
-    end
+    HR["HR UI"]
+    EMP["Employee UI"]
+    API["REST API Layer"]
+    ING["Ingestion"]
+    VEC["Vectorization"]
+    VS["Vector Store"]
 
     HR --> API
     EMP --> API
 
-    API --> INGEST
-    INGEST --> DB
+    API --> ING
 
-    API --> MATCH
-    MATCH --> DB
-    MATCH --> VEC
+    ING -->|Employee data| VEC
     VEC --> VS
-    VS --> MATCH
+
+    ING -->|Positions data| VS
