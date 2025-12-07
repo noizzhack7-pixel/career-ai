@@ -1,0 +1,47 @@
+/* Home Component Styles - Using Tailwind via CDN */
+/* Additional component-specific styles */
+
+:host {
+  display: block;
+}
+
+/* Ensure proper RTL support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+/* Job card hover effects */
+.job-card {
+  transition: all 0.2s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Smooth scrolling for the page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar hiding */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animation for IDP section reveal */
+#idp-connected {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

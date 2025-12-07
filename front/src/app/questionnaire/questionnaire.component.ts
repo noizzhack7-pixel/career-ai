@@ -2,7 +2,7 @@ import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
@@ -30,7 +30,7 @@ interface AssessmentResult {
 @Component({
   selector: 'app-questionnaire',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgChartsModule],
+  imports: [CommonModule, FormsModule, NgChartsModule, RouterLink],
   templateUrl: './questionnaire.component.html',
   styleUrls: ['./questionnaire.component.css']
 })
@@ -119,13 +119,13 @@ export class QuestionnaireComponent implements OnInit {
     datasets: [{
       label: 'Skills Score',
       data: [],
-      backgroundColor: 'rgba(102, 126, 234, 0.2)',
-      borderColor: 'rgba(102, 126, 234, 1)',
+      backgroundColor: 'rgba(84, 19, 136, 0.2)',
+      borderColor: 'rgba(84, 19, 136, 1)',
       borderWidth: 2,
-      pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+      pointBackgroundColor: 'rgba(84, 19, 136, 1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+      pointHoverBorderColor: 'rgba(84, 19, 136, 1)'
     }]
   });
   public radarChartType: ChartType = 'radar';
@@ -167,6 +167,31 @@ export class QuestionnaireComponent implements OnInit {
       newMap.set(questionId, score);
       return newMap;
     });
+    
+    // Scroll to next question after a short delay
+    setTimeout(() => {
+      this.scrollToNextQuestion(questionId);
+    }, 150);
+  }
+
+  private scrollToNextQuestion(currentQuestionId: number): void {
+    const currentPageQuestions = this.currentQuestions();
+    const currentIndex = currentPageQuestions.findIndex(q => q.id === currentQuestionId);
+    
+    // If there's a next question on this page, scroll to it
+    if (currentIndex < currentPageQuestions.length - 1) {
+      const nextQuestion = currentPageQuestions[currentIndex + 1];
+      const nextElement = document.getElementById(`question-${nextQuestion.id}`);
+      if (nextElement) {
+        nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } else {
+      // Last question on the page - scroll to navigation
+      const pagination = document.querySelector('.pagination');
+      if (pagination) {
+        pagination.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
   }
 
   getAnswer(questionId: number): number | undefined {
@@ -258,13 +283,13 @@ export class QuestionnaireComponent implements OnInit {
       datasets: [{
         label: 'Skills Score',
         data: scores,
-        backgroundColor: 'rgba(102, 126, 234, 0.2)',
-        borderColor: 'rgba(102, 126, 234, 1)',
+        backgroundColor: 'rgba(84, 19, 136, 0.2)',
+        borderColor: 'rgba(84, 19, 136, 1)',
         borderWidth: 2,
-        pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+        pointBackgroundColor: 'rgba(84, 19, 136, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+        pointHoverBorderColor: 'rgba(84, 19, 136, 1)'
       }]
     });
   }

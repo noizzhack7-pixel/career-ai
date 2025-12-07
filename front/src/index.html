@@ -1,14 +1,41 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <title>Career AI - Skills Assessment</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GO-PRO - Career AI</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>window.FontAwesomeConfig = { autoReplaceSvg: 'nest' };</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>::-webkit-scrollbar { display: none; }</style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#541388', light: '#EAD8FD', dark: '#650F54' },
+            secondary: { DEFAULT: '#FB8F67' },
+            accent: { DEFAULT: '#9DD9D2', dark: '#650F54' },
+            neutral: { 'dark': '#1F2937', 'medium': '#6B7280', 'light': '#E5E7EB', 'extralight': '#F9FAFB' },
+            status: { success: '#16A34A', warning: '#FACC15', danger: '#DC2626', info: '#2563EB' }
+          },
+          fontFamily: { 'heebo': ['Heebo', 'sans-serif'] },
+          borderRadius: { 'card': '8px', 'pill': '999px' },
+          boxShadow: {
+            'card': '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+            'panel': '0 10px 15px -3px rgb(0 0 0 / 0.1)'
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
+<body class="bg-neutral-extralight font-heebo text-neutral-dark">
   <app-root></app-root>
 </body>
 </html>
-
