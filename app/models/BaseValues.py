@@ -67,7 +67,7 @@ HardSkills = Literal[
 ]
 
 # Numeric range for skill levels (0–6). Annotated creates a clean alias.
-SkillRange = Annotated[float, Field(ge=0.0, le=6.0)]
+SkillRange = Annotated[float, Field(ge=1.0, le=5.0)]
 
 # Categories for a job position in the organization
 PositionCategory = Literal[
