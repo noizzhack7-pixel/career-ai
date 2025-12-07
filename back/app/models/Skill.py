@@ -1,5 +1,5 @@
 import uuid
-from typing import Literal
+from typing import Literal, Union
 
 from pydantic import BaseModel, Field
 from app.models.BaseValues import SkillRange, SoftSkills, HardSkills
@@ -37,3 +37,7 @@ class HardSkill(BaseModel):
                 "level": 4.5,
             }
         }
+
+
+# Union type for any skill
+Skill = Union[SoftSkill, HardSkill]

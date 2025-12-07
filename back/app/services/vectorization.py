@@ -1,6 +1,16 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import numpy as np
-from sentence_transformers import SentenceTransformer
+
+# Optional import for sentence_transformers (heavy ML dependency)
+try:
+    from sentence_transformers import SentenceTransformer
+    SENTENCE_TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    SentenceTransformer = None
+    SENTENCE_TRANSFORMERS_AVAILABLE = False
+    print("Warning: sentence_transformers not installed. ML features will be disabled.")
+    print("Install with: pip install sentence-transformers")
+
 from app.models.Candidate import Candidate
 from app.models.Position import Position
 from app.models.Skill import HardSkill, SoftSkill
@@ -14,11 +24,17 @@ class VectorizationService:
         self._model = None
 
     @property
-    def model(self) -> SentenceTransformer:
+    def model(self) -> Optional[Any]:
         """Lazy load the embedding model"""
+        if not SENTENCE_TRANSFORMERS_AVAILABLE:
+            return None
         if self._model is None:
             self._model = SentenceTransformer('all-MiniLM-L6-v2')
         return self._model
+    
+    def is_available(self) -> bool:
+        """Check if vectorization is available"""
+        return SENTENCE_TRANSFORMERS_AVAILABLE
 
     def _level_to_text(self, level: float) -> str:
         """Convert numeric skill level to descriptive text"""
@@ -154,6 +170,9 @@ This position requires {len(all_hard_skills)} technical skills and {len(all_soft
         Generate hybrid embedding vector for a candidate
         Combines semantic (70%) + structured (30%) features
         """
+        if not self.is_available():
+            # Return empty vector if ML features not available
+            return []
 
         # 1. Semantic embedding (384 dims)
         text = self._format_candidate_text(candidate)
@@ -180,6 +199,9 @@ This position requires {len(all_hard_skills)} technical skills and {len(all_soft
         Generate hybrid embedding vector for a position
         Combines semantic (70%) + structured (30%) features
         """
+        if not self.is_available():
+            # Return empty vector if ML features not available
+            return []
 
         # 1. Semantic embedding
         text = self._format_position_text(position)
