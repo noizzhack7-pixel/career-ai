@@ -1,0 +1,123 @@
+<div class="questionnaire-container" [dir]="'rtl'">
+  <!-- Loading State -->
+  <div *ngIf="isLoading() && !isSubmitted()" class="loading">
+    <div class="spinner"></div>
+    <p>טוען הערכה...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="error-message">
+    <p>{{ error() }}</p>
+    <button (click)="loadQuestions()" class="btn-retry">נסה שוב</button>
+  </div>
+
+  <!-- Assessment Form -->
+  <div *ngIf="!isLoading() && !isSubmitted() && questions().length > 0" class="assessment-form">
+    <div class="assessment-header">
+      <h2>הערכת כישורים <span *ngIf="isTestMode()" class="test-badge">מצב בדיקה</span></h2>
+      <p class="subtitle">ענה על כל השאלות כדי לזהות את החוזקות המקצועיות שלך</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="(answeredCount() / questions().length) * 100"></div>
+        <span class="progress-text">{{ answeredCount() }} / {{ questions().length }} נענו</span>
+      </div>
+    </div>
+
+    <!-- Questions -->
+    <div class="questions-section">
+      <div *ngFor="let question of currentQuestions()" class="question-card">
+        <div class="question-header">
+          <span class="question-number">שאלה {{ question.id }}</span>
+          <span class="question-category">{{ question.category }}</span>
+        </div>
+        <p class="question-text">{{ question.text }}</p>
+        <div class="rating-scale">
+          <label *ngFor="let score of [1, 2, 3, 4, 5]" class="rating-option">
+            <input type="radio" [name]="'question-' + question.id" [value]="score"
+              [checked]="getAnswer(question.id) === score" (change)="setAnswer(question.id, score)" />
+            <span class="rating-label">
+              <span class="rating-number">{{ score }}</span>
+              <span class="rating-text" *ngIf="score === 1">בכלל לא מסכים</span>
+              <span class="rating-text" *ngIf="score === 2">לא מסכים</span>
+              <span class="rating-text" *ngIf="score === 3">ניטרלי</span>
+              <span class="rating-text" *ngIf="score === 4">מסכים</span>
+              <span class="rating-text" *ngIf="score === 5">מסכים מאוד</span>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="pagination">
+      <!-- Back Button (on the left in RTL) -->
+      <button (click)="previousPage()" [disabled]="isFirstPage()" class="btn-nav btn-prev">
+        → הקודם
+      </button>
+
+
+      <!-- Submit Button (on last page) -->
+      <button *ngIf="isLastPage()" (click)="submitAssessment()" [disabled]="!isCurrentPageComplete() || isLoading()"
+        class="btn-submit">
+        {{ isLoading() ? 'שולח...' : 'שלח הערכה' }}
+      </button>
+
+      <!-- Page indicator text -->
+      <span class="page-indicator-text">עמוד {{ currentPage() + 1 }} מתוך {{ totalPages() }}</span>
+
+      <!-- Next/Submit Button (on the right in RTL) -->
+      <button *ngIf="!isLastPage()" (click)="nextPage()" [disabled]="!isCurrentPageComplete()" class="btn-nav btn-next">
+        הבא ←
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Dashboard (RTL Layout) -->
+  <div *ngIf="isSubmitted() && results()" class="results-dashboard">
+    <div class="results-header">
+      <h1 class="main-title">פרופיל הכישורים שלך</h1>
+      <p class="subtitle-hebrew">סיכום התוצאות וניתוח נטיות תעסוקתיות</p>
+      <button (click)="resetAssessment()" class="btn-reset">עשה הערכה שוב</button>
+    </div>
+
+    <div class="results-content">
+      <!-- Left Side: Radar Chart -->
+      <div class="chart-section">
+        <h3 class="section-title">מפת כישורים</h3>
+        <div class="chart-container">
+          <canvas baseChart [data]="radarChartData()" [options]="radarChartOptions" [type]="radarChartType">
+          </canvas>
+        </div>
+      </div>
+
+      <!-- Right Side: AI Insights -->
+      <div class="insights-section">
+        <h3 class="section-title">פרופיל המיומנויות שלך</h3>
+
+        <!-- AI Summary -->
+        <div class="insight-box">
+          <h4 class="insight-title">
+            <span class="ai-icon">⚡</span>
+            ניתוח אישי
+          </h4>
+          <p class="insight-text">{{ results()!.ai_summary }}</p>
+        </div>
+
+        <!-- Top Strengths -->
+        <div class="insight-box">
+          <h4 class="insight-title">החוזקות שלך</h4>
+          <ul class="strengths-list">
+            <li *ngFor="let strength of results()!.top_strengths" class="strength-item">
+              {{ strength }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Growth Recommendation -->
+        <div class="insight-box">
+          <h4 class="insight-title">המלצה להמשך</h4>
+          <p class="insight-text">{{ results()!.growth_recommendation }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
