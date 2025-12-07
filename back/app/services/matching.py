@@ -5,6 +5,7 @@ from app.models.Position import Position
 from app.models.Skill import HardSkill, SoftSkill
 from app.services.ingestion import ingestion_service
 from app.services.vectorization import vectorization_service
+from app.vector_db.client import vector_db_client
 
 
 class SkillGapDetail:
@@ -44,6 +45,18 @@ class MatchingService:
     def __init__(self):
         self.candidates_table = "candidates"
         self.positions_table = "positions"
+
+    # ---- Internal helpers ----
+    def _db_search(self, table: str, query_vector: List[float], limit: int) -> List[Dict[str, Any]]:
+        """
+        Try to search in pgvector. Returns list of {id, similarity, metadata}.
+        On any failure returns empty list (caller may fallback to in-memory computation).
+        """
+        try:
+            return vector_db_client.search_similar(table, query_vector, limit)
+        except Exception:
+            # Silent fallback to in-memory approach
+            return []
 
     def calculate_hybrid_score(
         self,
@@ -92,8 +105,9 @@ class MatchingService:
         if not position:
             return []
 
-        # 2. Vectorize position
-        pos_vec = np.array(vectorization_service.vectorize_position(position))
+        # 2. Vectorize position (query vector for ANN search)
+        pos_vec_list = vectorization_service.vectorize_position(position)
+        pos_vec = np.array(pos_vec_list)
         if pos_vec.size == 0:
             return []
 
@@ -104,54 +118,119 @@ class MatchingService:
             required_hard.extend(profile.hard_skills)
             required_soft.extend(profile.soft_skills)
 
+        # 4. Try pgvector ANN search first
+        ann_results = self._db_search(self.candidates_table, pos_vec_list, limit)
+
         results: List[Dict[str, Any]] = []
-        for cand in ingestion_service.list_candidates():
-            # 4. Vectorize candidate
-            cand_vec = np.array(vectorization_service.vectorize_candidate(cand))
-            if cand_vec.size == 0:
-                continue
 
-            # 5. Cosine similarity
-            sim = self._cosine_similarity(pos_vec, cand_vec)
+        if ann_results:
+            # Use ANN hits as candidates and then do hybrid rescoring
+            for hit in ann_results:
+                cand = ingestion_service.get_candidate(hit["id"])  # Prefer in-memory object for detailed overlap
+                if not cand:
+                    # Fallback minimal info from metadata
+                    md = hit.get("metadata", {}) or {}
+                    name = md.get("name", hit["id"])
+                    sim = float(hit.get("similarity", 0.0))
+                    results.append({
+                        "id": hit["id"],
+                        "name": name,
+                        "score": round(float(sim), 4),
+                        "semantic_similarity": round(float(sim), 4),
+                        "skill_match": 0.0,
+                        "details": {
+                            "matching_skills": [],
+                            "category_match": False,
+                            "note": "Candidate metadata not loaded; returning semantic-only score"
+                        },
+                    })
+                    continue
 
-            # 6. Skill overlap
-            overlap = vectorization_service.calculate_skill_overlap(
-                cand.hard_skills,
-                cand.soft_skills,
-                required_hard,
-                required_soft,
-            )
+                # Vector similarity from hit, compute overlap and category
+                sim = float(hit.get("similarity", 0.0))
+                overlap = vectorization_service.calculate_skill_overlap(
+                    cand.hard_skills,
+                    cand.soft_skills,
+                    required_hard,
+                    required_soft,
+                )
+                category_match = False
+                if cand.current_position and cand.current_position.category == position.category:
+                    category_match = True
+                else:
+                    for past in cand.past_positions:
+                        if past.category == position.category:
+                            category_match = True
+                            break
 
-            # 7. Category match heuristic
-            category_match = False
-            if cand.current_position and cand.current_position.category == position.category:
-                category_match = True
-            else:
-                for past in cand.past_positions:
-                    if past.category == position.category:
-                        category_match = True
-                        break
+                score = self.calculate_hybrid_score(sim, overlap, category_match)
 
-            score = self.calculate_hybrid_score(sim, overlap, category_match)
+                candidate_hard_dict = {s.skill: s.level for s in cand.hard_skills}
+                matched_skills = [
+                    s.skill for s in required_hard
+                    if s.skill in candidate_hard_dict and candidate_hard_dict[s.skill] >= s.level * 0.8
+                ]
 
-            # Build details: matching skills list where candidate level >= 80% of required
-            candidate_hard_dict = {s.skill: s.level for s in cand.hard_skills}
-            matched_skills = [
-                s.skill for s in required_hard
-                if s.skill in candidate_hard_dict and candidate_hard_dict[s.skill] >= s.level * 0.8
-            ]
+                results.append({
+                    "id": cand.candidate_id,
+                    "name": cand.name,
+                    "score": round(float(score), 4),
+                    "semantic_similarity": round(float(sim), 4),
+                    "skill_match": round(float(overlap.get("overall_match", 0.0)), 4),
+                    "details": {
+                        "matching_skills": matched_skills,
+                        "category_match": category_match,
+                    },
+                })
+        else:
+            # Fallback: brute-force over in-memory candidates
+            for cand in ingestion_service.list_candidates():
+                # 4. Vectorize candidate
+                cand_vec = np.array(vectorization_service.vectorize_candidate(cand))
+                if cand_vec.size == 0:
+                    continue
 
-            results.append({
-                "id": cand.candidate_id,
-                "name": cand.name,
-                "score": round(float(score), 4),
-                "semantic_similarity": round(float(sim), 4),
-                "skill_match": round(float(overlap.get("overall_match", 0.0)), 4),
-                "details": {
-                    "matching_skills": matched_skills,
-                    "category_match": category_match,
-                },
-            })
+                # 5. Cosine similarity
+                sim = self._cosine_similarity(pos_vec, cand_vec)
+
+                # 6. Skill overlap
+                overlap = vectorization_service.calculate_skill_overlap(
+                    cand.hard_skills,
+                    cand.soft_skills,
+                    required_hard,
+                    required_soft,
+                )
+
+                # 7. Category match heuristic
+                category_match = False
+                if cand.current_position and cand.current_position.category == position.category:
+                    category_match = True
+                else:
+                    for past in cand.past_positions:
+                        if past.category == position.category:
+                            category_match = True
+                            break
+
+                score = self.calculate_hybrid_score(sim, overlap, category_match)
+
+                # Build details: matching skills list where candidate level >= 80% of required
+                candidate_hard_dict = {s.skill: s.level for s in cand.hard_skills}
+                matched_skills = [
+                    s.skill for s in required_hard
+                    if s.skill in candidate_hard_dict and candidate_hard_dict[s.skill] >= s.level * 0.8
+                ]
+
+                results.append({
+                    "id": cand.candidate_id,
+                    "name": cand.name,
+                    "score": round(float(score), 4),
+                    "semantic_similarity": round(float(sim), 4),
+                    "skill_match": round(float(overlap.get("overall_match", 0.0)), 4),
+                    "details": {
+                        "matching_skills": matched_skills,
+                        "category_match": category_match,
+                    },
+                })
 
         # Sort and limit
         results.sort(key=lambda r: r["score"], reverse=True)
@@ -171,61 +250,130 @@ class MatchingService:
         if not candidate:
             return []
 
-        cand_vec = np.array(vectorization_service.vectorize_candidate(candidate))
+        cand_vec_list = vectorization_service.vectorize_candidate(candidate)
+        cand_vec = np.array(cand_vec_list)
         if cand_vec.size == 0:
             return []
 
         results: List[Dict[str, Any]] = []
-        for pos in ingestion_service.list_positions():
-            pos_vec = np.array(vectorization_service.vectorize_position(pos))
-            if pos_vec.size == 0:
-                continue
 
-            sim = self._cosine_similarity(cand_vec, pos_vec)
+        ann_results = self._db_search(self.positions_table, cand_vec_list, limit)
+        if ann_results:
+            for hit in ann_results:
+                pos = ingestion_service.get_position(hit["id"])  # Prefer in-memory
+                sim = float(hit.get("similarity", 0.0))
+                if not pos:
+                    md = hit.get("metadata", {}) or {}
+                    name = md.get("name", hit["id"])
+                    results.append({
+                        "id": hit["id"],
+                        "name": name,
+                        "score": round(float(sim), 4),
+                        "semantic_similarity": round(float(sim), 4),
+                        "skill_match": 0.0,
+                        "details": {
+                            "matching_skills": [],
+                            "category_match": False,
+                            "note": "Position metadata not loaded; returning semantic-only score"
+                        },
+                    })
+                    continue
 
-            # Collect required skills
-            req_hard: List[HardSkill] = []
-            req_soft: List[SoftSkill] = []
-            for profile in pos.profiles:
-                req_hard.extend(profile.hard_skills)
-                req_soft.extend(profile.soft_skills)
+                # Collect required skills
+                req_hard: List[HardSkill] = []
+                req_soft: List[SoftSkill] = []
+                for profile in pos.profiles:
+                    req_hard.extend(profile.hard_skills)
+                    req_soft.extend(profile.soft_skills)
 
-            overlap = vectorization_service.calculate_skill_overlap(
-                candidate.hard_skills,
-                candidate.soft_skills,
-                req_hard,
-                req_soft,
-            )
+                overlap = vectorization_service.calculate_skill_overlap(
+                    candidate.hard_skills,
+                    candidate.soft_skills,
+                    req_hard,
+                    req_soft,
+                )
 
-            category_match = False
-            if candidate.current_position and candidate.current_position.category == pos.category:
-                category_match = True
-            else:
-                for past in candidate.past_positions:
-                    if past.category == pos.category:
-                        category_match = True
-                        break
+                category_match = False
+                if candidate.current_position and candidate.current_position.category == pos.category:
+                    category_match = True
+                else:
+                    for past in candidate.past_positions:
+                        if past.category == pos.category:
+                            category_match = True
+                            break
 
-            score = self.calculate_hybrid_score(sim, overlap, category_match)
+                score = self.calculate_hybrid_score(sim, overlap, category_match)
 
-            matched_skills = [
-                s.skill for s in req_hard
-                if any(cs.skill == s.skill and cs.level >= s.level * 0.8 for cs in candidate.hard_skills)
-            ]
+                matched_skills = [
+                    s.skill for s in req_hard
+                    if any(cs.skill == s.skill and cs.level >= s.level * 0.8 for cs in candidate.hard_skills)
+                ]
 
-            results.append({
-                "id": str(pos.id),
-                "name": pos.name,
-                "score": round(float(score), 4),
-                "semantic_similarity": round(float(sim), 4),
-                "skill_match": round(float(overlap.get("overall_match", 0.0)), 4),
-                "details": {
-                    "matching_skills": matched_skills,
-                    "category_match": category_match,
-                    "matched_requirements": len(matched_skills),
-                    "total_requirements": len(req_hard),
-                },
-            })
+                results.append({
+                    "id": str(pos.id),
+                    "name": pos.name,
+                    "score": round(float(score), 4),
+                    "semantic_similarity": round(float(sim), 4),
+                    "skill_match": round(float(overlap.get("overall_match", 0.0)), 4),
+                    "details": {
+                        "matching_skills": matched_skills,
+                        "category_match": category_match,
+                        "matched_requirements": len(matched_skills),
+                        "total_requirements": len(req_hard),
+                    },
+                })
+        else:
+            # Fallback: brute-force over in-memory positions
+            for pos in ingestion_service.list_positions():
+                pos_vec = np.array(vectorization_service.vectorize_position(pos))
+                if pos_vec.size == 0:
+                    continue
+
+                sim = self._cosine_similarity(cand_vec, pos_vec)
+
+                # Collect required skills
+                req_hard = []
+                req_soft = []
+                for profile in pos.profiles:
+                    req_hard.extend(profile.hard_skills)
+                    req_soft.extend(profile.soft_skills)
+
+                overlap = vectorization_service.calculate_skill_overlap(
+                    candidate.hard_skills,
+                    candidate.soft_skills,
+                    req_hard,
+                    req_soft,
+                )
+
+                category_match = False
+                if candidate.current_position and candidate.current_position.category == pos.category:
+                    category_match = True
+                else:
+                    for past in candidate.past_positions:
+                        if past.category == pos.category:
+                            category_match = True
+                            break
+
+                score = self.calculate_hybrid_score(sim, overlap, category_match)
+
+                matched_skills = [
+                    s.skill for s in req_hard
+                    if any(cs.skill == s.skill and cs.level >= s.level * 0.8 for cs in candidate.hard_skills)
+                ]
+
+                results.append({
+                    "id": str(pos.id),
+                    "name": pos.name,
+                    "score": round(float(score), 4),
+                    "semantic_similarity": round(float(sim), 4),
+                    "skill_match": round(float(overlap.get("overall_match", 0.0)), 4),
+                    "details": {
+                        "matching_skills": matched_skills,
+                        "category_match": category_match,
+                        "matched_requirements": len(matched_skills),
+                        "total_requirements": len(req_hard),
+                    },
+                })
 
         results.sort(key=lambda r: r["score"], reverse=True)
         return results[:limit]
@@ -242,32 +390,69 @@ class MatchingService:
         pivot = ingestion_service.get_candidate(candidate_id)
         if not pivot:
             return []
-        pivot_vec = np.array(vectorization_service.vectorize_candidate(pivot))
+        pivot_vec_list = vectorization_service.vectorize_candidate(pivot)
+        pivot_vec = np.array(pivot_vec_list)
         if pivot_vec.size == 0:
             return []
 
         results: List[Dict[str, Any]] = []
-        for cand in ingestion_service.list_candidates():
-            if cand.candidate_id == candidate_id:
-                continue
-            cand_vec = np.array(vectorization_service.vectorize_candidate(cand))
-            if cand_vec.size == 0:
-                continue
-            sim = self._cosine_similarity(pivot_vec, cand_vec)
-            # Common skills by name
-            pivot_skills = set(s.skill for s in pivot.hard_skills)
-            cand_skills = set(s.skill for s in cand.hard_skills)
-            common = sorted(list(pivot_skills & cand_skills))
-            results.append({
-                "id": cand.candidate_id,
-                "name": cand.name,
-                "score": round(float(sim), 4),
-                "semantic_similarity": round(float(sim), 4),
-                "details": {
-                    "explanation": "Similar skill profile and experience",
-                    "common_skills": common[:10],
-                },
-            })
+
+        ann_results = self._db_search(self.candidates_table, pivot_vec_list, limit + 1)
+        if ann_results:
+            for hit in ann_results:
+                hit_id = hit.get("id")
+                if hit_id == candidate_id:
+                    continue
+                sim = float(hit.get("similarity", 0.0))
+                cand = ingestion_service.get_candidate(hit_id)
+                if cand:
+                    pivot_skills = set(s.skill for s in pivot.hard_skills)
+                    cand_skills = set(s.skill for s in cand.hard_skills)
+                    common = sorted(list(pivot_skills & cand_skills))
+                    results.append({
+                        "id": cand.candidate_id,
+                        "name": cand.name,
+                        "score": round(float(sim), 4),
+                        "semantic_similarity": round(float(sim), 4),
+                        "details": {
+                            "explanation": "Similar skill profile and experience",
+                            "common_skills": common[:10],
+                        },
+                    })
+                else:
+                    md = hit.get("metadata", {}) or {}
+                    name = md.get("name", hit_id)
+                    results.append({
+                        "id": hit_id,
+                        "name": name,
+                        "score": round(float(sim), 4),
+                        "semantic_similarity": round(float(sim), 4),
+                        "details": {
+                            "explanation": "Similar embedding",
+                            "common_skills": [],
+                        },
+                    })
+        else:
+            for cand in ingestion_service.list_candidates():
+                if cand.candidate_id == candidate_id:
+                    continue
+                cand_vec = np.array(vectorization_service.vectorize_candidate(cand))
+                if cand_vec.size == 0:
+                    continue
+                sim = self._cosine_similarity(pivot_vec, cand_vec)
+                pivot_skills = set(s.skill for s in pivot.hard_skills)
+                cand_skills = set(s.skill for s in cand.hard_skills)
+                common = sorted(list(pivot_skills & cand_skills))
+                results.append({
+                    "id": cand.candidate_id,
+                    "name": cand.name,
+                    "score": round(float(sim), 4),
+                    "semantic_similarity": round(float(sim), 4),
+                    "details": {
+                        "explanation": "Similar skill profile and experience",
+                        "common_skills": common[:10],
+                    },
+                })
 
         results.sort(key=lambda r: r["score"], reverse=True)
         return results[:limit]
@@ -284,32 +469,69 @@ class MatchingService:
         pivot = ingestion_service.get_position(position_id)
         if not pivot:
             return []
-        pivot_vec = np.array(vectorization_service.vectorize_position(pivot))
+        pivot_vec_list = vectorization_service.vectorize_position(pivot)
+        pivot_vec = np.array(pivot_vec_list)
         if pivot_vec.size == 0:
             return []
 
         results: List[Dict[str, Any]] = []
-        for pos in ingestion_service.list_positions():
-            if str(pos.id) == position_id:
-                continue
-            pos_vec = np.array(vectorization_service.vectorize_position(pos))
-            if pos_vec.size == 0:
-                continue
-            sim = self._cosine_similarity(pivot_vec, pos_vec)
-            # Common required skills (hard) by name
-            pivot_skills = set(s.skill for pr in pivot.profiles for s in pr.hard_skills)
-            pos_skills = set(s.skill for pr in pos.profiles for s in pr.hard_skills)
-            common = sorted(list(pivot_skills & pos_skills))
-            results.append({
-                "id": str(pos.id),
-                "name": pos.name,
-                "score": round(float(sim), 4),
-                "semantic_similarity": round(float(sim), 4),
-                "details": {
-                    "explanation": "Similar technical requirements and category",
-                    "common_skills": common[:10],
-                },
-            })
+
+        ann_results = self._db_search(self.positions_table, pivot_vec_list, limit + 1)
+        if ann_results:
+            for hit in ann_results:
+                hid = hit.get("id")
+                if hid == position_id:
+                    continue
+                sim = float(hit.get("similarity", 0.0))
+                pos = ingestion_service.get_position(hid)
+                if pos:
+                    pivot_skills = set(s.skill for pr in pivot.profiles for s in pr.hard_skills)
+                    pos_skills = set(s.skill for pr in pos.profiles for s in pr.hard_skills)
+                    common = sorted(list(pivot_skills & pos_skills))
+                    results.append({
+                        "id": str(pos.id),
+                        "name": pos.name,
+                        "score": round(float(sim), 4),
+                        "semantic_similarity": round(float(sim), 4),
+                        "details": {
+                            "explanation": "Similar technical requirements and category",
+                            "common_skills": common[:10],
+                        },
+                    })
+                else:
+                    md = hit.get("metadata", {}) or {}
+                    name = md.get("name", hid)
+                    results.append({
+                        "id": hid,
+                        "name": name,
+                        "score": round(float(sim), 4),
+                        "semantic_similarity": round(float(sim), 4),
+                        "details": {
+                            "explanation": "Similar embedding",
+                            "common_skills": [],
+                        },
+                    })
+        else:
+            for pos in ingestion_service.list_positions():
+                if str(pos.id) == position_id:
+                    continue
+                pos_vec = np.array(vectorization_service.vectorize_position(pos))
+                if pos_vec.size == 0:
+                    continue
+                sim = self._cosine_similarity(pivot_vec, pos_vec)
+                pivot_skills = set(s.skill for pr in pivot.profiles for s in pr.hard_skills)
+                pos_skills = set(s.skill for pr in pos.profiles for s in pr.hard_skills)
+                common = sorted(list(pivot_skills & pos_skills))
+                results.append({
+                    "id": str(pos.id),
+                    "name": pos.name,
+                    "score": round(float(sim), 4),
+                    "semantic_similarity": round(float(sim), 4),
+                    "details": {
+                        "explanation": "Similar technical requirements and category",
+                        "common_skills": common[:10],
+                    },
+                })
 
         results.sort(key=lambda r: r["score"], reverse=True)
         return results[:limit]
