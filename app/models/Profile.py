@@ -1,8 +1,8 @@
 import uuid
 from uuid import UUID
 from typing import List, Optional
-from pydantic import BaseModel, Field, field_validator
-from app.models.Skill import Skill
+from pydantic import BaseModel, Field
+from app.models.Skill import SoftSkill, HardSkill
 
 
 class Profile(BaseModel):
@@ -25,63 +25,13 @@ class Profile(BaseModel):
         description="Human-readable profile name (e.g., 'Senior Backend Engineer Profile').",
     )
 
-    soft_skills: List[Skill] = Field(
+    soft_skills: List[SoftSkill] = Field(
         default_factory=list,
-        description="List of soft skills associated with this profile. "
-                    "Each skill must have type='soft'.",
+        description="List of soft skills associated with this profile.",
     )
 
-    hard_skills: List[Skill] = Field(
+    hard_skills: List[HardSkill] = Field(
         default_factory=list,
-        description="List of hard skills associated with this profile. "
-                    "Each skill must have type='hard'.",
+        description="List of hard skills associated with this profile..",
+
     )
-
-    # --- Validators ---
-
-    @field_validator("soft_skills")
-    @classmethod
-    def ensure_soft_skills_are_soft(cls, skill: Skill) -> Skill:
-        """
-        Ensure that every skill in `soft_skills` has type == 'soft'.
-        """
-        if skill.type != "soft":
-            raise ValueError(
-                f"soft_skills can only contain skills with type='soft', "
-                f"got type='{skill.type}' for skill '{skill.name}'."
-            )
-        return skill
-
-    @field_validator("hard_skills")
-    @classmethod
-    def ensure_hard_skills_are_hard(cls, skill: Skill) -> Skill:
-            """
-            Ensure that every skill in `hard_skills` has type == 'hard'.
-            """
-            if skill.type != "hard":
-                raise ValueError(
-                    f"hard_skills can only contain skills with type='hard', "
-                    f"got type='{skill.type}' for skill '{skill.name}'."
-                )
-            return skill
-
-    class Config:
-        """
-        Pydantic configuration for the Profile model.
-
-        - `json_schema_extra` provides a concrete example for documentation / OpenAPI.
-        """
-
-        json_schema_extra = {
-            "example": {
-                "id": str(uuid.uuid4()),
-                "name": "Senior Backend Engineer Profile",
-                "soft_skills": [
-                    {"id": str(uuid.uuid4()), "type": "soft", "name": "Communication", "level": 4},
-                ],
-                "hard_skills": [
-                    {"id": str(uuid.uuid4()), "type": "hard", "name": "Python", "level": 6},
-                    {"id": str(uuid.uuid4()), "type": "hard", "name": "SQL", "level": 5},
-                ],
-            }
-        }

@@ -17,13 +17,4 @@ class Position(BaseModel):
         ..., description="Organizational category for this position"
     )
 
-    id: str = Field(default_factory=uuid.uuid4, description="Unique position identifier")
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "name": "Data Scientist",
-                "category": "Tech",
-                "profiles": [],
-            }
-        }
+    id: str = Field(default_factory=uuid.uuid4, description="Unique position identifier. Is created by default.")
