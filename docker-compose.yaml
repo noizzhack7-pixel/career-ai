@@ -4,21 +4,31 @@ services:
     ports:
       - "8000:80"
     environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
       - DB_USER=admin
       - DB_PASSWORD=secret
-      - DB_NAME=test.db
-      - QDRANT_HOST=qdrant
-      - QDRANT_PORT=6333
+      - DB_NAME=career_ai
+      - DATABASE_URL=postgresql://admin:secret@postgres:5432/career_ai
     depends_on:
-      - qdrant
+      postgres:
+        condition: service_healthy
 
-  qdrant:
-    image: qdrant/qdrant:latest
+  postgres:
+    image: pgvector/pgvector:pg16
     ports:
-      - "6333:6333"
-      - "6334:6334"
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=career_ai
     volumes:
-      - qdrant_storage:/qdrant/storage
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d career_ai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  qdrant_storage:
+  postgres_data:

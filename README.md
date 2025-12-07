@@ -7,7 +7,7 @@
 It provides:
 
 - RESTful API for managing positions, candidates, and skills
-- Vector-based similarity search using Qdrant
+- Vector-based similarity search using PostgreSQL with pgvector
 - Smart matching between candidates and positions
 - Skill gap analysis
 - Type-safe models with Pydantic validation
@@ -130,7 +130,7 @@ career-ai/
 │   │   ├── vectorization.py    # Embedding generation
 │   │   └── matching.py         # Matching algorithms
 │   ├── vector_db/
-│   │   └── client.py           # Qdrant client wrapper
+│   │   └── client.py           # PostgreSQL + pgvector client
 │   └── core/
 │       └── config.py           # Configuration settings
 ├── docker-compose.yaml
@@ -148,13 +148,13 @@ career-ai/
 1. **REST API Layer** - FastAPI-based REST endpoints
 2. **Ingestion Service** - Data validation and processing
 3. **Vectorization Service** - Convert data to embeddings
-4. **Vector Store** - Qdrant for similarity search
+4. **Vector Store** - PostgreSQL with pgvector extension for similarity search
 5. **Matching Service** - AI-powered candidate-position matching
 
 ### Data Flow
 
-- **Candidate/Position Creation:** Client → API → Ingestion → Vectorization → Qdrant
-- **Smart Matching:** Client → API → Qdrant (similarity search) → Response
+- **Candidate/Position Creation:** Client → API → Ingestion → Vectorization → PostgreSQL
+- **Smart Matching:** Client → API → PostgreSQL (vector similarity search) → Response
 - **Skill Gap Analysis:** Client → API → Compare vectors → Gap calculation
 
 ### High-Level System Diagram
@@ -166,14 +166,14 @@ flowchart LR
     ING["Ingestion Service"]
     VEC["Vectorization Service"]
     MATCH["Matching Service"]
-    QDRANT["Qdrant Vector DB"]
+    POSTGRES["PostgreSQL + pgvector"]
 
     CLIENT -->|HTTP Requests| API
     API --> ING
     ING --> VEC
-    VEC --> QDRANT
+    VEC --> POSTGRES
     API --> MATCH
-    MATCH <--> QDRANT
+    MATCH <--> POSTGRES
 ```
 
 ---
@@ -183,8 +183,9 @@ flowchart LR
 - **Framework:** FastAPI 0.116+
 - **Language:** Python 3.13+
 - **Validation:** Pydantic with type hints
-- **Vector Database:** Qdrant 1.12+
-- **Database:** SQLAlchemy 2.0+
+- **Database:** PostgreSQL 16 with pgvector extension
+- **ORM:** SQLAlchemy 2.0+
+- **Vector Operations:** pgvector 0.2.4+
 - **Server:** Uvicorn
 - **Containerization:** Docker & Docker Compose
 - **Testing:** Pytest
@@ -249,17 +250,16 @@ APP_NAME=Career AI
 APP_VERSION=1.0.0
 DEBUG=false
 
-# Database
+# PostgreSQL Database
+DB_HOST=localhost
+DB_PORT=5432
 DB_USER=admin
 DB_PASSWORD=secret
-DB_NAME=test.db
+DB_NAME=career_ai
+DATABASE_URL=postgresql://admin:secret@localhost:5432/career_ai
 
-# Qdrant Vector Database
-QDRANT_HOST=localhost
-QDRANT_PORT=6333
-QDRANT_COLLECTION_CANDIDATES=candidates
-QDRANT_COLLECTION_SKILLS=skills
-QDRANT_VECTOR_SIZE=384
+# Vector Settings
+VECTOR_DIMENSIONS=384
 
 # API
 API_V1_PREFIX=/api/v1
