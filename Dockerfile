@@ -16,9 +16,11 @@ COPY . .
 
 RUN uv sync
 
-ENV PATH="/app/.venv/bin:{$PATH}"
+# Ensure the virtualenv bin is first on PATH
+ENV PATH="/app/.venv/bin:${PATH}"
 
-# Expose the specified port for FastAPI
-EXPOSE $PORT
+# Expose the specified port for FastAPI (default 80 in container)
+EXPOSE 80
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+# Run the FastAPI app located under back/app from the repo root
+CMD ["uvicorn", "app.main:app", "--app-dir", "back", "--host", "0.0.0.0", "--port", "80"]

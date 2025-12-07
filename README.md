@@ -24,14 +24,14 @@ It provides:
 ### Installation
 
 ```bash
-# Install dependencies
+# Install dependencies (run from repo root)
 pip install -e .
 
-# Run with Docker Compose
+# Run with Docker Compose (from repo root)
 docker-compose up
 
-# Or run locally
-uvicorn app.main:app --reload
+# Or run locally (from repo root)
+uvicorn app.main:app --app-dir back --reload
 ```
 
 The API will be available at `http://localhost:8000`
@@ -144,34 +144,39 @@ All endpoints are prefixed with `/api/v1` and follow RESTful conventions.
 
 ```
 career-ai/
-├── app/
-│   ├── __init__.py
-│   ├── main.py                 # FastAPI application entry point
-│   ├── api/
-│   │   └── v1/
-│   │       ├── __init__.py
-│   │       └── routers/
-│   │           ├── candidates.py    # Candidate endpoints
-│   │           ├── positions.py     # Position endpoints
-│   │           ├── skills.py        # Skills endpoints
-│   │           └── smart.py         # AI matching endpoints
-│   ├── models/
-│   │   ├── BaseValues.py       # Enums and base types
-│   │   ├── Candidate.py        # Candidate model
-│   │   ├── Position.py         # Position model
-│   │   ├── Profile.py          # Profile model
-│   │   └── Skill.py            # Skill models
-│   ├── services/
-│   │   ├── ingestion.py        # Data ingestion service
-│   │   ├── vectorization.py    # Embedding generation
-│   │   └── matching.py         # Matching algorithms
-│   ├── vector_db/
-│   │   └── client.py           # PostgreSQL + pgvector client
-│   └── core/
-│       └── config.py           # Configuration settings
+├── back/
+│   └── app/
+│       ├── __init__.py
+│       ├── main.py                 # FastAPI application entry point
+│       ├── api/
+│       │   └── v1/
+│       │       ├── __init__.py
+│       │       └── routers/
+│       │           ├── candidates.py    # Candidate endpoints
+│       │           ├── positions.py     # Position endpoints
+│       │           ├── skills.py        # Skills endpoints
+│       │           └── smart.py         # AI matching endpoints
+│       ├── models/
+│       │   ├── BaseValues.py       # Enums and base types
+│       │   ├── Candidate.py        # Candidate model
+│       │   ├── Position.py         # Position model
+│       │   ├── Profile.py          # Profile model
+│       │   └── Skill.py            # Skill models
+│       ├── services/
+│       │   ├── ingestion.py        # Data ingestion service
+│       │   ├── vectorization.py    # Embedding generation
+│       │   └── matching.py         # Matching algorithms
+│       ├── vector_db/
+│       │   └── client.py           # PostgreSQL + pgvector client
+│       └── core/
+│           └── config.py           # Configuration settings
+├── initial_code/                   # Demo assets & scripts
+├── tests/                          # Test utilities
+├── Dockerfile
 ├── docker-compose.yaml
 ├── pyproject.toml
-├── .gitignore
+├── uv.lock
+├── .env (optional)
 └── README.md
 ```
 
@@ -191,74 +196,55 @@ career-ai/
 
 ### System Components
 
-1. **API Gateway Layer** (Kong/Traefik)
-   - Rate limiting & load balancing
-   - Request routing
-   - Authentication/Authorization
-
-2. **Service Layer** (Horizontally Scalable)
+1. **Service Layer** (Horizontally Scalable)
    - **Core API Service** (FastAPI) - stateless, multiple instances
    - **Skill Calculation Worker Service** - dedicated async workers
    - **Ingestion Service** - data validation & preprocessing
 
-3. **Message Queue** (RabbitMQ/AWS SQS)
+2. **Message Queue** (RabbitMQ/AWS SQS)
    - Async skill recalculation jobs
    - Dead letter queue for failed jobs (retry logic)
    - Priority queues (critical vs batch operations)
 
-4. **Cache Layer** (Redis Cluster)
+3. **Cache Layer** (Redis Cluster)
    - Calculated embeddings (TTL: 24h)
    - Frequently accessed candidate/position data
    - Match results cache
    - Session/UI state cache
 
-5. **Database Layer**
+4. **Database Layer**
    - **PostgreSQL Primary** (write operations) with read replicas
    - **pgvector** for embeddings
    - Connection pooling (PgBouncer)
 
-6. **Background Job Processor** (Celery/Bull)
+5. **Background Job Processor** (Celery/Bull)
    - Distributed task queue
    - Automatic retries with exponential backoff
    - Job status tracking
    - Max 1 hour timeout per recalculation batch
 
-7. **CDN + Static Assets** (CloudFront/Cloudflare)
-   - Pre-rendered UI components
-   - Static resources
-
-8. **Monitoring & Health Checks**
+6. **Monitoring & Health Checks**
    - Prometheus + Grafana
    - ELK Stack for logging
    - Circuit breakers (handle failures gracefully)
 
 ### Data Flow
 
-- **Candidate/Position Creation:** Client → API Gateway → FastAPI → Ingestion → Queue → Worker → Vectorization → PostgreSQL + Redis Cache
-- **Smart Matching:** Client → CDN/Cache → API Gateway → FastAPI → Redis (cache hit) OR PostgreSQL Read Replica (cache miss) → Response
-- **Skill Gap Analysis:** Client → API → Redis Cache → PostgreSQL Read Replica → Compare vectors → Gap calculation
+- **Candidate/Position Creation:** Client → FastAPI → Ingestion → Queue → Worker → Vectorization → PostgreSQL + Redis Cache
+- **Smart Matching:** Client → FastAPI → Redis (cache hit) OR PostgreSQL Read Replica (cache miss) → Response
+- **Skill Gap Analysis:** Client → FastAPI → Redis Cache → PostgreSQL Read Replica → Compare vectors → Gap calculation
 - **Async Recalculation:** Queue → Celery Workers → Parallel Processing → PostgreSQL + Cache Update → Retry on Failure
 
 ### High-Level System Diagram
 
 ```
-┌─────────────┐
-│   CDN       │ ← Zero loading time (static assets)
-└──────┬──────┘
+┌──────────────────┐
+│     Client       │
+└──────┬───────────┘
        │
-┌──────▼──────────┐
-│  Load Balancer  │ ← 99% uptime (multi-AZ deployment)
-└──────┬──────────┘
-       │
-┌──────▼──────────┐
-│  API Gateway    │ ← Rate limiting, routing
-└──────┬──────────┘
-       │
-       ├─────────────────────────────────────┐
-       │                                     │
 ┌──────▼──────────┐              ┌──────────▼─────────┐
-│  FastAPI        │              │   Redis Cluster    │
-│  (Multi-inst)   │◄────────────►│   (Cache Layer)    │
+│  FastAPI        │◄────────────►│   Redis Cluster    │
+│  (Multi-inst)   │              │   (Cache Layer)    │
 └──────┬──────────┘              └────────────────────┘
        │
        ├───────────────────┐
@@ -282,7 +268,7 @@ career-ai/
 | **<1 sec per employee** | Pre-computed embeddings in Redis + parallel workers + read replicas |
 | **Elastic data processing** | Schema-less JSON fields + dynamic Pydantic models + extensible pipeline |
 | **<1 hour recalculation** | Message queue with DLQ + Celery retries + batch processing + timeouts |
-| **Zero loading time** | Redis cache (>90% hit rate) + CDN + prefetching + optimistic UI |
+| **Zero loading time** | Redis cache (>90% hit rate) + prefetching + optimistic UI |
 | **99% uptime** | Multi-AZ deployment + auto-scaling + health checks + circuit breakers + DB replication |
 
 ---
@@ -332,10 +318,10 @@ final_score = (
 {
   "name": "John Doe",
   "candidate_id": "uuid-generated",
-  "current_position": Position,
-  "past_positions": [Position],
-  "hard_skills": [HardSkill],
-  "soft_skills": [SoftSkill]
+  "current_position": "Position",
+  "past_positions": ["Position"],
+  "hard_skills": ["HardSkill"],
+  "soft_skills": ["SoftSkill"]
 }
 ```
 
@@ -346,7 +332,7 @@ final_score = (
   "name": "Backend Developer",
   "id": "uuid-generated",
   "category": "Tech",  # Tech, HR, Business, Finance, Law, Other
-  "profiles": [Profile]  # List of skill profiles
+  "profiles": ["Profile"]  # List of skill profiles
 }
 ```
 
@@ -356,8 +342,8 @@ final_score = (
 {
   "id": "uuid-generated",
   "name": "Senior Backend Engineer Profile",
-  "hard_skills": [HardSkill],
-  "soft_skills": [SoftSkill]
+  "hard_skills": ["HardSkill"],
+  "soft_skills": ["SoftSkill"]
 }
 ```
 
