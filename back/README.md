@@ -90,17 +90,53 @@ All endpoints are prefixed with `/api/v1` and follow RESTful conventions.
 
 ### `/api/v1/smart` (AI-Powered Matching)
 
-| Method | Route                      | Query Parameters                  | Returns             | Description                              |
-|--------|----------------------------|-----------------------------------|---------------------|------------------------------------------|
-| GET    | `/smart/candidates/top`    | `position_id`, `limit=10`         | `List[MatchResult]` | Top candidates for a position            |
-| GET    | `/smart/candidates/similar`| `candidate_id`, `limit=10`        | `List[MatchResult]` | Similar candidates                       |
-| GET    | `/smart/positions/top`     | `candidate_id`, `limit=10`        | `List[MatchResult]` | Top positions for a candidate            |
-| GET    | `/smart/positions/similar` | `position_id`, `limit=10`         | `List[MatchResult]` | Similar positions                        |
-| GET    | `/smart/gaps`              | `candidate_id`, `position_id`     | `List[SkillGap]`    | Analyze skill gaps                       |
+| Method | Route                        | Parameters                        | Returns                | Description                              |
+|--------|------------------------------|-----------------------------------|------------------------|------------------------------------------|
+| POST   | `/smart/candidates/ingest`   | Body: `Candidate`                 | Confirmation           | Add candidate to system                  |
+| POST   | `/smart/positions/ingest`    | Body: `Position`                  | Confirmation           | Add position to system                   |
+| GET    | `/smart/candidates/top`      | `position_id`, `limit=10`         | `List[MatchResult]`    | Top candidates for a position            |
+| GET    | `/smart/candidates/similar`  | `candidate_id`, `limit=10`        | `List[MatchResult]`    | Similar candidates                       |
+| GET    | `/smart/positions/top`       | `candidate_id`, `limit=10`        | `List[MatchResult]`    | Top positions for a candidate            |
+| GET    | `/smart/positions/similar`   | `position_id`, `limit=10`         | `List[MatchResult]`    | Similar positions                        |
+| GET    | `/smart/gaps`                | `candidate_id`, `position_id`     | `SkillGapResponse`     | Comprehensive skill gap analysis         |
+| GET    | `/smart/health`              | —                                 | Health status          | Service health check                     |
 
-**Query Parameters:**
-- `limit`: Number of results to return (1-100, default: 10)
-- IDs are required for matching operations
+**MatchResult Response:**
+```json
+{
+  "id": "candidate-123",
+  "name": "John Doe",
+  "score": 0.87,
+  "semantic_similarity": 0.90,
+  "skill_match": 0.82,
+  "details": {
+    "explanation": "Strong match based on technical skills",
+    "matching_skills": ["Python Programming", "SQL"],
+    "category_match": true
+  }
+}
+```
+
+**SkillGapResponse:**
+```json
+{
+  "readiness_score": 85.0,
+  "summary": {
+    "total_skills_required": 7,
+    "skills_met": 5,
+    "critical_gaps": 1,
+    "moderate_gaps": 0,
+    "minor_gaps": 1
+  },
+  "recommendations": [
+    {
+      "priority": "high",
+      "message": "Focus on developing 1 critical skill(s)",
+      "skills": ["Cloud Services"]
+    }
+  ]
+}
+```
 
 ---
 
@@ -186,9 +222,32 @@ flowchart LR
 - **Database:** PostgreSQL 16 with pgvector extension
 - **ORM:** SQLAlchemy 2.0+
 - **Vector Operations:** pgvector 0.2.4+
+- **ML Embeddings:** Sentence Transformers 2.2+ (`all-MiniLM-L6-v2`)
+- **ML Backend:** PyTorch 2.0+
 - **Server:** Uvicorn
 - **Containerization:** Docker & Docker Compose
 - **Testing:** Pytest
+
+### Vectorization Approach
+
+**Hybrid Strategy (Option 3):**
+- **Semantic Embeddings (70%)**: Using Sentence Transformers model `all-MiniLM-L6-v2`
+  - 384-dimensional vectors
+  - Captures semantic meaning of skills and experience
+  - Understands skill relationships (e.g., "Python developer" ≈ "Python engineer")
+- **Structured Features (30%)**: Numeric skill statistics
+  - Exact skill level matching
+  - 80% threshold for skill requirements
+  - Category matching bonus
+
+**Matching Score Formula:**
+```
+final_score = (
+    semantic_similarity × 0.60 +    # Cosine similarity from embeddings
+    skill_match × 0.30 +             # Exact skill overlap percentage
+    category_bonus × 0.10            # Same category = 1.0, different = 0.5
+)
+```
 
 ---
 
@@ -211,12 +270,21 @@ flowchart LR
 
 ```python
 {
-  "title": "Software Engineer",
-  "position_id": "uuid-generated",
-  "description": "Job description...",
-  "required_hard_skills": [HardSkill],
-  "required_soft_skills": [SoftSkill],
-  "experience_years": 3
+  "name": "Backend Developer",
+  "id": "uuid-generated",
+  "category": "Tech",  # Tech, HR, Business, Finance, Law, Other
+  "profiles": [Profile]  # List of skill profiles
+}
+```
+
+### Profile
+
+```python
+{
+  "id": "uuid-generated",
+  "name": "Senior Backend Engineer Profile",
+  "hard_skills": [HardSkill],
+  "soft_skills": [SoftSkill]
 }
 ```
 
@@ -225,18 +293,25 @@ flowchart LR
 ```python
 # HardSkill
 {
-  "skill": "Python",  # from HardSkills enum
-  "level": 4.5,       # 0-5 range
+  "skill": "Python Programming",  # from HardSkills enum
+  "level": 4.5,                   # 1.0-5.0 range
   "id": "uuid-generated"
 }
 
 # SoftSkill
 {
   "skill": "Communication",  # from SoftSkills enum
-  "level": 4.0,              # 0-5 range
+  "level": 4.0,              # 1.0-5.0 range
   "id": "uuid-generated"
 }
 ```
+
+**Skill Level Scale:**
+- **1.0-2.0**: Beginner level
+- **2.0-3.0**: Basic level
+- **3.0-4.0**: Intermediate level
+- **4.0-4.5**: Advanced level
+- **4.5-5.0**: Expert level
 
 ---
 
@@ -272,7 +347,11 @@ API_V1_PREFIX=/api/v1
 ### Running Tests
 
 ```bash
+# Run pytest
 pytest
+
+# Test smart endpoints (requires running server)
+python test_smart_endpoints.py
 ```
 
 ### Local Development
@@ -283,6 +362,54 @@ pip install -e .
 
 # Run with auto-reload
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Testing Smart Matching Endpoints
+
+The project includes a comprehensive test script (`test_smart_endpoints.py`) that demonstrates:
+
+1. **Ingesting test data** (candidate + position)
+2. **Skill gap analysis** with detailed output
+3. **Health check** to verify service status
+
+**Run the test:**
+```bash
+# Start the server first
+uvicorn app.main:app --reload
+
+# In another terminal, run the test
+python test_smart_endpoints.py
+```
+
+**Expected output:**
+```
+============================================================
+Smart Matching Endpoints Test
+============================================================
+
+4. Testing health check...
+Status: 200
+Response: {
+  "status": "healthy",
+  "features": {
+    "vectorization": "sentence-transformers (all-MiniLM-L6-v2)",
+    "candidates_loaded": 1,
+    "positions_loaded": 1
+  }
+}
+
+Readiness Score: 85.0/100
+
+Summary:
+  - Total skills required: 7
+  - Skills met: 5
+  - Critical gaps: 1
+  - Moderate gaps: 0
+  - Minor gaps: 1
+
+Recommendations:
+  [HIGH] Focus on developing 1 critical skill(s)
+    Skills: Cloud Services (e.g., AWS, GCP, Azure)
 ```
 
 ### Docker Development
@@ -299,6 +426,35 @@ docker-compose logs -f web
 
 # Stop services
 docker-compose down
+```
+
+### Manual API Testing
+
+**1. Health Check:**
+```bash
+curl http://localhost:8000/api/v1/smart/health
+```
+
+**2. Ingest a Candidate:**
+```bash
+curl -X POST http://localhost:8000/api/v1/smart/candidates/ingest \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Alice Johnson",
+    "candidate_id": "alice-123",
+    "hard_skills": [
+      {"skill": "Python Programming", "level": 4.5, "id": "hs1"}
+    ],
+    "soft_skills": [
+      {"skill": "Communication", "level": 4.0, "id": "ss1"}
+    ],
+    "past_positions": []
+  }'
+```
+
+**3. Analyze Skill Gaps:**
+```bash
+curl "http://localhost:8000/api/v1/smart/gaps?candidate_id=alice-123&position_id=backend-456"
 ```
 
 ---
