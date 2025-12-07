@@ -179,38 +179,111 @@ career-ai/
 
 ## 🏗️ Architecture
 
+### System Overview
+
+**Career-AI** uses an **event-driven microservices architecture** with caching and message queues to meet demanding non-functional requirements:
+
+- ⚡ **<1 second** per employee skill recalculation
+- 🔄 **Elastic processing** for structured/unstructured data
+- ⏱️ **<1 hour** total recalculation with retry logic
+- 🚀 **Zero loading time** in UI
+- 💪 **99% uptime** SLA
+
 ### System Components
 
-1. **REST API Layer** - FastAPI-based REST endpoints
-2. **Ingestion Service** - Data validation and processing
-3. **Vectorization Service** - Convert data to embeddings
-4. **Vector Store** - PostgreSQL with pgvector extension for similarity search
-5. **Matching Service** - AI-powered candidate-position matching
+1. **API Gateway Layer** (Kong/Traefik)
+   - Rate limiting & load balancing
+   - Request routing
+   - Authentication/Authorization
+
+2. **Service Layer** (Horizontally Scalable)
+   - **Core API Service** (FastAPI) - stateless, multiple instances
+   - **Skill Calculation Worker Service** - dedicated async workers
+   - **Ingestion Service** - data validation & preprocessing
+
+3. **Message Queue** (RabbitMQ/AWS SQS)
+   - Async skill recalculation jobs
+   - Dead letter queue for failed jobs (retry logic)
+   - Priority queues (critical vs batch operations)
+
+4. **Cache Layer** (Redis Cluster)
+   - Calculated embeddings (TTL: 24h)
+   - Frequently accessed candidate/position data
+   - Match results cache
+   - Session/UI state cache
+
+5. **Database Layer**
+   - **PostgreSQL Primary** (write operations) with read replicas
+   - **pgvector** for embeddings
+   - Connection pooling (PgBouncer)
+
+6. **Background Job Processor** (Celery/Bull)
+   - Distributed task queue
+   - Automatic retries with exponential backoff
+   - Job status tracking
+   - Max 1 hour timeout per recalculation batch
+
+7. **CDN + Static Assets** (CloudFront/Cloudflare)
+   - Pre-rendered UI components
+   - Static resources
+
+8. **Monitoring & Health Checks**
+   - Prometheus + Grafana
+   - ELK Stack for logging
+   - Circuit breakers (handle failures gracefully)
 
 ### Data Flow
 
-- **Candidate/Position Creation:** Client → API → Ingestion → Vectorization → PostgreSQL
-- **Smart Matching:** Client → API → PostgreSQL (vector similarity search) → Response
-- **Skill Gap Analysis:** Client → API → Compare vectors → Gap calculation
+- **Candidate/Position Creation:** Client → API Gateway → FastAPI → Ingestion → Queue → Worker → Vectorization → PostgreSQL + Redis Cache
+- **Smart Matching:** Client → CDN/Cache → API Gateway → FastAPI → Redis (cache hit) OR PostgreSQL Read Replica (cache miss) → Response
+- **Skill Gap Analysis:** Client → API → Redis Cache → PostgreSQL Read Replica → Compare vectors → Gap calculation
+- **Async Recalculation:** Queue → Celery Workers → Parallel Processing → PostgreSQL + Cache Update → Retry on Failure
 
 ### High-Level System Diagram
 
-```mermaid
-flowchart LR
-    CLIENT["Client Application"]
-    API["FastAPI REST API"]
-    ING["Ingestion Service"]
-    VEC["Vectorization Service"]
-    MATCH["Matching Service"]
-    POSTGRES["PostgreSQL + pgvector"]
-
-    CLIENT -->|HTTP Requests| API
-    API --> ING
-    ING --> VEC
-    VEC --> POSTGRES
-    API --> MATCH
-    MATCH <--> POSTGRES
 ```
+┌─────────────┐
+│   CDN       │ ← Zero loading time (static assets)
+└──────┬──────┘
+       │
+┌──────▼──────────┐
+│  Load Balancer  │ ← 99% uptime (multi-AZ deployment)
+└──────┬──────────┘
+       │
+┌──────▼──────────┐
+│  API Gateway    │ ← Rate limiting, routing
+└──────┬──────────┘
+       │
+       ├─────────────────────────────────────┐
+       │                                     │
+┌──────▼──────────┐              ┌──────────▼─────────┐
+│  FastAPI        │              │   Redis Cluster    │
+│  (Multi-inst)   │◄────────────►│   (Cache Layer)    │
+└──────┬──────────┘              └────────────────────┘
+       │
+       ├───────────────────┐
+       │                   │
+┌──────▼──────┐    ┌───────▼────────┐
+│  Message     │    │  PostgreSQL    │
+│  Queue       │    │  Primary +     │
+│ (RabbitMQ)   │    │  Read Replicas │
+└──────┬───────┘    └────────────────┘
+       │
+┌──────▼──────────────────┐
+│  Skill Calc Workers     │ ← <1 sec per employee
+│  (Celery/Distributed)   │ ← Max 1hr batch timeout
+└─────────────────────────┘
+```
+
+### Architecture Benefits
+
+| Requirement | Solution |
+|-------------|----------|
+| **<1 sec per employee** | Pre-computed embeddings in Redis + parallel workers + read replicas |
+| **Elastic data processing** | Schema-less JSON fields + dynamic Pydantic models + extensible pipeline |
+| **<1 hour recalculation** | Message queue with DLQ + Celery retries + batch processing + timeouts |
+| **Zero loading time** | Redis cache (>90% hit rate) + CDN + prefetching + optimistic UI |
+| **99% uptime** | Multi-AZ deployment + auto-scaling + health checks + circuit breakers + DB replication |
 
 ---
 
