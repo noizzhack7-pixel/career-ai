@@ -3,32 +3,29 @@
         <div class="flex items-center justify-between h-16">
             <div class="flex items-center gap-8">
                 <a routerLink="/" class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-accent-dark rounded-lg flex items-center justify-center">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-primary to-accent-dark rounded-lg flex items-center justify-center">
                         <i class="fa-solid fa-rocket text-white text-lg"></i>
                     </div>
                     <span class="text-xl font-bold text-primary">GO-PRO</span>
                 </a>
-                
+
                 <div class="flex items-center gap-1">
-                    <a routerLink="/" 
-                       routerLinkActive="bg-primary-light/40 text-primary" 
-                       [routerLinkActiveOptions]="{exact: true}"
-                       class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                    <a routerLink="/" routerLinkActive="bg-primary-light/40 text-primary"
+                        [routerLinkActiveOptions]="{exact: true}"
+                        class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors ">
                         בית
                     </a>
-                    <a routerLink="/positions" 
-                       routerLinkActive="bg-primary-light/40 text-primary"
-                       class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                    <a routerLink="/positions" routerLinkActive="bg-primary-light/40 text-primary"
+                        class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors ">
                         משרות
                     </a>
-                    <a routerLink="/dev-plan" 
-                       routerLinkActive="bg-primary-light/40 text-primary"
-                       class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                    <a routerLink="/dev-plan" routerLinkActive="bg-primary-light/40 text-primary"
+                        class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors">
                         התאמה ומסלול פיתוח
                     </a>
-                    <a routerLink="/profile" 
-                       routerLinkActive="bg-primary-light/40 text-primary"
-                       class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                    <a routerLink="/profile" routerLinkActive="bg-primary-light/40 text-primary"
+                        class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors ">
                         הפרופיל שלי
                     </a>
                 </div>
@@ -37,17 +34,20 @@
             <div class="flex items-center gap-6">
                 <div class="relative w-72">
                     <label for="global-search" class="sr-only">חיפוש בשפה חופשית</label>
-                    <input id="global-search" type="text" placeholder="חיפוש בשפה חופשית..." class="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 pr-10 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                    <input id="global-search" type="text" placeholder="חיפוש בשפה חופשית..."
+                        class="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 pr-10 pl-4 text-sm focus:outline-none focus:ring-0 focus:ring-primary focus:border-primary transition-colors">
                     <i class="fa-solid fa-search absolute top-1/2 -translate-y-1/2 right-4 text-neutral-dark"></i>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <button class="relative text-neutral-dark hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary rounded-full p-1">
+                    <button class="relative text-neutral-dark hover:text-primary rounded-full p-1">
                         <i class="fa-regular fa-bell text-xl"></i>
-                        <span class="absolute -top-1 -left-1 w-5 h-5 bg-secondary text-white text-xs rounded-full flex items-center justify-center font-bold">2</span>
+                        <span
+                            class="absolute -top-1 -left-1 w-5 h-5 bg-secondary text-white text-xs rounded-full flex items-center justify-center font-bold">2</span>
                     </button>
                     <div *ngIf="isLoaded()" class="flex items-center gap-3 pr-4 border-r-2 border-neutral-light">
-                        <img [src]="avatar()" [alt]="'תמונת פרופיל של ' + fullName()" class="w-9 h-9 rounded-full border-2 border-primary/40">
+                        <img [src]="avatar()" [alt]="'תמונת פרופיל של ' + fullName()"
+                            class="w-9 h-9 rounded-full border-2 border-primary/40">
                         <div class="text-right">
                             <p class="text-sm font-semibold text-neutral-dark">{{ fullName() }}</p>
                             <p class="text-xs text-neutral-medium">{{ title() }}</p>
@@ -58,4 +58,3 @@
         </div>
     </div>
 </nav>
-
