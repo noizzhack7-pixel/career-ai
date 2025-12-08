@@ -1,0 +1,55 @@
+{
+  "id": "user-1",
+  "name": "תמר כהן",
+  "title": "מפתחת תוכנה בכירה",
+  "avatar": "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg",
+  "cover_image": "https://storage.googleapis.com/uxpilot-auth.appspot.com/39be326735-650cf9197c9ab8504004.png",
+  "organization": {
+    "division": "חטיבת טכנולוגיות",
+    "department": "מחלקת פיתוח Backend",
+    "team": "צוות ליבה"
+  },
+  "details": {
+    "seniority": "5 שנים",
+    "grade": "Senior Developer",
+    "manager": "דני לוי",
+    "location": "מטה כללי, בניין אלון"
+  },
+  "metrics": {
+    "kudos": 34,
+    "data_quality": 85,
+    "matching_jobs_count": 12
+  },
+  "education": {
+    "degree": "תואר ראשון במדעי המחשב",
+    "institution": "אוניברסיטת תל אביב"
+  },
+  "specialization": {
+    "main": "Java, Spring Boot",
+    "area": "ארכיטקטורת מערכות"
+  },
+  "soft_skills": [
+    "מנהיגות",
+    "קליטה מהירה",
+    "למידה עצמית",
+    "חשיבה אנליטית",
+    "פתרון בעיות"
+  ],
+  "hard_skills": [
+    "Java",
+    "Spring Boot",
+    "Microservices",
+    "REST API",
+    "SQL"
+  ],
+  "idp": {
+    "progress": {
+      "overall": 68,
+      "gaps_remaining": 2,
+      "gaps_total": 5,
+      "tasks_completed": 7,
+      "tasks_total": 11,
+      "estimated_months": 3
+    }
+  }
+}

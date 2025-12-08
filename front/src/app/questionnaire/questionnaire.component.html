@@ -47,25 +47,25 @@
 
 <div class="questionnaire-container" [dir]="'rtl'">
   <!-- Loading State -->
-  <div *ngIf="isLoading() && !isSubmitted()" class="loading">
+  <div *ngIf="assessmentStore.isLoading() && !assessmentStore.isSubmitted()" class="loading">
     <div class="spinner"></div>
     <p class="text-neutral-dark font-medium">טוען הערכה...</p>
   </div>
 
   <!-- Error State -->
-  <div *ngIf="error()" class="error-message">
-    <p>{{ error() }}</p>
-    <button (click)="loadQuestions()" class="btn-retry">נסה שוב</button>
+  <div *ngIf="assessmentStore.error()" class="error-message">
+    <p>{{ assessmentStore.error() }}</p>
+    <button (click)="assessmentStore.loadQuestions(assessmentStore.isTestMode())" class="btn-retry">נסה שוב</button>
   </div>
 
   <!-- Assessment Form -->
-  <div *ngIf="!isLoading() && !isSubmitted() && questions().length > 0" class="assessment-form">
+  <div *ngIf="!assessmentStore.isLoading() && !assessmentStore.isSubmitted() && assessmentStore.questions().length > 0" class="assessment-form">
     <div class="assessment-header">
       <div class="flex items-center justify-between mb-4">
         <h2 class="flex items-center gap-3">
           <i class="fa-solid fa-list-check text-accent-dark"></i>
           שאלון התאמה
-          <span *ngIf="isTestMode()" class="test-badge">מצב בדיקה</span>
+          <span *ngIf="assessmentStore.isTestMode()" class="test-badge">מצב בדיקה</span>
         </h2>
         <a routerLink="/" class="text-sm text-primary hover:underline font-semibold flex items-center gap-2">
           <i class="fa-solid fa-arrow-right"></i>
@@ -74,14 +74,14 @@
       </div>
       <p class="subtitle">ענה על כל השאלות כדי לזהות את החוזקות המקצועיות שלך ולשפר את איכות ההתאמות</p>
       <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="(answeredCount() / questions().length) * 100"></div>
-        <span class="progress-text">{{ answeredCount() }} / {{ questions().length }} נענו</span>
+        <div class="progress-fill" [style.width.%]="assessmentStore.progressPercentage()"></div>
+        <span class="progress-text">{{ assessmentStore.answeredCount() }} / {{ assessmentStore.questions().length }} נענו</span>
       </div>
     </div>
 
     <!-- Questions -->
     <div class="questions-section">
-      <div *ngFor="let question of currentQuestions()" class="question-card" [id]="'question-' + question.id">
+      <div *ngFor="let question of assessmentStore.currentQuestions()" class="question-card" [id]="'question-' + question.id">
         <div class="question-header">
           <span class="question-number">
             <i class="fa-solid fa-circle-question ml-1"></i>
@@ -110,23 +110,23 @@
     <!-- Navigation -->
     <div class="pagination">
       <!-- Back Button (on the left in RTL) -->
-      <button (click)="previousPage()" [disabled]="isFirstPage()" class="btn-nav btn-prev">
+      <button (click)="previousPage()" [disabled]="assessmentStore.isFirstPage()" class="btn-nav btn-prev">
         <i class="fa-solid fa-arrow-right ml-2"></i>
         הקודם
       </button>
 
       <!-- Submit Button (on last page) -->
-      <button *ngIf="isLastPage()" (click)="submitAssessment()" [disabled]="!isCurrentPageComplete() || isLoading()"
+      <button *ngIf="assessmentStore.isLastPage()" (click)="submitAssessment()" [disabled]="!assessmentStore.isCurrentPageComplete() || assessmentStore.isLoading()"
         class="btn-submit">
         <i class="fa-solid fa-paper-plane ml-2"></i>
-        {{ isLoading() ? 'שולח...' : 'שלח הערכה' }}
+        {{ assessmentStore.isLoading() ? 'שולח...' : 'שלח הערכה' }}
       </button>
 
       <!-- Page indicator text -->
-      <span class="page-indicator-text">עמוד {{ currentPage() + 1 }} מתוך {{ totalPages() }}</span>
+      <span class="page-indicator-text">עמוד {{ assessmentStore.currentPage() + 1 }} מתוך {{ assessmentStore.totalPages() }}</span>
 
       <!-- Next/Submit Button (on the right in RTL) -->
-      <button *ngIf="!isLastPage()" (click)="nextPage()" [disabled]="!isCurrentPageComplete()" class="btn-nav btn-next">
+      <button *ngIf="!assessmentStore.isLastPage()" (click)="nextPage()" [disabled]="!assessmentStore.isCurrentPageComplete()" class="btn-nav btn-next">
         הבא
         <i class="fa-solid fa-arrow-left mr-2"></i>
       </button>
@@ -134,7 +134,7 @@
   </div>
 
   <!-- Results Dashboard (RTL Layout) -->
-  <div *ngIf="isSubmitted() && results()" class="results-dashboard">
+  <div *ngIf="assessmentStore.isSubmitted() && assessmentStore.results()" class="results-dashboard">
     <div class="results-header">
       <div class="flex items-center justify-center gap-3 mb-2">
         <i class="fa-solid fa-sparkles text-accent-dark text-2xl"></i>
@@ -179,7 +179,7 @@
             <span class="ai-icon"><i class="fa-solid fa-bolt"></i></span>
             ניתוח אישי
           </h4>
-          <p class="insight-text">{{ results()!.ai_summary }}</p>
+          <p class="insight-text">{{ assessmentStore.aiSummary() }}</p>
         </div>
 
         <!-- Top Strengths -->
@@ -189,7 +189,7 @@
             החוזקות שלך
           </h4>
           <ul class="strengths-list">
-            <li *ngFor="let strength of results()!.top_strengths" class="strength-item">
+            <li *ngFor="let strength of assessmentStore.topStrengths()" class="strength-item">
               {{ strength }}
             </li>
           </ul>
@@ -201,7 +201,7 @@
             <i class="fa-solid fa-lightbulb text-secondary"></i>
             המלצה להמשך
           </h4>
-          <p class="insight-text">{{ results()!.growth_recommendation }}</p>
+          <p class="insight-text">{{ assessmentStore.growthRecommendation() }}</p>
         </div>
       </div>
     </div>
