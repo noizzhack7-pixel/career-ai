@@ -1,13 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './shared/header/header.component';
+import { EmployeeStore } from './stores/employee.store';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  template: `<router-outlet></router-outlet>`,
+  imports: [RouterOutlet, HeaderComponent],
+  template: `
+    <app-header></app-header>
+    <router-outlet></router-outlet>
+  `,
   styles: []
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'career-ai';
+  private employeeStore = inject(EmployeeStore);
+
+  ngOnInit(): void {
+    // Load employee data once at app startup
+    this.employeeStore.loadAll();
+  }
 }

@@ -39,6 +39,9 @@ env/
 *.db
 *.sqlite
 
+# Assessment results (user-generated data)
+back/data/assessment_results.json
+
 # Logs
 *.log
 
