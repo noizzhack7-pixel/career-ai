@@ -17,4 +17,4 @@ class Position(BaseModel):
         ..., description="Organizational category for this position"
     )
 
-    id: str = Field(default_factory=uuid.uuid4, description="Unique position identifier. Is created by default.")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique position identifier. Is created by default.")
