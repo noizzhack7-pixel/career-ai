@@ -66,7 +66,8 @@
                         </app-dropdown>
                     </div>
                     <div class="col-span-2 flex items-center justify-end gap-3">
-                        <button (click)="clearFilters()" class="hover:shadow-none text-sm text-primary hover:underline font-semibold">נקה
+                        <button (click)="clearFilters()"
+                            class="hover:shadow-none text-sm text-primary hover:underline font-semibold">נקה
                             הכל</button>
                         <!-- <button
                             class="bg-primary text-white font-bold py-2.5 px-6 rounded-card hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary">
@@ -86,7 +87,8 @@
                         <div class="flex items-center gap-3 text-sm">
                             <label class="font-semibold text-neutral-medium">מיין לפי:</label>
                             <app-dropdown [options]="sortOptions" [selectedValue]="sortBy()" [defaultValue]="'match'"
-                                [width]="'180px'" [alwaysBold]="true" (selectionChange)="setSortBy($event)">
+                                [width]="'180px'" [alwaysBold]="true" (selectionChange)="setSortBy($event)"
+                                [noBG]="true">
                             </app-dropdown>
                         </div>
                     </div>
