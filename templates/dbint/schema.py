@@ -1,7 +1,8 @@
 import os
+import json
 import pandas as pd
 import psycopg2
-from psycopg2.extras import execute_values
+from psycopg2.extras import execute_values, Json
 
 # Database connection
 conn = psycopg2.connect(
@@ -68,18 +69,44 @@ def insert_employees(file_path):
         conn.commit()
 
 
-def insert_employee_skill_experience():
-    """Insert experience for employees on various skills dynamically."""
-    query = """
-        INSERT INTO employee_skill_experience (employee_id, skill_id, skill_type, experience_level)
-        VALUES (%s, %s, %s, %s)
+def upsert_employee_skills():
+    """Insert/Update employee skill arrays in new JSONB-based schema.
+
+    Columns:
+      - employee_id (int, PK referencing employees.id)
+      - employee_num (text)
+      - employee_soft_skills (jsonb array of {id: string, experience: number})
+      - employee_hard_skills (jsonb array of {id: string, experience: number})
     """
-    # Replace with your data
-    data = [
-        (1, 2, 'hard', 5),  # Example: Employee 1 has 5 years of experience with skill 2 (hard skill)
-        (1, 4, 'soft', 3),  # Example: Employee 1 has 3 years of experience with skill 4 (soft skill)
+    query = (
+        """
+        INSERT INTO employee_skill_experience (
+            employee_id, employee_num, employee_soft_skills, employee_hard_skills
+        ) VALUES (%s, %s, %s, %s)
+        ON CONFLICT (employee_id) DO UPDATE SET
+            employee_num = EXCLUDED.employee_num,
+            employee_soft_skills = EXCLUDED.employee_soft_skills,
+            employee_hard_skills = EXCLUDED.employee_hard_skills
+        """
+    )
+
+    # Example payload; replace with your generation/loading logic as needed.
+    rows = [
+        (
+            1,
+            "E0001",
+            Json([
+                {"id": "1", "experience": 3},
+                {"id": "2", "experience": 3.5},
+            ]),
+            Json([
+                {"id": "10", "experience": 4},
+                {"id": "12", "experience": 2},
+            ]),
+        )
     ]
-    cursor.executemany(query, data)
+
+    cursor.executemany(query, rows)
     conn.commit()
 
 
@@ -93,8 +120,8 @@ insert_positions(os.path.join(folder_path, "positions.csv"))
 # Insert employees
 insert_employees(os.path.join(folder_path, "employees.csv"))
 
-# Populate employee-skill experience table (manually or dynamically based on your own rules)
-insert_employee_skill_experience()
+# Populate employee skills JSONB table (manually or dynamically based on your own rules)
+upsert_employee_skills()
 
 # Close connection
 cursor.close()
