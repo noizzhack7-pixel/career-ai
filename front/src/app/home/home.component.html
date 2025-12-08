@@ -19,59 +19,6 @@
 
 <!-- Main Content -->
 <ng-container *ngIf="!isLoading() && !error() && employeeStore.profile()">
-    <!-- Top Navigation -->
-    <nav id="top-navigation" class="bg-bg border-b border-border-light sticky top-0 z-50 shadow-sm">
-        <div class="max-w-[1600px] mx-auto px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-8">
-                    <div class="flex items-center gap-2">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-lg flex items-center justify-center">
-                            <i class="fa-solid fa-rocket text-white text-lg"></i>
-                        </div>
-                        <span class="text-xl font-bold text-primary">GO-PRO</span>
-                    </div>
-                    
-                    <div class="flex items-center gap-1">
-                        <a routerLink="/" class="px-5 py-2.5 rounded-button text-sm font-semibold bg-primary-soft text-primary hover:bg-primary-soft/80 transition-colors h-[44px] flex items-center">
-                            בית
-                        </a>
-                        <a href="#" class="px-5 py-2.5 rounded-button text-sm font-semibold text-text-primary hover:bg-primary-soft/40 transition-colors h-[44px] flex items-center">
-                            כלל המשרות
-                        </a>
-                        <a href="#" class="px-5 py-2.5 rounded-button text-sm font-semibold text-text-primary hover:bg-primary-soft/40 transition-colors h-[44px] flex items-center">
-                            התאמה ומסלול פיתוח
-                        </a>
-                        <a href="#" class="px-5 py-2.5 rounded-button text-sm font-semibold text-text-primary hover:bg-primary-soft/40 transition-colors h-[44px] flex items-center">
-                            הפרופיל שלי
-                        </a>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-6">
-                    <div class="relative w-72">
-                        <input type="text" placeholder="חיפוש בשפה חופשית..." class="w-full bg-[#F8F9FA] border-2 border-border-light rounded-button py-2 pr-10 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors h-[44px]">
-                        <i class="fa-solid fa-search absolute top-1/2 -translate-y-1/2 right-4 text-text-secondary"></i>
-                    </div>
-
-                    <div class="flex items-center gap-4">
-                        <button class="relative text-text-primary hover:text-primary transition-colors p-1">
-                            <i class="fa-regular fa-bell text-xl"></i>
-                            <span class="absolute -top-1 -left-1 w-5 h-5 bg-secondary text-white text-xs rounded-full flex items-center justify-center font-bold">2</span>
-                        </button>
-                        <div class="flex items-center gap-3 pr-4 border-r-2 border-border-light">
-                            <img [src]="employeeStore.avatar()" [alt]="'תמונת פרופיל של ' + employeeStore.fullName()" class="w-9 h-9 rounded-full border-2 border-primary/40">
-                            <div class="text-right">
-                                <p class="text-sm font-semibold text-text-primary">{{ employeeStore.fullName() }}</p>
-                                <p class="text-xs text-text-secondary">{{ employeeStore.title() }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
     <main id="main-home" class="max-w-[1600px] mx-auto p-10">
         <div class="grid grid-cols-12 gap-8 items-start">
             

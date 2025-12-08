@@ -33,8 +33,7 @@ export class HomeComponent implements OnInit {
   }
 
   loadData(): void {
-    // Load employee data and positions
-    this.employeeStore.loadAll();
+    // Load positions data (employee data is loaded at app startup)
     this.positionsStore.loadPositions();
   }
 

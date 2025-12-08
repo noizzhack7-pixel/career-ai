@@ -1,0 +1,750 @@
+<!-- Loading State -->
+<div *ngIf="isLoading()" class="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
+    <div class="text-center">
+        <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-text-primary font-medium">טוען פרופיל...</p>
+    </div>
+</div>
+
+<!-- Error State -->
+<div *ngIf="error() && !isLoading()" class="min-h-screen flex items-center justify-center bg-[#F8F9FA] p-4">
+    <div class="bg-bg p-8 rounded-card shadow-card text-center max-w-md">
+        <i class="fa-solid fa-exclamation-triangle text-4xl text-secondary mb-4"></i>
+        <p class="text-text-primary mb-4">{{ error() }}</p>
+        <button (click)="loadProfile()" class="bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary-dark h-[44px]">
+            נסה שוב
+        </button>
+    </div>
+</div>
+
+<!-- Main Content -->
+<ng-container *ngIf="!isLoading() && !error() && profile()">
+    <main id="main-profile" class="max-w-[1600px] mx-auto p-10">
+        
+        <!-- Profile Hero Section -->
+        <section id="profile-hero" class="bg-bg rounded-card shadow-card overflow-hidden mb-8">
+            <div class="relative">
+                <div class="h-64 bg-gradient-to-l from-primary/20 via-accent/10 to-primary/20 overflow-hidden">
+                    <img class="w-full h-full object-cover opacity-50" [src]="coverImage()" alt="">
+                    <button class="absolute top-6 left-6 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-card">
+                        <i class="fa-solid fa-camera text-text-primary"></i>
+                    </button>
+                </div>
+                <div class="absolute top-40 right-12">
+                    <div class="relative">
+                        <img [src]="avatar()" [alt]="'תמונת פרופיל של ' + fullName()" class="w-48 h-48 rounded-full border-8 border-bg shadow-panel">
+                        <button class="absolute bottom-2 left-2 w-12 h-12 bg-primary rounded-full flex items-center justify-center hover:bg-primary-dark transition-colors shadow-card">
+                            <i class="fa-solid fa-camera text-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-28 pb-8 px-12">
+                <div class="flex justify-between items-start mb-8">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-4 mb-3">
+                            <h1 class="text-4xl font-bold text-primary">{{ fullName() }}</h1>
+                            <span *ngIf="isActive()" class="bg-status-success/20 text-status-success px-4 py-1.5 rounded-pill text-sm font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-circle text-xs"></i>
+                                פעילה
+                            </span>
+                        </div>
+                        <p class="text-xl font-semibold text-text-primary mb-4">{{ title() }}</p>
+                        
+                        <div class="space-y-3" *ngIf="organization()">
+                            <div class="flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-building text-primary"></i>
+                                <span class="font-semibold text-primary">{{ organization()!.division }}</span>
+                                <span class="text-text-secondary">|</span>
+                                <span class="text-text-primary">{{ organization()!.department }}</span>
+                                <span class="text-text-secondary">|</span>
+                                <span class="text-text-primary">{{ organization()!.team }}</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-6 text-sm" *ngIf="details()">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-calendar-days text-accent-dark"></i>
+                                    <span class="text-text-secondary">ותק:</span>
+                                    <span class="font-semibold text-text-primary">{{ details()!.seniority }}</span>
+                                </div>
+                                <div class="w-px h-4 bg-border-light"></div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-layer-group text-accent-dark"></i>
+                                    <span class="text-text-secondary">דרגה:</span>
+                                    <span class="font-semibold text-text-primary">{{ details()!.grade }}</span>
+                                </div>
+                                <div class="w-px h-4 bg-border-light"></div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-user-tie text-accent-dark"></i>
+                                    <span class="text-text-secondary">מנהל/ת ישיר/ה:</span>
+                                    <span class="font-semibold text-text-primary">{{ details()!.manager }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-6 text-sm" *ngIf="details()">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-accent-dark"></i>
+                                    <span class="text-text-secondary">מיקום:</span>
+                                    <span class="font-semibold text-text-primary">{{ details()!.location }}</span>
+                                </div>
+                                <div class="w-px h-4 bg-border-light" *ngIf="details()!.email"></div>
+                                <div class="flex items-center gap-2" *ngIf="details()!.email">
+                                    <i class="fa-solid fa-envelope text-accent-dark"></i>
+                                    <span class="font-semibold text-text-primary">{{ details()!.email }}</span>
+                                </div>
+                                <div class="w-px h-4 bg-border-light" *ngIf="details()!.phone"></div>
+                                <div class="flex items-center gap-2" *ngIf="details()!.phone">
+                                    <i class="fa-solid fa-phone text-accent-dark"></i>
+                                    <span class="font-semibold text-text-primary">{{ details()!.phone }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button class="bg-primary text-white px-6 py-3 rounded-button font-semibold hover:bg-primary-dark transition-colors flex items-center gap-2 h-[44px]">
+                            <i class="fa-solid fa-pen"></i>
+                            עריכת פרופיל
+                        </button>
+                        <button class="bg-white border-2 border-primary text-primary px-6 py-3 rounded-button font-semibold hover:bg-primary-soft/20 transition-colors flex items-center gap-2 h-[44px]">
+                            <i class="fa-solid fa-share-nodes"></i>
+                            שתף פרופיל
+                        </button>
+                        <button class="bg-white border-2 border-border-light text-text-primary px-6 py-3 rounded-button font-semibold hover:bg-border-light transition-colors flex items-center gap-2 h-[44px]">
+                            <i class="fa-solid fa-download"></i>
+                            ייצא PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Metrics Cards -->
+                <div class="grid grid-cols-4 gap-4" *ngIf="metrics()">
+                    <div class="bg-gradient-to-br from-accent/10 to-accent/20 p-5 rounded-card border-2 border-accent/30">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-12 h-12 bg-bg rounded-full flex items-center justify-center shadow-card">
+                                <i class="fa-solid fa-trophy text-accent-dark text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-bold text-accent-dark">{{ metrics()!.kudos }}</p>
+                                <p class="text-xs text-text-primary font-medium">קודוס שצברתי</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-primary/10 to-primary/20 p-5 rounded-card border-2 border-primary/30">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="relative w-12 h-12">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-border-light" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+                                    <path class="text-primary" [attr.stroke-dasharray]="dataQuality() + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                                </svg>
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                    <p class="text-lg font-bold text-primary">{{ dataQuality() }}%</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-primary font-medium mb-1">איכות נתונים</p>
+                                <button class="text-xs text-primary hover:underline font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-up text-[10px]"></i>
+                                    שפר נתונים
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-secondary/10 to-secondary/20 p-5 rounded-card border-2 border-secondary/30">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-12 h-12 bg-bg rounded-full flex items-center justify-center shadow-card">
+                                <i class="fa-solid fa-briefcase text-secondary text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-bold text-secondary">{{ metrics()!.matching_jobs_count }}</p>
+                                <p class="text-xs text-text-primary font-medium">משרות מתאימות</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-status-success/10 to-status-success/20 p-5 rounded-card border-2 border-status-success/30">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-12 h-12 bg-bg rounded-full flex items-center justify-center shadow-card">
+                                <i class="fa-solid fa-chart-line text-status-success text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-bold text-status-success">{{ idpProgress() }}%</p>
+                                <p class="text-xs text-text-primary font-medium">התקדמות IDP</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-12 gap-8">
+            
+            <!-- Main Column -->
+            <div class="col-span-8 space-y-8">
+                
+                <!-- About Section -->
+                <section id="about-section" class="bg-bg p-8 rounded-card shadow-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
+                            <i class="fa-solid fa-user"></i>
+                            אודות
+                        </h2>
+                        <button class="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                            ערוך
+                        </button>
+                    </div>
+                    <p class="text-text-primary leading-relaxed text-base">{{ bio() }}</p>
+                    
+                    <div class="mt-6 pt-6 border-t border-border-light" *ngIf="professionalInterests().length > 0">
+                        <h3 class="text-lg font-bold text-primary mb-4">תחומי עניין מקצועיים</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span *ngFor="let interest of professionalInterests()" class="bg-primary/10 text-primary px-4 py-2 rounded-pill text-sm font-semibold border border-primary/20">{{ interest }}</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Skills Section -->
+                <section id="skills-section" class="bg-bg p-8 rounded-card shadow-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
+                            <i class="fa-solid fa-sparkles"></i>
+                            מיומנויות
+                        </h2>
+                        <button class="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            הוסף מיומנות
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Soft Skills -->
+                        <div class="bg-accent/5 p-6 rounded-card border-2 border-accent/20">
+                            <div class="flex items-center gap-3 mb-5">
+                                <i class="fa-solid fa-brain text-accent-dark text-2xl"></i>
+                                <h3 class="text-xl font-bold text-accent-dark">מיומנויות בין אישיות</h3>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div *ngFor="let skill of softSkillsDetailed()">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-semibold text-text-primary">{{ skill.name }}</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-text-secondary">רמה:</span>
+                                            <span class="font-bold text-accent-dark">{{ skill.level }}/5</span>
+                                        </div>
+                                    </div>
+                                    <div class="w-full bg-border-light rounded-full h-2.5">
+                                        <div class="bg-accent-dark h-2.5 rounded-full" [style.width.%]="getSkillLevelPercent(skill.level)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hard Skills -->
+                        <div class="bg-primary/5 p-6 rounded-card border-2 border-primary/20">
+                            <div class="flex items-center gap-3 mb-5">
+                                <i class="fa-solid fa-code text-primary text-2xl"></i>
+                                <h3 class="text-xl font-bold text-primary">מיומנויות תפקיד</h3>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div *ngFor="let skill of hardSkillsDetailed()">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-semibold text-text-primary">{{ skill.name }}</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-text-secondary">רמה:</span>
+                                            <span class="font-bold text-primary">{{ skill.level }}/5</span>
+                                            <span class="text-xs px-2 py-1 rounded-pill" [ngClass]="getSkillBadgeClass(skill.level)">{{ getSkillLevelLabel(skill.level) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="w-full bg-border-light rounded-full h-2.5">
+                                        <div class="h-2.5 rounded-full" [ngClass]="getSkillLevelColorClass(skill.level)" [style.width.%]="getSkillLevelPercent(skill.level)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Education Section -->
+                <section id="education-section" class="bg-bg p-8 rounded-card shadow-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            השכלה והסמכות
+                        </h2>
+                        <button class="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            הוסף
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div *ngFor="let item of educationItems()" class="border-r-4 p-6 rounded-card" [ngClass]="getEducationColorClass(item.type)">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 bg-bg rounded-lg flex items-center justify-center shadow-card">
+                                        <i class="fa-solid text-2xl" [ngClass]="getEducationIconClass(item.type)"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold" [ngClass]="item.type === 'degree' ? 'text-primary' : (item.type === 'certification' ? 'text-accent-dark' : 'text-status-success')">{{ item.title }}</h3>
+                                        <p class="text-text-primary font-semibold">{{ item.institution }}</p>
+                                        <p class="text-sm text-text-secondary">{{ item.year_start }}{{ item.year_end ? ' - ' + item.year_end : '' }}</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 rounded-pill text-xs font-bold" [ngClass]="getEducationBadgeClass(item.type)">{{ getEducationTypeLabel(item.type) }}</span>
+                            </div>
+                            <p *ngIf="item.description" class="text-sm text-text-primary">{{ item.description }}</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Experience Section -->
+                <section id="experience-section" class="bg-bg p-8 rounded-card shadow-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
+                            <i class="fa-solid fa-briefcase"></i>
+                            ניסיון תעסוקתי
+                        </h2>
+                        <button class="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            הוסף
+                        </button>
+                    </div>
+
+                    <div class="relative">
+                        <div class="absolute right-8 top-0 bottom-0 w-0.5 bg-primary/20"></div>
+                        
+                        <div class="space-y-8">
+                            <div *ngFor="let exp of experience(); let i = index" class="relative pr-16">
+                                <div class="absolute right-0 w-16 h-16 rounded-full flex items-center justify-center shadow-card border-4 border-bg" [ngClass]="getExperienceColorClass(i, exp.is_current)">
+                                    <i class="fa-solid text-white text-xl" [ngClass]="exp.is_current ? 'fa-star' : (i % 2 === 0 ? 'fa-code' : 'fa-laptop-code')"></i>
+                                </div>
+                                <div class="p-6 rounded-card border-2" [ngClass]="getExperienceBgClass(i, exp.is_current)">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h3 class="text-xl font-bold" [ngClass]="getExperienceTitleClass(i, exp.is_current)">{{ exp.title }}</h3>
+                                            <p class="text-text-primary font-semibold">{{ exp.division }} - {{ exp.department }}</p>
+                                            <p class="text-sm text-text-secondary flex items-center gap-2 mt-1">
+                                                <i class="fa-regular fa-calendar"></i>
+                                                {{ exp.start_date }} - {{ exp.end_date || 'היום' }}
+                                            </p>
+                                        </div>
+                                        <span *ngIf="exp.is_current" class="bg-status-success/20 text-status-success px-3 py-1 rounded-pill text-xs font-bold">תפקיד נוכחי</span>
+                                    </div>
+                                    <p class="text-text-primary mb-4">{{ exp.description }}</p>
+                                    <div class="space-y-2">
+                                        <div *ngFor="let achievement of exp.achievements" class="flex items-start gap-2">
+                                            <i class="fa-solid fa-check-circle text-sm mt-0.5" [ngClass]="getExperienceCheckClass(i, exp.is_current)"></i>
+                                            <p class="text-sm text-text-primary">{{ achievement }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recommendations Section -->
+                <section id="recommendations-section" class="bg-bg p-8 rounded-card shadow-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
+                            <i class="fa-solid fa-comments"></i>
+                            המלצות וחוות דעת
+                        </h2>
+                        <button class="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-cog text-xs"></i>
+                            נהל שיתוף
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div *ngFor="let rec of recommendations()" class="bg-gradient-to-br from-primary/5 to-accent/5 p-6 rounded-card border-2 border-primary/20">
+                            <div class="flex items-start gap-4 mb-4">
+                                <img [src]="rec.author_avatar" [alt]="rec.author_name" class="w-16 h-16 rounded-full border-2 border-primary/30">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <h3 class="font-bold text-primary">{{ rec.author_name }}</h3>
+                                            <p class="text-sm text-text-secondary">{{ rec.author_title }}</p>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs px-3 py-1 rounded-pill font-semibold" [ngClass]="getRelationshipBadgeClass(rec.relationship)">{{ getRelationshipLabel(rec.relationship) }}</span>
+                                            <span class="text-xs text-text-secondary">{{ rec.date }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 mb-3">
+                                        <i *ngFor="let star of getStarsArray(rec.rating)" class="fa-solid fa-star text-status-warning"></i>
+                                    </div>
+                                    <p class="text-text-primary leading-relaxed">{{ rec.content }}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2 pt-4 border-t border-primary/10">
+                                <span *ngFor="let skill of rec.skills_mentioned" class="bg-accent/20 text-accent-dark px-3 py-1 rounded-pill text-xs font-semibold">{{ skill }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-primary-soft/20 rounded-card border border-primary/20">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-shield-halved text-primary text-xl"></i>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-primary">שליטה על שיתוף המלצות</p>
+                                <p class="text-xs text-text-secondary">ניתן לנהל את הגדרות השיתוף של ההמלצות שלך</p>
+                            </div>
+                            <button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-semibold hover:bg-primary-dark transition-colors">
+                                נהל הגדרות
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Wishlist Section -->
+                <section id="wishlist-section" class="bg-bg p-8 rounded-card shadow-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
+                            <i class="fa-solid fa-heart"></i>
+                            רשימת המשאלות שלי
+                        </h2>
+                        <button (click)="openWishlistModal()" class="bg-primary text-white px-5 py-2.5 rounded-button font-semibold hover:bg-primary-dark transition-colors flex items-center gap-2 h-[44px]">
+                            <i class="fa-solid fa-plus"></i>
+                            הוסף משאלה
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div *ngFor="let wish of wishlist()" class="p-5 rounded-card border-2" [ngClass]="getWishBgClass(wish.type)">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-start gap-3 flex-1">
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" [ngClass]="wish.type === 'text' ? 'bg-primary/20' : (wish.type === 'role' ? 'bg-accent/20' : 'bg-secondary/20')">
+                                        <i class="fa-solid" [ngClass]="getWishIconClass(wish.type)"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-xs px-2 py-1 rounded-pill font-semibold" [ngClass]="getWishTypeBadgeClass(wish.type)">{{ getWishTypeLabel(wish.type) }}</span>
+                                            <span *ngIf="wish.has_alert" class="text-xs bg-status-warning/20 text-status-warning px-2 py-1 rounded-pill font-semibold flex items-center gap-1">
+                                                <i class="fa-solid fa-bell text-[10px]"></i>
+                                                התראה פעילה
+                                            </span>
+                                            <span class="text-xs text-text-secondary">{{ wish.created_at }}</span>
+                                        </div>
+                                        
+                                        <!-- Text type -->
+                                        <p *ngIf="wish.type === 'text'" class="text-text-primary font-medium leading-relaxed">{{ wish.content }}</p>
+                                        
+                                        <!-- Role type -->
+                                        <ng-container *ngIf="wish.type === 'role'">
+                                            <h4 class="font-bold text-accent-dark mb-1">{{ wish.role_title }}</h4>
+                                            <p class="text-sm text-text-secondary mb-2">{{ wish.role_department }}</p>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs px-2 py-1 rounded-pill font-semibold" [ngClass]="wish.role_status === 'open' ? 'bg-status-success/20 text-status-success' : 'bg-status-danger/20 text-status-danger'">{{ wish.role_status === 'open' ? 'פתוח' : 'לא פתוח כרגע' }}</span>
+                                                <span *ngIf="wish.role_status === 'closed'" class="text-xs text-text-secondary">תקבלי התראה כשהמשרה תפתח</span>
+                                            </div>
+                                        </ng-container>
+                                        
+                                        <!-- Keywords type -->
+                                        <ng-container *ngIf="wish.type === 'keywords'">
+                                            <div class="flex flex-wrap gap-2 mb-2">
+                                                <span *ngFor="let keyword of wish.keywords" class="bg-primary/20 text-primary px-3 py-1.5 rounded-pill text-sm font-semibold border border-primary/30">{{ keyword }}</span>
+                                            </div>
+                                            <p class="text-xs text-text-secondary">תקבלי התראה על משרות המכילות את מילות המפתח הללו</p>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="hover:bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center transition-colors" [ngClass]="wish.type === 'text' ? 'text-primary' : (wish.type === 'role' ? 'text-accent-dark' : 'text-secondary')">
+                                        <i class="fa-solid fa-pen text-sm"></i>
+                                    </button>
+                                    <button class="text-status-danger hover:bg-status-danger/10 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                                        <i class="fa-solid fa-trash text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-accent/10 rounded-card border border-accent/30">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-lightbulb text-accent-dark text-xl"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-accent-dark mb-1">טיפ: ניהול רשימת המשאלות</p>
+                                <p class="text-xs text-text-primary">הוסיפי משאלות כדי לקבל התראות אוטומטיות על משרות מתאימות. ניתן לערוך או למחוק משאלות בכל עת.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-span-4 space-y-6">
+                
+                <!-- Career Preferences -->
+                <section id="career-preferences" class="bg-bg p-6 rounded-card shadow-card" *ngIf="careerPreferences()">
+                    <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-compass"></i>
+                        העדפות קריירה
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm font-semibold text-text-primary mb-2 block">מסלול קריירה מועדף</label>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 px-3 rounded-button text-sm font-semibold" [ngClass]="careerPreferences()!.career_path === 'management' ? 'bg-primary text-white' : 'bg-border-light text-text-primary hover:bg-border-light/70'">
+                                    <i class="fa-solid fa-users ml-1"></i>
+                                    ניהולי
+                                </button>
+                                <button class="flex-1 py-2 px-3 rounded-button text-sm font-semibold" [ngClass]="careerPreferences()!.career_path === 'professional' ? 'bg-primary text-white' : 'bg-border-light text-text-primary hover:bg-border-light/70'">
+                                    <i class="fa-solid fa-code ml-1"></i>
+                                    מקצועי
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-text-primary mb-2 block">סוג תפקיד</label>
+                            <div class="space-y-2">
+                                <label *ngFor="let roleType of careerPreferences()!.role_types" class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" checked class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-text-primary">{{ roleType }}</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-text-primary mb-2 block">תחומי עניין</label>
+                            <div class="space-y-2">
+                                <label *ngFor="let interest of careerPreferences()!.interests" class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" checked class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-text-primary">{{ interest }}</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-text-primary mb-2 block">מוכנות למעבר</label>
+                            <div class="space-y-2">
+                                <label *ngFor="let location of careerPreferences()!.locations" class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" checked class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-text-primary">{{ location }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-4 bg-primary-soft/40 text-primary py-2 rounded-button text-sm font-semibold hover:bg-primary-soft/60 transition-colors">
+                        <i class="fa-solid fa-save ml-1"></i>
+                        שמור העדפות
+                    </button>
+                </section>
+
+                <!-- Languages -->
+                <section id="languages-section" class="bg-bg p-6 rounded-card shadow-card">
+                    <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-language"></i>
+                        שפות
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div *ngFor="let lang of languages()" class="flex items-center justify-between">
+                            <span class="font-semibold text-text-primary">{{ lang.name }}</span>
+                            <span class="text-sm px-3 py-1 rounded-pill font-semibold" [ngClass]="getLanguageBadgeClass(lang.level)">{{ getLanguageLevelLabel(lang.level) }}</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Target Role -->
+                <section id="target-role-section" class="bg-gradient-to-br from-primary to-primary-dark text-white p-6 rounded-card shadow-panel" *ngIf="targetRole()">
+                    <h3 class="text-lg font-bold mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye"></i>
+                        התפקיד היעד שלי
+                    </h3>
+                    
+                    <div class="bg-white/10 backdrop-blur-sm p-4 rounded-card mb-4">
+                        <h4 class="font-bold text-lg mb-2">{{ targetRole()!.title }}</h4>
+                        <p class="text-sm text-white/90 mb-3">{{ targetRole()!.division }}</p>
+                        
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm">התאמה נוכחית</span>
+                            <span class="font-bold text-xl">{{ targetRole()!.match_percentage }}%</span>
+                        </div>
+                        
+                        <div class="w-full bg-white/20 rounded-full h-2 mb-3">
+                            <div class="bg-white h-2 rounded-full" [style.width.%]="targetRole()!.match_percentage"></div>
+                        </div>
+
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-check-circle text-status-success"></i>
+                                <span>{{ targetRole()!.required_skills_met }}/{{ targetRole()!.required_skills_total }} מיומנויות חובה</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-exclamation-circle text-status-warning"></i>
+                                <span>{{ targetRole()!.gaps_count }} פערים לסגירה</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-clock"></i>
+                                <span>זמן משוער: {{ targetRole()!.estimated_months }} חודשים</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a routerLink="/" class="block w-full bg-white text-primary font-bold py-3 rounded-button hover:bg-white/90 transition-colors text-center">
+                        <i class="fa-solid fa-route ml-2"></i>
+                        צפה בתוכנית פיתוח
+                    </a>
+                </section>
+
+                <!-- Quick Actions -->
+                <section id="quick-actions" class="bg-bg p-6 rounded-card shadow-card">
+                    <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt"></i>
+                        פעולות מהירות
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        <a routerLink="/questionnaire" class="w-full text-right bg-primary-soft/20 hover:bg-primary-soft/40 p-3 rounded-button transition-colors flex items-center gap-3 group">
+                            <i class="fa-solid fa-list-check text-primary text-lg group-hover:scale-110 transition-transform"></i>
+                            <span class="font-semibold text-text-primary">השלם שאלון מיומנויות</span>
+                        </a>
+                        <button class="w-full text-right bg-accent/10 hover:bg-accent/20 p-3 rounded-button transition-colors flex items-center gap-3 group">
+                            <i class="fa-solid fa-search text-accent-dark text-lg group-hover:scale-110 transition-transform"></i>
+                            <span class="font-semibold text-text-primary">חפש תפקידים מתאימים</span>
+                        </button>
+                        <button class="w-full text-right bg-secondary/10 hover:bg-secondary/20 p-3 rounded-button transition-colors flex items-center gap-3 group">
+                            <i class="fa-solid fa-graduation-cap text-secondary text-lg group-hover:scale-110 transition-transform"></i>
+                            <span class="font-semibold text-text-primary">עדכן השכלה</span>
+                        </button>
+                        <button class="w-full text-right bg-status-success/10 hover:bg-status-success/20 p-3 rounded-button transition-colors flex items-center gap-3 group">
+                            <i class="fa-solid fa-plus text-status-success text-lg group-hover:scale-110 transition-transform"></i>
+                            <span class="font-semibold text-text-primary">הוסף המלצה</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Notifications -->
+                <section id="notifications-section" class="bg-bg p-6 rounded-card shadow-card">
+                    <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bell"></i>
+                        התראות אחרונות
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div *ngFor="let notif of notifications()" class="p-3 rounded-button border-r-4" [ngClass]="getNotificationBgClass(notif.type)">
+                            <p class="text-sm font-semibold text-text-primary mb-1">{{ notif.title }}</p>
+                            <p class="text-xs text-text-secondary">{{ notif.message }}</p>
+                            <p class="text-xs text-text-secondary mt-1">{{ notif.timestamp }}</p>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-3 text-primary hover:underline text-sm font-semibold">
+                        צפה בכל ההתראות
+                        <i class="fa-solid fa-arrow-left mr-1 text-xs"></i>
+                    </button>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Wishlist Modal -->
+    <div *ngIf="showWishlistModal()" class="fixed inset-0 bg-text-primary/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="closeWishlistModal()">
+        <div class="bg-bg rounded-card shadow-panel max-w-2xl w-full max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+            <div class="p-6 border-b border-border-light">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+                        <i class="fa-solid fa-heart"></i>
+                        הוספת משאלה חדשה
+                    </h3>
+                    <button (click)="closeWishlistModal()" class="text-text-secondary hover:text-text-primary w-8 h-8 rounded-full hover:bg-border-light flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-6">
+                    <label class="text-sm font-semibold text-text-primary mb-3 block">בחרי סוג משאלה</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button (click)="selectWishType('text')" class="p-4 border-2 rounded-card hover:border-primary hover:bg-primary/5 transition-all text-center" [ngClass]="selectedWishType() === 'text' ? 'border-primary bg-primary/5' : 'border-border-light'">
+                            <i class="fa-solid fa-comment-dots text-2xl text-primary mb-2"></i>
+                            <p class="font-semibold text-sm text-text-primary">טקסט חופשי</p>
+                        </button>
+                        <button (click)="selectWishType('role')" class="p-4 border-2 rounded-card hover:border-accent hover:bg-accent/5 transition-all text-center" [ngClass]="selectedWishType() === 'role' ? 'border-accent bg-accent/5' : 'border-border-light'">
+                            <i class="fa-solid fa-briefcase text-2xl text-accent-dark mb-2"></i>
+                            <p class="font-semibold text-sm text-text-primary">תפקיד ספציפי</p>
+                        </button>
+                        <button (click)="selectWishType('keywords')" class="p-4 border-2 rounded-card hover:border-secondary hover:bg-secondary/5 transition-all text-center" [ngClass]="selectedWishType() === 'keywords' ? 'border-secondary bg-secondary/5' : 'border-border-light'">
+                            <i class="fa-solid fa-tags text-2xl text-secondary mb-2"></i>
+                            <p class="font-semibold text-sm text-text-primary">מילות מפתח</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Text Wish Form -->
+                <div *ngIf="selectedWishType() === 'text'">
+                    <label class="text-sm font-semibold text-text-primary mb-2 block">תארי את המשאלה שלך</label>
+                    <textarea class="w-full border-2 border-border-light rounded-card p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary min-h-[120px]" placeholder="לדוגמה: אני מעוניינת להתפתח לכיוון ניהול פרויקטים..."></textarea>
+                    <p class="text-xs text-text-secondary mt-2">שתפי את הרצונות והשאיפות שלך בצורה חופשית</p>
+                </div>
+
+                <!-- Role Wish Form -->
+                <div *ngIf="selectedWishType() === 'role'">
+                    <div class="mb-4">
+                        <label class="text-sm font-semibold text-text-primary mb-2 block">בחרי תפקיד</label>
+                        <select class="w-full border-2 border-border-light rounded-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                            <option>בחרי תפקיד מהרשימה...</option>
+                            <option>ראש צוות פיתוח Backend</option>
+                            <option>ארכיטקט תוכנה בכיר</option>
+                            <option>מנהל/ת מוצר טכני</option>
+                            <option>Tech Lead</option>
+                        </select>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer p-3 bg-accent/10 rounded-card border border-accent/20">
+                        <input type="checkbox" checked class="w-5 h-5 text-primary rounded focus:ring-2 focus:ring-primary">
+                        <span class="text-sm font-semibold text-text-primary">שלחי לי התראה כשהמשרה תפתח</span>
+                    </label>
+                </div>
+
+                <!-- Keywords Wish Form -->
+                <div *ngIf="selectedWishType() === 'keywords'">
+                    <label class="text-sm font-semibold text-text-primary mb-2 block">הוסיפי מילות מפתח</label>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" placeholder="הקלידי מילת מפתח..." class="flex-1 border-2 border-border-light rounded-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                        <button class="bg-primary text-white px-5 py-3 rounded-card font-semibold hover:bg-primary-dark transition-colors">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-4 min-h-[60px] p-3 bg-[#F8F9FA] rounded-card border-2 border-dashed border-border-light">
+                        <span class="bg-primary/20 text-primary px-3 py-1.5 rounded-pill text-sm font-semibold border border-primary/30 flex items-center gap-2">
+                            ניהול
+                            <i class="fa-solid fa-times text-xs cursor-pointer hover:text-primary-dark"></i>
+                        </span>
+                        <span class="bg-primary/20 text-primary px-3 py-1.5 rounded-pill text-sm font-semibold border border-primary/30 flex items-center gap-2">
+                            הובלה
+                            <i class="fa-solid fa-times text-xs cursor-pointer hover:text-primary-dark"></i>
+                        </span>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer p-3 bg-secondary/10 rounded-card border border-secondary/20">
+                        <input type="checkbox" checked class="w-5 h-5 text-primary rounded focus:ring-2 focus:ring-primary">
+                        <span class="text-sm font-semibold text-text-primary">שלחי לי התראה על משרות עם מילות המפתח הללו</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-border-light flex gap-3 justify-end">
+                <button (click)="closeWishlistModal()" class="px-6 py-3 border-2 border-border-light text-text-primary rounded-button font-semibold hover:bg-border-light transition-colors h-[44px]">
+                    ביטול
+                </button>
+                <button class="px-6 py-3 bg-primary text-white rounded-button font-semibold hover:bg-primary-dark transition-colors flex items-center gap-2 h-[44px]">
+                    <i class="fa-solid fa-check"></i>
+                    שמור משאלה
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-container>
+
