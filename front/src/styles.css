@@ -22,10 +22,17 @@ button {
   transition: all 0.2s ease;
 }
 
-button:hover {
+button[class*="bg-"]:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+
+/* Underline text on hover for buttons without explicit background class */
+button:not([class*="bg-"]):hover {
+  text-decoration: underline;
+}
+
+
 
 button:disabled {
   opacity: 0.6;
