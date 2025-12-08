@@ -1,7 +1,7 @@
 [
   {
     "id": "1",
-    "title": "ראש צוות פיתוח",
+    "title": "ראש צוות פיתוח Backend",
     "category": "טכנולוגיה",
     "category_icon": "fa-laptop-code",
     "category_color": "primary",
@@ -10,49 +10,221 @@
     "division": "חטיבת טכנולוגיות",
     "location": "תל אביב",
     "work_model": "היברידי",
-    "description": "הובלת צוות פיתוח Backend בטכנולוגיות Java ו-Spring, ניהול ארכיטקטורה ופיתוח מערכות מורכבות.",
+    "description": "הובלת צוות פיתוח של 6-8 מפתחים, תכנון ארכיטקטורה, ניהול פרויקטים טכנולוגיים מורכבים ופיתוח מערכות Backend בקנה מידה גדול.",
     "requirements": [
-      { "skill": "Java & Spring", "status": "מתאים" },
-      { "skill": "מנהיגות", "status": "חוזקה" },
-      { "skill": "ניהול פרויקטים", "status": "פער קטן" }
+      { "skill": "ניסיון בניהול צוותים", "status": "יש" },
+      { "skill": "מומחיות Java & Spring Boot", "status": "יש" },
+      { "skill": "ניסיון בארכיטקטורת מערכות", "status": "יש" },
+      { "skill": "ניסיון בניהול תקציבים", "status": "חסר" }
     ]
   },
   {
     "id": "2",
+    "title": "ארכיטקט תוכנה",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-laptop-code",
+    "category_color": "primary",
+    "match_percentage": 88,
+    "match_level": "גבוהה",
+    "division": "חטיבת טכנולוגיות",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "description": "תכנון והובלת ארכיטקטורה טכנולוגית ארגונית, ייעוץ לצוותי פיתוח, הגדרת תקנים טכנולוגיים ובחירת טכנולוגיות עתידיות.",
+    "requirements": [
+      { "skill": "ניסיון בתכנון ארכיטקטורה", "status": "יש" },
+      { "skill": "מומחיות Microservices", "status": "יש" },
+      { "skill": "ניסיון Cloud Architecture", "status": "חסר" },
+      { "skill": "יכולות הדרכה וייעוץ", "status": "יש" }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Tech Lead - פיתוח מוצר",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-laptop-code",
+    "category_color": "primary",
+    "match_percentage": 86,
+    "match_level": "גבוהה",
+    "division": "חטיבת מוצר",
+    "location": "היברידי",
+    "work_model": "היברידי",
+    "description": "הובלה טכנית של פיתוח מוצר ליבה, עבודה צמודה עם Product Managers, קבלת החלטות טכנולוגיות ומנטורינג של מפתחים.",
+    "requirements": [
+      { "skill": "מומחיות טכנית Backend", "status": "יש" },
+      { "skill": "ניסיון בהובלת צוותים", "status": "יש" },
+      { "skill": "הבנה עמוקה של מוצר", "status": "יש" },
+      { "skill": "ניסיון DevOps", "status": "חסר" }
+    ]
+  },
+  {
+    "id": "4",
+    "title": "מנהל/ת פרויקטים טכנולוגיים",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-laptop-code",
+    "category_color": "primary",
+    "match_percentage": 78,
+    "match_level": "טובה",
+    "division": "חטיבת טכנולוגיות",
+    "location": "תל אביב",
+    "work_model": "משרד",
+    "description": "ניהול פרויקטים טכנולוגיים מורכבים, תיאום בין צוותים, ניהול סיכונים ותקציבים, דיווח להנהלה ועמידה ביעדים.",
+    "requirements": [
+      { "skill": "ניסיון ניהול פרויקטים", "status": "חסר" },
+      { "skill": "רקע טכנולוגי", "status": "יש" },
+      { "skill": "הסמכת PMP/Agile", "status": "חסר" },
+      { "skill": "מיומנויות תקשורת", "status": "יש" }
+    ]
+  },
+  {
+    "id": "5",
+    "title": "מפתח/ת Full Stack בכיר/ה",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-laptop-code",
+    "category_color": "primary",
+    "match_percentage": 85,
+    "match_level": "גבוהה",
+    "division": "חטיבת טכנולוגיות",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "description": "פיתוח מערכות Full Stack, עבודה עם React/Angular בצד הלקוח ו-Node.js/Java בצד השרת, שילוב טכנולוגיות חדשניות.",
+    "requirements": [
+      { "skill": "ניסיון Backend", "status": "יש" },
+      { "skill": "ניסיון Frontend", "status": "חסר" },
+      { "skill": "עבודה עם Databases", "status": "יש" },
+      { "skill": "CI/CD", "status": "יש" }
+    ]
+  },
+  {
+    "id": "6",
     "title": "מנהל/ת תקציבים",
     "category": "כספים",
     "category_icon": "fa-chart-line",
     "category_color": "accent",
-    "match_percentage": 81,
-    "match_level": "טובה",
+    "match_percentage": 72,
+    "match_level": "בינונית",
     "division": "חטיבת הכספים",
     "location": "ירושלים",
     "work_model": "היברידי",
     "description": "ניהול תקציבי פרויקטים, ניתוח פיננסי ובקרה תקציבית לפרויקטים אסטרטגיים בארגון.",
     "requirements": [
-      { "skill": "חשיבה אנליטית", "status": "חוזקה" },
-      { "skill": "Excel מתקדם", "status": "פער קטן" },
-      { "skill": "הכרת SAP", "status": "חסר" }
+      { "skill": "חשיבה אנליטית", "status": "יש" },
+      { "skill": "Excel מתקדם", "status": "חסר" },
+      { "skill": "הכרת SAP", "status": "חסר" },
+      { "skill": "ניסיון בניהול תקציבים", "status": "חסר" }
     ]
   },
   {
-    "id": "3",
+    "id": "7",
     "title": "שותף/ה עסקי HR",
     "category": "משאבי אנוש",
     "category_icon": "fa-users",
     "category_color": "secondary",
-    "match_percentage": 73,
+    "match_percentage": 68,
     "match_level": "בינונית",
     "division": "חטיבת משאבי אנוש",
     "location": "חיפה",
     "work_model": "משרד מלא",
     "description": "ליווי מנהלים בתהליכי פיתוח ארגוני, גיוס ושימור עובדים, וניהול תהליכי שינוי ארגוני.",
     "requirements": [
-      { "skill": "תקשורת בין-אישית", "status": "חוזקה" },
-      { "skill": "ניהול שינוי ארגוני", "status": "פער" },
-      { "skill": "תואר בפסיכולוגיה", "status": "חסר" }
+      { "skill": "תקשורת בין-אישית", "status": "יש" },
+      { "skill": "ניהול שינוי ארגוני", "status": "חסר" },
+      { "skill": "ניסיון בגיוס", "status": "חסר" },
+      { "skill": "תואר רלוונטי", "status": "חסר" }
+    ]
+  },
+  {
+    "id": "8",
+    "title": "DevOps Engineer",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-laptop-code",
+    "category_color": "primary",
+    "match_percentage": 76,
+    "match_level": "טובה",
+    "division": "חטיבת טכנולוגיות",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "description": "ניהול תשתיות ענן, בניית תהליכי CI/CD, אוטומציה של תהליכים ושיפור ביצועי מערכות.",
+    "requirements": [
+      { "skill": "ניסיון עם Docker/K8s", "status": "חסר" },
+      { "skill": "ניסיון עם AWS/Azure", "status": "חסר" },
+      { "skill": "Scripting (Python/Bash)", "status": "יש" },
+      { "skill": "הבנת מערכות Linux", "status": "יש" }
+    ]
+  },
+  {
+    "id": "9",
+    "title": "Data Engineer",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-laptop-code",
+    "category_color": "primary",
+    "match_percentage": 74,
+    "match_level": "בינונית",
+    "division": "חטיבת Data",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "description": "בניית תשתיות Data, עבודה עם Big Data, פיתוח ETL processes ואופטימיזציה של queries.",
+    "requirements": [
+      { "skill": "SQL מתקדם", "status": "יש" },
+      { "skill": "Python", "status": "יש" },
+      { "skill": "Spark/Hadoop", "status": "חסר" },
+      { "skill": "ניסיון עם Data Lakes", "status": "חסר" }
+    ]
+  },
+  {
+    "id": "10",
+    "title": "ראש תחום אבטחת מידע",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-shield",
+    "category_color": "primary",
+    "match_percentage": 70,
+    "match_level": "בינונית",
+    "division": "חטיבת אבטחת מידע",
+    "location": "תל אביב",
+    "work_model": "משרד",
+    "description": "ניהול מערך אבטחת המידע הארגוני, הגדרת מדיניות אבטחה, ניהול צוות SOC והתמודדות עם אירועי אבטחה.",
+    "requirements": [
+      { "skill": "ניסיון באבטחת מידע", "status": "חסר" },
+      { "skill": "הסמכות CISSP/CISM", "status": "חסר" },
+      { "skill": "ניהול צוותים", "status": "יש" },
+      { "skill": "הבנת ארכיטקטורת מערכות", "status": "יש" }
+    ]
+  },
+  {
+    "id": "11",
+    "title": "מנהל/ת לוגיסטיקה",
+    "category": "לוגיסטיקה",
+    "category_icon": "fa-truck",
+    "category_color": "secondary",
+    "match_percentage": 65,
+    "match_level": "בינונית",
+    "division": "חטיבת תפעול",
+    "location": "באר שבע",
+    "work_model": "משרד מלא",
+    "description": "ניהול מערך הלוגיסטיקה הארגוני, אופטימיזציה של תהליכי שרשרת אספקה וניהול מלאי.",
+    "requirements": [
+      { "skill": "ניסיון בלוגיסטיקה", "status": "חסר" },
+      { "skill": "יכולת אנליטית", "status": "יש" },
+      { "skill": "ניהול ספקים", "status": "חסר" },
+      { "skill": "הכרת מערכות ERP", "status": "חסר" }
+    ]
+  },
+  {
+    "id": "12",
+    "title": "Product Manager",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-lightbulb",
+    "category_color": "accent",
+    "match_percentage": 79,
+    "match_level": "טובה",
+    "division": "חטיבת מוצר",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "description": "ניהול מוצר מקצה לקצה, הגדרת Roadmap, עבודה מול לקוחות וניהול צוות פיתוח.",
+    "requirements": [
+      { "skill": "רקע טכנולוגי", "status": "יש" },
+      { "skill": "ניסיון בניהול מוצר", "status": "חסר" },
+      { "skill": "יכולות אנליטיות", "status": "יש" },
+      { "skill": "תקשורת בין-אישית", "status": "יש" }
     ]
   }
 ]
-
-
