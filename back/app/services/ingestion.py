@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional
-from app.models.Candidate import Candidate
+from app.models.Employee import Employee
 from app.models.Position import Position
 from app.models.Skill import Skill
 
@@ -9,30 +9,30 @@ class IngestionService:
 
     def __init__(self):
         # In-memory stores; swap to DB later
-        self._candidates: Dict[str, Candidate] = {}
+        self._employees: Dict[str, Employee] = {}
         self._positions: Dict[str, Position] = {}
 
-    # ---- Candidates ----
-    def ingest_candidates(self, candidates: List[Candidate]) -> List[Candidate]:
-        for c in candidates:
-            self._candidates[c.candidate_id] = c
-        return candidates
+    # ---- Employees ----
+    def ingest_employees(self, employees: List[Employee]) -> List[Employee]:
+        for c in employees:
+            self._employees[c.employee_id] = c
+        return employees
 
-    def ingest_candidate(self, candidate: Candidate) -> Candidate:
-        self._candidates[candidate.candidate_id] = candidate
-        return candidate
+    def ingest_employee(self, employee: Employee) -> Employee:
+        self._employees[employee.employee_id] = employee
+        return employee
 
-    def get_candidate(self, candidate_id: str) -> Optional[Candidate]:
-        return self._candidates.get(candidate_id)
+    def get_employee(self, employee_id: str) -> Optional[Employee]:
+        return self._employees.get(employee_id)
 
-    def list_candidates(self) -> List[Candidate]:
-        return list(self._candidates.values())
+    def list_employees(self) -> List[Employee]:
+        return list(self._employees.values())
 
-    def delete_candidate(self, candidate_id: str) -> None:
-        self._candidates.pop(candidate_id, None)
+    def delete_employee(self, employee_id: str) -> None:
+        self._employees.pop(employee_id, None)
 
-    def clear_candidates(self) -> None:
-        self._candidates.clear()
+    def clear_employees(self) -> None:
+        self._employees.clear()
 
     # ---- Positions ----
     def ingest_positions(self, positions: List[Position]) -> List[Position]:
@@ -62,8 +62,8 @@ class IngestionService:
         return skills
 
     # ---- Validation (basic) ----
-    def validate_candidate(self, candidate: Candidate) -> bool:
-        return bool(candidate.name and candidate.hard_skills and candidate.soft_skills)
+    def validate_employee(self, employee: Employee) -> bool:
+        return bool(employee.name and employee.hard_skills and employee.soft_skills)
 
     def validate_position(self, position: Position) -> bool:
         return bool(position.name and position.category is not None)

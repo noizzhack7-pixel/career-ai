@@ -3,7 +3,7 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 from app.services.matching import matching_service
 from app.services.ingestion import ingestion_service
-from app.models.Candidate import Candidate
+from app.models.Employee import Employee
 from app.models.Position import Position
 
 router = APIRouter(prefix="/smart", tags=["smart"])
@@ -34,16 +34,16 @@ In production, these routes would read/write to a database and vector index.
 """
 
 
-@router.post("/candidates/ingest")
-async def ingest_candidate(candidate: Candidate):
+@router.post("/employees/ingest")
+async def ingest_employee(employee: Employee):
     """
-    Ingest a candidate into the system (demo endpoint)
+    Ingest a employee into the system (demo endpoint)
     In production, this would vectorize and store in database
     """
-    ingestion_service.ingest_candidate(candidate)
+    ingestion_service.ingest_employee(employee)
     return {
-        "message": "Candidate ingested successfully",
-        "candidate_id": candidate.candidate_id,
+        "message": "Employee ingested successfully",
+        "employee_id": employee.employee_id,
         "note": "In production, this would generate embeddings and store in PostgreSQL"
     }
 
@@ -62,17 +62,17 @@ async def ingest_position(position: Position):
     }
 
 
-@router.get("/candidates/top", response_model=List[MatchResult])
-async def get_top_candidates(
+@router.get("/employees/top", response_model=List[MatchResult])
+async def get_top_employees(
     position_id: str = Query(..., description="Position ID to match against"),
-    limit: int = Query(10, ge=1, le=100, description="Number of top candidates to return")
+    limit: int = Query(10, ge=1, le=100, description="Number of top employees to return")
 ):
     """
-    Get top matching candidates for a position using hybrid scoring
+    Get top matching employees for a position using hybrid scoring
 
     Algorithm:
     1. Fetch position embedding from database
-    2. Perform vector similarity search in candidates table
+    2. Perform vector similarity search in employees table
     3. Calculate skill overlap for top results
     4. Combine semantic similarity (60%) + skill match (30%) + category bonus (10%)
     5. Return ranked results with explanations
@@ -81,39 +81,39 @@ async def get_top_candidates(
     if not ingestion_service.get_position(position_id):
         raise HTTPException(status_code=404, detail=f"Position {position_id} not found. Use /smart/positions/ingest to add positions.")
 
-    results = matching_service.get_top_candidates_for_position(position_id, limit)
+    results = matching_service.get_top_employees_for_position(position_id, limit)
     return results
 
 
-@router.get("/candidates/similar", response_model=List[MatchResult])
-async def get_similar_candidates(
-    candidate_id: str = Query(..., description="Candidate ID to find similar candidates"),
-    limit: int = Query(10, ge=1, le=100, description="Number of similar candidates to return")
+@router.get("/employees/similar", response_model=List[MatchResult])
+async def get_similar_employees(
+    employee_id: str = Query(..., description="Employee ID to find similar employees"),
+    limit: int = Query(10, ge=1, le=100, description="Number of similar employees to return")
 ):
     """
-    Find similar candidates based on skills and experience
+    Find similar employees based on skills and experience
     Uses pure vector similarity search
     """
-    if not ingestion_service.get_candidate(candidate_id):
-        raise HTTPException(status_code=404, detail=f"Candidate {candidate_id} not found. Use /smart/candidates/ingest to add candidates.")
+    if not ingestion_service.get_employee(employee_id):
+        raise HTTPException(status_code=404, detail=f"Employee {employee_id} not found. Use /smart/employees/ingest to add employees.")
 
-    results = matching_service.get_similar_candidates(candidate_id, limit)
+    results = matching_service.get_similar_employees(employee_id, limit)
     return results
 
 
 @router.get("/positions/top", response_model=List[MatchResult])
 async def get_top_positions(
-    candidate_id: str = Query(..., description="Candidate ID to match against"),
+    employee_id: str = Query(..., description="Employee ID to match against"),
     limit: int = Query(10, ge=1, le=100, description="Number of top positions to return")
 ):
     """
-    Get top matching positions for a candidate using hybrid scoring
-    Filters out positions where candidate is significantly overqualified
+    Get top matching positions for a employee using hybrid scoring
+    Filters out positions where employee is significantly overqualified
     """
-    if not ingestion_service.get_candidate(candidate_id):
-        raise HTTPException(status_code=404, detail=f"Candidate {candidate_id} not found. Use /smart/candidates/ingest to add candidates.")
+    if not ingestion_service.get_employee(employee_id):
+        raise HTTPException(status_code=404, detail=f"Employee {employee_id} not found. Use /smart/employees/ingest to add employees.")
 
-    results = matching_service.get_top_positions_for_candidate(candidate_id, limit)
+    results = matching_service.get_top_positions_for_employee(employee_id, limit)
     return results
 
 
@@ -135,11 +135,11 @@ async def get_similar_positions(
 
 @router.get("/gaps", response_model=SkillGapResponse)
 async def get_skill_gaps(
-    candidate_id: str = Query(..., description="Candidate ID"),
+    employee_id: str = Query(..., description="Employee ID"),
     position_id: str = Query(..., description="Position ID")
 ):
     """
-    Comprehensive skill gap analysis between candidate and position
+    Comprehensive skill gap analysis between employee and position
 
     Returns:
     - Readiness score (0-100): Overall fitness for the position
@@ -150,21 +150,21 @@ async def get_skill_gaps(
     - critical_gap: Gap > 1.5 points (high priority to address)
     - moderate_gap: Gap 0.5-1.5 points (should improve)
     - minor_gap: Gap <= 0.5 points (nice to improve)
-    - met: Candidate meets or exceeds requirement
+    - met: Employee meets or exceeds requirement
     """
 
-    # Get candidate and position from storage
-    candidate = ingestion_service.get_candidate(candidate_id)
+    # Get employee and position from storage
+    employee = ingestion_service.get_employee(employee_id)
     position = ingestion_service.get_position(position_id)
 
-    if not candidate:
-        raise HTTPException(status_code=404, detail=f"Candidate {candidate_id} not found. Use /smart/candidates/ingest to add candidates.")
+    if not employee:
+        raise HTTPException(status_code=404, detail=f"Employee {employee_id} not found. Use /smart/employees/ingest to add employees.")
 
     if not position:
         raise HTTPException(status_code=404, detail=f"Position {position_id} not found. Use /smart/positions/ingest to add positions.")
 
     # Perform skill gap analysis
-    analysis = matching_service.analyze_skill_gaps(candidate, position)
+    analysis = matching_service.analyze_skill_gaps(employee, position)
 
     return SkillGapResponse(**analysis)
 
@@ -179,7 +179,7 @@ async def health_check():
             "vectorization": "sentence-transformers (all-MiniLM-L6-v2)",
             "database": "PostgreSQL + pgvector",
             "scoring": "hybrid (semantic + structured)",
-            "candidates_loaded": len(ingestion_service.list_candidates()),
+            "employees_loaded": len(ingestion_service.list_employees()),
             "positions_loaded": len(ingestion_service.list_positions()),
         }
     }
