@@ -56,7 +56,7 @@ export class ProfileComponent implements OnInit {
   // Computed signals
   readonly fullName = computed(() => this._profile()?.name ?? '');
   readonly title = computed(() => this._profile()?.title ?? '');
-  readonly avatar = computed(() => this._profile()?.avatar ?? '');
+  readonly avatar = computed(() => this._profile()?.avatar || this._profile()?.photo_url || '');
   readonly coverImage = computed(() => this._profile()?.cover_image ?? '');
   readonly isActive = computed(() => this._profile()?.is_active ?? false);
   readonly organization = computed(() => this._profile()?.organization ?? null);
@@ -85,9 +85,14 @@ export class ProfileComponent implements OnInit {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.api.get<ExtendedProfile>(ApiService.ENDPOINTS.CANDIDATES.ME).subscribe({
+    this.api.get<ExtendedProfile>(ApiService.ENDPOINTS.EMPLOYEES.ME).subscribe({
       next: (profile) => {
-        this._profile.set(profile);
+        // Prefer photo_url when present
+        const mergedProfile: ExtendedProfile = {
+          ...profile,
+          avatar: profile.photo_url || profile.avatar,
+        };
+        this._profile.set(mergedProfile);
         this._isLoading.set(false);
       },
       error: (error) => {
