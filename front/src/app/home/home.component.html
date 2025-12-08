@@ -1,17 +1,17 @@
 <!-- Loading State -->
-<div *ngIf="isLoading()" class="min-h-screen flex items-center justify-center bg-neutral-extralight">
+<div *ngIf="isLoading()" class="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
     <div class="text-center">
         <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-neutral-dark font-medium">טוען נתונים...</p>
+        <p class="text-text-primary font-medium">טוען נתונים...</p>
     </div>
 </div>
 
 <!-- Error State -->
-<div *ngIf="error() && !isLoading()" class="min-h-screen flex items-center justify-center bg-neutral-extralight p-4">
-    <div class="bg-white p-8 rounded-card shadow-card text-center max-w-md">
+<div *ngIf="error() && !isLoading()" class="min-h-screen flex items-center justify-center bg-[#F8F9FA] p-4">
+    <div class="bg-bg p-8 rounded-card shadow-card text-center max-w-md">
         <i class="fa-solid fa-exclamation-triangle text-4xl text-secondary mb-4"></i>
-        <p class="text-neutral-dark mb-4">{{ error() }}</p>
-        <button (click)="loadData()" class="bg-primary text-white px-6 py-2 rounded-card font-semibold hover:bg-primary-dark">
+        <p class="text-text-primary mb-4">{{ error() }}</p>
+        <button (click)="loadData()" class="bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary-dark h-[44px]">
             נסה שוב
         </button>
     </div>
@@ -20,28 +20,28 @@
 <!-- Main Content -->
 <ng-container *ngIf="!isLoading() && !error() && employeeStore.profile()">
     <!-- Top Navigation -->
-    <nav id="top-navigation" class="bg-white border-b border-neutral-light sticky top-0 z-50 shadow-sm">
+    <nav id="top-navigation" class="bg-bg border-b border-border-light sticky top-0 z-50 shadow-sm">
         <div class="max-w-[1600px] mx-auto px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-8">
                     <div class="flex items-center gap-2">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-accent-dark rounded-lg flex items-center justify-center">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-lg flex items-center justify-center">
                             <i class="fa-solid fa-rocket text-white text-lg"></i>
                         </div>
                         <span class="text-xl font-bold text-primary">GO-PRO</span>
                     </div>
                     
                     <div class="flex items-center gap-1">
-                        <a routerLink="/" class="px-5 py-2.5 rounded-card text-sm font-semibold bg-primary-light/40 text-primary hover:bg-primary-light/60 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        <a routerLink="/" class="px-5 py-2.5 rounded-button text-sm font-semibold bg-primary-soft text-primary hover:bg-primary-soft/80 transition-colors h-[44px] flex items-center">
                             בית
                         </a>
-                        <a href="#" class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        <a href="#" class="px-5 py-2.5 rounded-button text-sm font-semibold text-text-primary hover:bg-primary-soft/40 transition-colors h-[44px] flex items-center">
                             כלל המשרות
                         </a>
-                        <a href="#" class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        <a href="#" class="px-5 py-2.5 rounded-button text-sm font-semibold text-text-primary hover:bg-primary-soft/40 transition-colors h-[44px] flex items-center">
                             התאמה ומסלול פיתוח
                         </a>
-                        <a href="#" class="px-5 py-2.5 rounded-card text-sm font-semibold text-neutral-dark hover:bg-primary-light/40 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        <a href="#" class="px-5 py-2.5 rounded-button text-sm font-semibold text-text-primary hover:bg-primary-soft/40 transition-colors h-[44px] flex items-center">
                             הפרופיל שלי
                         </a>
                     </div>
@@ -49,21 +49,20 @@
 
                 <div class="flex items-center gap-6">
                     <div class="relative w-72">
-                        <label for="global-search" class="sr-only">חיפוש בשפה חופשית</label>
-                        <input id="global-search" type="text" placeholder="חיפוש בשפה חופשית..." class="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 pr-10 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors" aria-label="שדה חיפוש גלובלי">
-                        <i class="fa-solid fa-search absolute top-1/2 -translate-y-1/2 right-4 text-neutral-dark" aria-hidden="true"></i>
+                        <input type="text" placeholder="חיפוש בשפה חופשית..." class="w-full bg-[#F8F9FA] border-2 border-border-light rounded-button py-2 pr-10 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors h-[44px]">
+                        <i class="fa-solid fa-search absolute top-1/2 -translate-y-1/2 right-4 text-text-secondary"></i>
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <button class="relative text-neutral-dark hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary rounded-full p-1" aria-label="התראות - יש 2 התראות חדשות">
-                            <i class="fa-regular fa-bell text-xl" aria-hidden="true"></i>
-                            <span class="absolute -top-1 -left-1 w-5 h-5 bg-secondary text-white text-xs rounded-full flex items-center justify-center font-bold" aria-label="2 התראות">2</span>
+                        <button class="relative text-text-primary hover:text-primary transition-colors p-1">
+                            <i class="fa-regular fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -left-1 w-5 h-5 bg-secondary text-white text-xs rounded-full flex items-center justify-center font-bold">2</span>
                         </button>
-                        <div class="flex items-center gap-3 pr-4 border-r-2 border-neutral-light">
+                        <div class="flex items-center gap-3 pr-4 border-r-2 border-border-light">
                             <img [src]="employeeStore.avatar()" [alt]="'תמונת פרופיל של ' + employeeStore.fullName()" class="w-9 h-9 rounded-full border-2 border-primary/40">
                             <div class="text-right">
-                                <p class="text-sm font-semibold text-neutral-dark">{{ employeeStore.fullName() }}</p>
-                                <p class="text-xs text-neutral-medium">{{ employeeStore.title() }}</p>
+                                <p class="text-sm font-semibold text-text-primary">{{ employeeStore.fullName() }}</p>
+                                <p class="text-xs text-text-secondary">{{ employeeStore.title() }}</p>
                             </div>
                         </div>
                     </div>
@@ -80,19 +79,19 @@
             <div class="col-span-9 space-y-8">
                 
                 <!-- Personal Profile Section -->
-                <section id="personal-profile-linkedin" class="bg-white rounded-card shadow-card overflow-hidden" aria-label="פרופיל אישי">
+                <section id="personal-profile-linkedin" class="bg-bg rounded-card shadow-card overflow-hidden">
                     <div class="relative">
-                        <div class="h-48 bg-primary/10 overflow-hidden">
-                            <img class="w-full h-full object-cover" [src]="employeeStore.profile()!.cover_image" alt="" role="presentation" />
-                            <button class="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-primary" aria-label="שנה תמונת רקע">
-                                <i class="fa-solid fa-camera text-neutral-dark" aria-hidden="true"></i>
+                        <div class="h-48 bg-primary-soft overflow-hidden">
+                            <img class="w-full h-full object-cover opacity-40" [src]="employeeStore.profile()!.cover_image" alt="">
+                            <button class="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
+                                <i class="fa-solid fa-camera text-text-primary"></i>
                             </button>
                         </div>
                         <div class="absolute top-28 right-8">
-                             <img [src]="employeeStore.avatar()" [alt]="'תמונת פרופיל של ' + employeeStore.fullName()" class="w-40 h-40 rounded-full border-8 border-white shadow-lg">
+                             <img [src]="employeeStore.avatar()" [alt]="'תמונת פרופיל של ' + employeeStore.fullName()" class="w-40 h-40 rounded-full border-8 border-bg shadow-panel">
                         </div>
-                        <button class="absolute top-48 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-primary" aria-label="ערוך פרופיל">
-                            <i class="fa-solid fa-pen text-neutral-dark" aria-hidden="true"></i>
+                        <button class="absolute top-48 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
+                            <i class="fa-solid fa-pen text-text-primary"></i>
                         </button>
                     </div>
 
@@ -100,72 +99,65 @@
                         <div class="flex justify-between items-start">
                              <div>
                                 <h1 class="text-3xl font-bold text-primary mb-1">{{ employeeStore.fullName() }}</h1>
-                                <p class="text-lg font-semibold text-neutral-dark">{{ employeeStore.title() }}</p>
+                                <p class="text-lg font-semibold text-text-primary">{{ employeeStore.title() }}</p>
                                 
-                                <!-- Enhanced Organizational Assignment -->
                                 <div class="mt-3 space-y-2" *ngIf="employeeStore.organization()">
                                     <div class="flex items-center gap-2 text-sm">
-                                        <i class="fa-solid fa-building text-primary" aria-hidden="true"></i>
+                                        <i class="fa-solid fa-building text-primary-dark text-lg"></i>
                                         <span class="font-semibold text-primary">{{ employeeStore.organization()!.division }}</span>
-                                        <span class="text-neutral-medium">|</span>
-                                        <span class="text-neutral-dark">{{ employeeStore.organization()!.department }}</span>
-                                        <span class="text-neutral-medium">|</span>
-                                        <span class="text-neutral-dark">{{ employeeStore.organization()!.team }}</span>
+                                        <span class="text-text-secondary">|</span>
+                                        <span class="text-text-primary">{{ employeeStore.organization()!.department }}</span>
+                                        <span class="text-text-secondary">|</span>
+                                        <span class="text-text-primary">{{ employeeStore.organization()!.team }}</span>
                                     </div>
                                     
                                     <div class="flex items-center gap-4 text-sm">
                                         <div class="flex items-center gap-2">
-                                            <i class="fa-solid fa-calendar-days text-accent-dark text-xs" aria-hidden="true"></i>
-                                            <span class="text-neutral-medium">ותק:</span>
-                                            <span class="font-semibold text-neutral-dark">{{ employeeStore.profile()!.details.seniority }}</span>
+                                            <i class="fa-solid fa-calendar-days text-primary-dark text-lg"></i>
+                                            <span class="text-text-secondary">ותק:</span>
+                                            <span class="font-semibold text-text-primary">{{ employeeStore.profile()!.details.seniority }}</span>
                                         </div>
-                                        <div class="w-px h-4 bg-neutral-medium"></div>
+                                        <div class="w-px h-4 bg-border-light"></div>
                                         <div class="flex items-center gap-2">
-                                            <i class="fa-solid fa-layer-group text-accent-dark text-xs" aria-hidden="true"></i>
-                                            <span class="text-neutral-medium">דרגה:</span>
-                                            <span class="font-semibold text-neutral-dark">{{ employeeStore.profile()!.details.grade }}</span>
+                                            <i class="fa-solid fa-layer-group text-primary-dark text-lg"></i>
+                                            <span class="text-text-secondary">דרגה:</span>
+                                            <span class="font-semibold text-text-primary">{{ employeeStore.profile()!.details.grade }}</span>
                                         </div>
-                                        <div class="w-px h-4 bg-neutral-medium"></div>
+                                        <div class="w-px h-4 bg-border-light"></div>
                                         <div class="flex items-center gap-2">
-                                            <i class="fa-solid fa-user-tie text-accent-dark text-xs" aria-hidden="true"></i>
-                                            <span class="text-neutral-medium">מנהל/ת:</span>
-                                            <span class="font-semibold text-neutral-dark">{{ employeeStore.profile()!.details.manager }}</span>
+                                            <i class="fa-solid fa-user-tie text-primary-dark text-lg"></i>
+                                            <span class="text-text-secondary">מנהל/ת:</span>
+                                            <span class="font-semibold text-text-primary">{{ employeeStore.profile()!.details.manager }}</span>
                                         </div>
                                     </div>
                                     
-                                    <p class="text-sm text-neutral-medium flex items-center gap-2">
-                                        <i class="fa-solid fa-location-dot text-accent-dark text-xs" aria-hidden="true"></i>
+                                    <p class="text-sm text-text-secondary flex items-center gap-2">
+                                        <i class="fa-solid fa-location-dot text-primary-dark text-lg"></i>
                                         {{ employeeStore.profile()!.details.location }}
                                     </p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2 mt-2">
-                            </div>
                         </div>
 
-                        <!-- Enhanced Metrics Section - Single Row Compact -->
-                        <div class="mt-6 grid grid-cols-3 gap-3" *ngIf="employeeStore.metrics()">
-                            <!-- Kudos Card - Compact -->
-                            <div class="bg-gradient-to-br from-accent/10 to-accent/20 p-4 rounded-card border-2 border-accent/30 hover:border-accent/50 transition-all">
+                        <!-- Enhanced Metrics Section -->
+                        <div class="mt-6 grid grid-cols-3 gap-4" *ngIf="employeeStore.metrics()">
+                            <div class="bg-gradient-to-br from-accent/10 to-accent/5 p-5 rounded-card border border-accent/20 hover:border-accent/40 transition-all">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-card flex-shrink-0">
-                                        <i class="fa-solid fa-trophy text-accent-dark text-xl" aria-hidden="true"></i>
+                                    <div class="w-14 h-14 bg-bg rounded-full flex items-center justify-center shadow-card flex-shrink-0">
+                                        <i class="fa-solid fa-trophy text-accent-dark text-2xl"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-baseline gap-2 mb-0.5">
-                                            <p class="text-2xl font-bold text-accent-dark">{{ employeeStore.metrics()!.kudos }}</p>
-                                        </div>
-                                        <p class="text-xs text-neutral-dark font-medium">קודוס שצברתי</p>
+                                        <p class="text-3xl font-bold text-accent-dark mb-0.5">{{ employeeStore.metrics()!.kudos }}</p>
+                                        <p class="text-xs text-text-secondary font-medium">קודוס שצברתי</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Data Quality Card - Compact with Questionnaire CTA -->
-                            <div class="bg-gradient-to-br from-primary/10 to-primary/20 p-4 rounded-card border-2 border-primary/30 hover:border-primary/50 transition-all">
+                            <div class="bg-gradient-to-br from-primary-soft/40 to-primary-soft/20 p-5 rounded-card border border-primary/20 hover:border-primary/40 transition-all">
                                 <div class="flex items-center gap-3">
-                                    <div class="relative w-12 h-12 flex-shrink-0">
+                                    <div class="relative w-14 h-14 flex-shrink-0">
                                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                                            <path class="text-neutral-light" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+                                            <path class="text-border-light" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
                                             <path class="text-primary" [attr.stroke-dasharray]="employeeStore.dataQuality() + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
                                         </svg>
                                         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -173,7 +165,7 @@
                                         </div>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-xs text-neutral-dark font-medium mb-1">איכות נתונים</p>
+                                        <p class="text-xs text-text-secondary font-medium mb-1">איכות נתונים</p>
                                         <button (click)="scrollToQuestionnaire()" class="text-xs text-primary hover:underline font-semibold flex items-center gap-1">
                                             <i class="fa-solid fa-arrow-up text-[10px]"></i>
                                             מלא שאלון לשיפור
@@ -182,15 +174,14 @@
                                 </div>
                             </div>
 
-                            <!-- Quick Action Card - Replace with Matching Roles Counter -->
-                            <div class="bg-gradient-to-br from-secondary/10 to-secondary/20 p-4 rounded-card border-2 border-secondary/30 hover:border-secondary/50 transition-all">
+                            <div class="bg-gradient-to-br from-secondary-light/60 to-secondary-light/30 p-5 rounded-card border border-secondary/20 hover:border-secondary/40 transition-all">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-card flex-shrink-0">
-                                        <i class="fa-solid fa-briefcase text-secondary text-xl" aria-hidden="true"></i>
+                                    <div class="w-14 h-14 bg-bg rounded-full flex items-center justify-center shadow-card flex-shrink-0">
+                                        <i class="fa-solid fa-briefcase text-secondary text-2xl"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-xs text-neutral-dark font-medium mb-1">משרות מתאימות מעל 75%</p>
-                                        <p class="text-2xl font-bold text-secondary">{{ employeeStore.metrics()!.matching_jobs_count }}</p>
+                                        <p class="text-xs text-text-secondary font-medium mb-0.5">משרות מתאימות מעל 75%</p>
+                                        <p class="text-3xl font-bold text-secondary">{{ employeeStore.metrics()!.matching_jobs_count }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -198,11 +189,11 @@
                     </div>
                 </section>
                 
-                <!-- Skills & Education Section - TOP 5 with Color Separation -->
-                <section id="skills-education" class="bg-white p-6 rounded-card shadow-card" aria-labelledby="skills-heading">
+                <!-- Skills & Education Section -->
+                <section id="skills-education" class="bg-bg p-6 rounded-card shadow-card">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 id="skills-heading" class="text-xl font-bold text-primary flex items-center gap-2">
-                            <i class="fa-solid fa-sparkles" aria-hidden="true"></i>
+                        <h2 class="text-xl font-bold text-primary flex items-center gap-2">
+                            <i class="fa-solid fa-sparkles text-primary-dark text-xl"></i>
                             המיומנויות וההשכלה שלי
                         </h2>
                         <button class="text-sm text-primary hover:underline font-semibold flex items-center gap-1">
@@ -211,63 +202,62 @@
                         </button>
                     </div>
 
-                    <!-- Soft Skills Row - TOP 5 -->
-                    <div class="mb-6 bg-accent/5 p-4 rounded-card border-2 border-accent/20">
+                    <!-- Soft Skills -->
+                    <div class="mb-6 bg-accent/5 p-5 rounded-card border border-accent/20">
                         <div class="flex items-center gap-2 mb-3">
-                            <i class="fa-solid fa-brain text-accent-dark text-lg" aria-hidden="true"></i>
+                            <i class="fa-solid fa-brain text-accent-dark text-xl"></i>
                             <h3 class="font-semibold text-accent-dark">TOP 5 מיומנויות בין אישיות</h3>
                         </div>
-                        <div class="flex flex-wrap gap-2" role="list" aria-label="רשימת מיומנויות בין אישיות">
-                            <span *ngFor="let skill of employeeStore.softSkills()" class="bg-accent/30 text-accent-dark px-4 py-2 rounded-pill text-sm font-bold border-2 border-accent/50 shadow-sm" role="listitem">{{ skill }}</span>
+                        <div class="flex flex-wrap gap-2">
+                            <span *ngFor="let skill of employeeStore.softSkills()" class="bg-accent/20 text-accent-dark px-4 py-2 rounded-pill text-sm font-bold border border-accent/40">{{ skill }}</span>
                         </div>
                     </div>
 
-                    <!-- Hard Skills Row - TOP 5 -->
-                    <div class="bg-primary/5 p-4 rounded-card border-2 border-primary/20">
+                    <!-- Hard Skills -->
+                    <div class="bg-primary-soft/30 p-5 rounded-card border border-primary/20">
                         <div class="flex items-center gap-2 mb-3">
-                            <i class="fa-solid fa-code text-primary text-lg" aria-hidden="true"></i>
+                            <i class="fa-solid fa-code text-primary-dark text-xl"></i>
                             <h3 class="font-semibold text-primary">TOP 5 מיומנויות תפקיד</h3>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div class="bg-white p-3 rounded-card border-r-4 border-primary shadow-sm">
+                            <div class="bg-bg p-4 rounded-card border-r-4 border-primary shadow-sm">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <i class="fa-solid fa-graduation-cap text-primary text-sm" aria-hidden="true"></i>
-                                    <p class="text-xs text-neutral-dark font-bold uppercase tracking-wide">השכלה</p>
+                                    <i class="fa-solid fa-graduation-cap text-primary-dark text-lg"></i>
+                                    <p class="text-xs text-text-secondary font-bold uppercase tracking-wide">השכלה</p>
                                 </div>
                                 <p class="font-bold text-primary text-sm">{{ employeeStore.profile()!.education.degree }}</p>
-                                <p class="text-xs text-neutral-dark mt-0.5">{{ employeeStore.profile()!.education.institution }}</p>
+                                <p class="text-xs text-text-secondary mt-0.5">{{ employeeStore.profile()!.education.institution }}</p>
                             </div>
 
-                            <div class="bg-white p-3 rounded-card border-r-4 border-primary shadow-sm">
+                            <div class="bg-bg p-4 rounded-card border-r-4 border-primary shadow-sm">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <i class="fa-solid fa-star text-primary text-sm" aria-hidden="true"></i>
-                                    <p class="text-xs text-neutral-dark font-bold uppercase tracking-wide">התמחות</p>
+                                    <i class="fa-solid fa-star text-primary-dark text-lg"></i>
+                                    <p class="text-xs text-text-secondary font-bold uppercase tracking-wide">התמחות</p>
                                 </div>
                                 <p class="font-bold text-primary text-sm">{{ employeeStore.profile()!.specialization.main }}</p>
-                                <p class="text-xs text-neutral-dark mt-0.5">{{ employeeStore.profile()!.specialization.area }}</p>
+                                <p class="text-xs text-text-secondary mt-0.5">{{ employeeStore.profile()!.specialization.area }}</p>
                             </div>
                         </div>
 
                         <div>
-                            <p class="text-xs text-neutral-dark mb-2 font-bold">טכנולוגיות עיקריות:</p>
-                            <div class="flex flex-wrap gap-2" role="list" aria-label="רשימת טכנולוגיות">
-                                <span *ngFor="let skill of employeeStore.hardSkills()" class="bg-primary/20 text-primary px-4 py-2 rounded-pill text-sm font-bold border-2 border-primary/40 shadow-sm" role="listitem">{{ skill }}</span>
+                            <p class="text-xs text-text-secondary mb-2 font-bold">טכנולוגיות עיקריות:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span *ngFor="let skill of employeeStore.hardSkills()" class="bg-primary/15 text-primary px-4 py-2 rounded-pill text-sm font-bold border border-primary/30">{{ skill }}</span>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- Matching Opportunities Section -->
-                <section id="matching-opportunities" class="bg-white rounded-card shadow-card overflow-hidden">
-                    <!-- Header with gradient background -->
-                    <div class="bg-gradient-to-l from-primary/10 via-accent/10 to-primary/10 p-6 border-b-2 border-primary/20">
+                <section id="matching-opportunities" class="bg-bg rounded-card shadow-card overflow-hidden">
+                    <div class="bg-primary-soft p-6 border-b border-primary/20">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h2 class="text-2xl font-bold text-primary mb-1">משרות מותאמות עבורך</h2>
-                                <p class="text-neutral-medium text-sm">על בסיס הכישורים הקשים והרכים שלך · בחר/י משרה לצפייה בתוכנית פיתוח מותאמת</p>
+                                <p class="text-text-secondary text-sm">על בסיס הכישורים הקשים והרכים שלך · בחר/י משרה לצפייה בתוכנית פיתוח מותאמת</p>
                             </div>
-                            <button class="text-primary hover:underline font-semibold text-sm flex items-center gap-2">
+                            <button class="text-primary hover:underline font-semibold text-sm flex items-center gap-2 h-[44px] px-5 bg-bg rounded-button border border-primary/20 hover:border-primary transition-colors">
                                 צפה בכל ההזדמנויות ({{ positionsStore.positionsCount() }} משרות)
                                 <i class="fa-solid fa-arrow-left"></i>
                             </button>
@@ -278,13 +268,13 @@
                         <div class="grid grid-cols-3 gap-5">
                             <!-- Dynamic Position Cards -->
                             <div *ngFor="let position of positionsStore.positions()" 
-                                 class="job-card relative border-2 rounded-card p-5 hover:shadow-panel transition-all cursor-pointer"
-                                 [ngClass]="getCategoryBorderClass(position.category_color)"
+                                 [id]="'job-card-' + position.id"
+                                 class="job-card relative border rounded-card p-6 hover:shadow-panel transition-all cursor-pointer bg-bg"
+                                 [ngClass]="getJobCardBorderClass(position.category_color)"
                                  [class.ring-2]="positionsStore.selectedPositionId() === position.id" 
                                  [class.ring-primary]="positionsStore.selectedPositionId() === position.id"
                                  (click)="selectPosition(position.id)">
-                                <!-- Category Tag at Top -->
-                                <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center justify-between mb-4">
                                     <span class="text-xs px-3 py-1.5 rounded-pill font-bold border"
                                           [ngClass]="getCategoryTagClass(position.category_color)">
                                         <i [class]="'fa-solid ' + position.category_icon + ' ml-1'"></i>{{ position.category }}
@@ -292,7 +282,7 @@
                                     <div class="text-center">
                                         <div class="relative w-16 h-16">
                                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                                                <path class="text-neutral-light" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+                                                <path class="text-border-light" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
                                                 <path [ngClass]="getProgressColorClass(position.category_color)" [attr.stroke-dasharray]="position.match_percentage + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
                                             </svg>
                                             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
@@ -304,23 +294,21 @@
                                 </div>
 
                                 <h3 class="font-bold text-xl text-primary mb-2">{{ position.title }}</h3>
-                                <p class="text-neutral-medium text-sm mb-3">{{ position.division }} | {{ position.location }} | {{ position.work_model }}</p>
+                                <p class="text-text-secondary text-sm mb-3">{{ position.division }} | {{ position.location }} | {{ position.work_model }}</p>
                                 
-                                <!-- Position Description -->
-                                <p class="text-sm text-neutral-dark mb-3 leading-relaxed">{{ position.description }}</p>
+                                <p class="text-sm text-text-primary mb-4 leading-relaxed">{{ position.description }}</p>
 
-                                <!-- Required Skills -->
-                                <div class="mb-4 bg-neutral-extralight rounded-card p-3">
-                                    <p class="text-xs font-bold text-neutral-dark mb-2">דרישות עיקריות:</p>
+                                <div class="mb-4 bg-[#F8F9FA] rounded-card p-4">
+                                    <p class="text-xs font-bold text-text-primary mb-2">דרישות עיקריות:</p>
                                     <div class="space-y-1.5">
                                         <div *ngFor="let req of position.requirements" class="flex items-start gap-2 text-xs">
                                             <i class="fa-solid fa-circle text-[6px] mt-1" [ngClass]="getRequirementDotClass(position.category_color)"></i>
-                                            <span class="text-neutral-dark">{{ req.skill }} - {{ req.status }}</span>
+                                            <span class="text-text-primary">{{ req.skill }} - {{ req.status }}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <button class="w-full bg-primary text-white py-2.5 rounded-card text-sm font-semibold hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary">
+                                <button class="w-full bg-primary text-white py-3 rounded-button text-sm font-semibold hover:bg-primary-dark transition-colors h-[44px]">
                                     <i class="fa-solid fa-eye ml-2"></i>צפה בפירוט המשרה
                                 </button>
                             </div>
@@ -329,43 +317,43 @@
                 </section>
 
                 <!-- IDP Section - Initially Hidden -->
-                <section *ngIf="showIDP() && positionsStore.selectedPosition() && employeeStore.idpProgress()" id="idp-connected" class="bg-white rounded-card shadow-card overflow-hidden border-t-4 border-primary" aria-labelledby="idp-heading">
+                <section *ngIf="showIDP() && positionsStore.selectedPosition() && employeeStore.idpProgress()" id="idp-connected" class="bg-bg rounded-card shadow-card overflow-hidden border-t-4 border-primary">
                     <!-- Visual Connection Element -->
-                    <div class="relative bg-gradient-to-l from-primary/5 via-accent/5 to-primary/5 py-6">
+                    <div class="relative bg-primary-soft py-6">
                         <div class="absolute inset-0 flex items-center">
                             <div class="w-full border-t-2 border-dashed border-primary/30"></div>
                         </div>
                         <div class="relative flex justify-center">
-                            <div class="bg-white px-6 py-2 flex items-center gap-3 border-2 border-primary/30 rounded-pill shadow-sm">
-                                <i class="fa-solid fa-link text-primary text-xl"></i>
+                            <div class="bg-bg px-6 py-2 flex items-center gap-3 border border-primary/30 rounded-pill shadow-sm">
+                                <i class="fa-solid fa-link text-primary-dark text-xl"></i>
                                 <span class="font-bold text-primary">תוכנית הפיתוח מותאמת למשרה שבחרת</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-l from-primary/10 via-accent/10 to-primary/10 p-6 border-b-2 border-primary/20">
+                    <div class="bg-primary-soft p-6 border-b border-primary/20">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center shadow-card">
+                                <div class="w-12 h-12 bg-primary rounded-card flex items-center justify-center shadow-card">
                                     <i class="fa-solid fa-route text-white text-xl"></i>
                                 </div>
                                 <div>
                                     <h2 class="text-2xl font-bold text-primary mb-1">תוכנית הפיתוח שלי</h2>
                                     <div class="flex items-center gap-3">
-                                        <p class="text-sm text-neutral-medium">מותאמת אישית לתפקיד:</p>
-                                        <div class="flex items-center gap-2 bg-white px-4 py-1.5 rounded-pill shadow-sm border-2 border-primary">
-                                            <i class="fa-solid fa-briefcase text-primary text-sm"></i>
+                                        <p class="text-sm text-text-secondary">מותאמת אישית לתפקיד:</p>
+                                        <div class="flex items-center gap-2 bg-bg px-4 py-1.5 rounded-pill shadow-sm border border-primary">
+                                            <i class="fa-solid fa-briefcase text-primary-dark text-sm"></i>
                                             <span class="font-bold text-primary">{{ positionsStore.selectedPositionTitle() }}</span>
                                             <div class="w-px h-4 bg-primary/30"></div>
                                             <div class="flex items-center gap-1">
-                                                <span class="text-xs text-neutral-medium">התאמה:</span>
+                                                <span class="text-xs text-text-secondary">התאמה:</span>
                                                 <span class="font-bold text-primary">{{ positionsStore.selectedPositionMatch() }}%</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <button (click)="closeIDP()" class="text-primary hover:underline text-sm font-semibold flex items-center gap-2 bg-white px-4 py-2.5 rounded-card shadow-sm border border-primary/20 hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                            <button (click)="closeIDP()" class="text-primary hover:underline text-sm font-semibold flex items-center gap-2 bg-bg px-4 py-2.5 rounded-button shadow-sm border border-primary/20 hover:border-primary transition-colors h-[44px]">
                                 <i class="fa-solid fa-times ml-1"></i>
                                 סגור תוכנית
                             </button>
@@ -375,54 +363,331 @@
                     <div class="p-6">
                         <!-- Progress Overview -->
                         <div class="grid grid-cols-4 gap-4 mb-8">
-                            <div class="bg-gradient-to-br from-primary/5 to-primary/10 p-4 rounded-card border-r-4 border-primary">
+                            <div class="bg-primary-soft/30 p-5 rounded-card border-r-4 border-primary">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-neutral-medium">התקדמות כללית</span>
-                                    <i class="fa-solid fa-chart-line text-primary"></i>
+                                    <span class="text-sm text-text-secondary">התקדמות כללית</span>
+                                    <i class="fa-solid fa-chart-line text-primary-dark text-lg"></i>
                                 </div>
                                 <p class="text-3xl font-bold text-primary mb-1">{{ employeeStore.idpProgress()!.overall }}%</p>
-                                <div class="w-full bg-neutral-light rounded-full h-2">
+                                <div class="w-full bg-border-light rounded-full h-2">
                                     <div class="bg-primary h-2 rounded-full transition-all" [style.width.%]="employeeStore.idpProgress()!.overall"></div>
                                 </div>
                             </div>
 
-                            <div class="bg-gradient-to-br from-accent/5 to-accent/10 p-4 rounded-card border-r-4 border-accent">
+                            <div class="bg-accent/10 p-5 rounded-card border-r-4 border-accent">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-neutral-medium">פערים נותרו</span>
-                                    <i class="fa-solid fa-exclamation-triangle text-accent-dark"></i>
+                                    <span class="text-sm text-text-secondary">פערים נותרו</span>
+                                    <i class="fa-solid fa-exclamation-triangle text-accent-dark text-lg"></i>
                                 </div>
                                 <p class="text-3xl font-bold text-accent-dark mb-1">{{ employeeStore.idpProgress()!.gaps_remaining }}</p>
-                                <p class="text-xs text-neutral-medium">מתוך {{ employeeStore.idpProgress()!.gaps_total }} פערים</p>
+                                <p class="text-xs text-text-secondary">מתוך {{ employeeStore.idpProgress()!.gaps_total }} פערים</p>
                             </div>
 
-                            <div class="bg-gradient-to-br from-status-success/5 to-status-success/10 p-4 rounded-card border-r-4 border-status-success">
+                            <div class="bg-status-success/10 p-5 rounded-card border-r-4 border-status-success">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-neutral-medium">משימות הושלמו</span>
-                                    <i class="fa-solid fa-check-circle text-status-success"></i>
+                                    <span class="text-sm text-text-secondary">משימות הושלמו</span>
+                                    <i class="fa-solid fa-check-circle text-status-success text-lg"></i>
                                 </div>
                                 <p class="text-3xl font-bold text-status-success mb-1">{{ employeeStore.idpProgress()!.tasks_completed }}</p>
-                                <p class="text-xs text-neutral-medium">מתוך {{ employeeStore.idpProgress()!.tasks_total }} משימות</p>
+                                <p class="text-xs text-text-secondary">מתוך {{ employeeStore.idpProgress()!.tasks_total }} משימות</p>
                             </div>
 
-                            <div class="bg-gradient-to-br from-accent/5 to-accent/10 p-4 rounded-card border-r-4 border-accent">
+                            <div class="bg-accent/10 p-5 rounded-card border-r-4 border-accent">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-neutral-medium">זמן משוער</span>
-                                    <i class="fa-solid fa-clock text-accent-dark"></i>
+                                    <span class="text-sm text-text-secondary">זמן משוער</span>
+                                    <i class="fa-solid fa-clock text-accent-dark text-lg"></i>
                                 </div>
                                 <p class="text-3xl font-bold text-accent-dark mb-1">{{ employeeStore.idpProgress()!.estimated_months }}</p>
-                                <p class="text-xs text-neutral-medium">חודשים להשלמה</p>
+                                <p class="text-xs text-text-secondary">חודשים להשלמה</p>
+                            </div>
+                        </div>
+
+                        <!-- Skills Gap Analysis -->
+                        <div class="mb-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-primary flex items-center gap-2">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                    ניתוח פערים מול התפקיד
+                                </h3>
+                                <span class="text-xs bg-primary/10 text-primary px-3 py-1 rounded-pill font-medium">עדכון אחרון: 05.12.24</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Soft Skills Gap -->
+                                <div class="border border-accent/30 rounded-card p-4 bg-accent/5">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <i class="fa-solid fa-brain text-accent-dark"></i>
+                                        <h4 class="font-semibold text-accent-dark">מיומנויות בין אישיות</h4>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-check-circle text-status-success text-xs"></i>
+                                                <span>מנהיגות</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-text-secondary">נוכחי: 4</span>
+                                                <span class="text-xs font-bold text-status-success">נדרש: 4</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-exclamation-circle text-status-warning text-xs"></i>
+                                                <span>ניהול פרויקטים</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-text-secondary">נוכחי: 2</span>
+                                                <span class="text-xs font-bold text-status-warning">נדרש: 4</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-check-circle text-status-success text-xs"></i>
+                                                <span>תקשורת בין-אישית</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-text-secondary">נוכחי: 5</span>
+                                                <span class="text-xs font-bold text-status-success">נדרש: 4</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hard Skills Gap -->
+                                <div class="border border-primary/30 rounded-card p-4 bg-primary/5">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <i class="fa-solid fa-code text-primary"></i>
+                                        <h4 class="font-semibold text-primary">מיומנויות תפקיד</h4>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-check-circle text-status-success text-xs"></i>
+                                                <span>Java &amp; Spring</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-text-secondary">נוכחי: 5</span>
+                                                <span class="text-xs font-bold text-status-success">נדרש: 4</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-check-circle text-status-success text-xs"></i>
+                                                <span>Microservices</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-text-secondary">נוכחי: 4</span>
+                                                <span class="text-xs font-bold text-status-success">נדרש: 4</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-exclamation-circle text-status-warning text-xs"></i>
+                                                <span>ניהול תשתיות Cloud</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-text-secondary">נוכחי: 2</span>
+                                                <span class="text-xs font-bold text-status-warning">נדרש: 3</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Development Tasks by Category -->
+                        <div class="space-y-6">
+                            <!-- Critical Gaps -->
+                            <div class="bg-status-warning/5 border border-status-warning/30 rounded-card p-5">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-status-warning flex items-center gap-2">
+                                        <i class="fa-solid fa-fire"></i>
+                                        פערים קריטיים לסגירה
+                                    </h3>
+                                    <span class="text-xs bg-status-warning/20 text-status-warning px-3 py-1 rounded-pill font-medium">דחיפות גבוהה</span>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="bg-white p-4 rounded-card border-r-4 border-status-warning hover:shadow-card transition-all">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <i class="fa-solid fa-graduation-cap text-primary"></i>
+                                                    <h4 class="font-semibold">קורס ניהול פרויקטים - PMP</h4>
+                                                </div>
+                                                <p class="text-sm text-text-secondary mb-2">סגירת פער בניהול פרויקטים מורכבים</p>
+                                                <div class="flex items-center gap-4 text-xs text-text-secondary">
+                                                    <span><i class="fa-regular fa-clock ml-1"></i>משך: 8 שבועות</span>
+                                                    <span><i class="fa-regular fa-calendar ml-1"></i>יעד: 15.02.25</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col items-end gap-2">
+                                                <span class="text-xs bg-status-info/20 text-status-info px-2 py-1 rounded-pill">בתהליך</span>
+                                                <div class="text-left">
+                                                    <p class="text-xs text-text-secondary mb-1">התקדמות</p>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-20 bg-border-light rounded-full h-1.5">
+                                                            <div class="bg-status-info h-1.5 rounded-full" style="width: 45%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold text-status-info">45%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2 pt-3 border-t border-border-light">
+                                            <button class="flex-1 bg-primary text-white py-2 px-3 rounded text-xs hover:bg-primary-dark">
+                                                <i class="fa-solid fa-play ml-1"></i>המשך קורס
+                                            </button>
+                                            <button class="px-3 py-2 border border-border-light rounded text-xs hover:bg-border-light">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white p-4 rounded-card border-r-4 border-status-warning hover:shadow-card transition-all">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <i class="fa-solid fa-cloud text-primary"></i>
+                                                    <h4 class="font-semibold">הסמכת AWS Solutions Architect</h4>
+                                                </div>
+                                                <p class="text-sm text-text-secondary mb-2">הכנה לניהול תשתיות ענן</p>
+                                                <div class="flex items-center gap-4 text-xs text-text-secondary">
+                                                    <span><i class="fa-regular fa-clock ml-1"></i>משך: 12 שבועות</span>
+                                                    <span><i class="fa-regular fa-calendar ml-1"></i>יעד: 30.03.25</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col items-end gap-2">
+                                                <span class="text-xs bg-border-light text-text-secondary px-2 py-1 rounded-pill">טרם התחיל</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2 pt-3 border-t border-border-light">
+                                            <button class="flex-1 bg-primary text-white py-2 px-3 rounded text-xs hover:bg-primary-dark">
+                                                <i class="fa-solid fa-rocket ml-1"></i>התחל קורס
+                                            </button>
+                                            <button class="px-3 py-2 border border-border-light rounded text-xs hover:bg-border-light">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Experience & Mentoring -->
+                            <div class="bg-accent/5 border border-accent/30 rounded-card p-5">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-accent-dark flex items-center gap-2">
+                                        <i class="fa-solid fa-users"></i>
+                                        ניסיון מעשי ומנטורינג
+                                    </h3>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="bg-white p-4 rounded-card border-r-4 border-accent hover:shadow-card transition-all">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <i class="fa-solid fa-diagram-project text-primary"></i>
+                                                    <h4 class="font-semibold">הובלת פרויקט חוצה-ארגון</h4>
+                                                </div>
+                                                <p class="text-sm text-text-secondary mb-2">ניהול צוות של 5 מפתחים בפרויקט משמעותי</p>
+                                                <div class="flex items-center gap-4 text-xs text-text-secondary">
+                                                    <span><i class="fa-regular fa-clock ml-1"></i>משך: 4 חודשים</span>
+                                                    <span><i class="fa-regular fa-calendar ml-1"></i>יעד: 31.05.25</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col items-end gap-2">
+                                                <span class="text-xs bg-status-info/20 text-status-info px-2 py-1 rounded-pill">בתהליך</span>
+                                                <div class="text-left">
+                                                    <p class="text-xs text-text-secondary mb-1">התקדמות</p>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-20 bg-border-light rounded-full h-1.5">
+                                                            <div class="bg-status-info h-1.5 rounded-full" style="width: 30%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold text-status-info">30%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2 pt-3 border-t border-border-light">
+                                            <button class="flex-1 bg-primary text-white py-2 px-3 rounded text-xs hover:bg-primary-dark">
+                                                <i class="fa-solid fa-arrow-left ml-1"></i>עדכן התקדמות
+                                            </button>
+                                            <button class="px-3 py-2 border border-border-light rounded text-xs hover:bg-border-light">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white p-4 rounded-card border-r-4 border-accent hover:shadow-card transition-all">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <i class="fa-solid fa-handshake text-primary"></i>
+                                                    <h4 class="font-semibold">מנטורינג עם CTO החטיבה</h4>
+                                                </div>
+                                                <p class="text-sm text-text-secondary mb-2">פגישות חודשיות לפיתוח מיומנויות ניהול</p>
+                                                <div class="flex items-center gap-4 text-xs text-text-secondary">
+                                                    <span><i class="fa-regular fa-clock ml-1"></i>משך: 6 חודשים</span>
+                                                    <span><i class="fa-regular fa-calendar ml-1"></i>פגישה הבאה: 12.12.24</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col items-end gap-2">
+                                                <span class="text-xs bg-status-info/20 text-status-info px-2 py-1 rounded-pill">פעיל</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2 pt-3 border-t border-border-light">
+                                            <button class="flex-1 bg-primary text-white py-2 px-3 rounded text-xs hover:bg-primary-dark">
+                                                <i class="fa-solid fa-calendar-plus ml-1"></i>תזמן פגישה
+                                            </button>
+                                            <button class="px-3 py-2 border border-border-light rounded text-xs hover:bg-border-light">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Completed Tasks -->
+                            <div class="bg-status-success/5 border border-status-success/30 rounded-card p-5">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-status-success flex items-center gap-2">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        משימות שהושלמו
+                                    </h3>
+                                    <button class="text-xs text-primary hover:underline">הצג הכל (7)</button>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between p-3 bg-white rounded border-r-4 border-status-success">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fa-solid fa-check-circle text-status-success text-lg"></i>
+                                            <div>
+                                                <p class="font-medium text-sm">קורס Agile &amp; Scrum Master</p>
+                                                <p class="text-xs text-text-secondary">הושלם ב-28.11.24</p>
+                                            </div>
+                                        </div>
+                                        <button class="text-xs text-primary hover:underline">צפה בתעודה</button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-white rounded border-r-4 border-status-success">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fa-solid fa-check-circle text-status-success text-lg"></i>
+                                            <div>
+                                                <p class="font-medium text-sm">סדנת מיומנויות תקשורת</p>
+                                                <p class="text-xs text-text-secondary">הושלם ב-15.11.24</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex gap-3 mt-8 pt-6 border-t border-neutral-light">
-                            <button class="flex-1 bg-accent-dark text-white py-3 rounded-card font-semibold hover:bg-accent-dark/90 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-dark focus:ring-offset-2">
+                        <div class="flex gap-3 mt-8 pt-6 border-t border-border-light">
+                            <button class="flex-1 bg-primary-dark text-white py-3 rounded-button font-semibold hover:bg-primary transition-colors h-[44px]">
                                 <i class="fa-solid fa-plus ml-2"></i>הוסף משימה חדשה
                             </button>
-                            <button class="flex-1 bg-primary-light text-primary py-3 rounded-card font-semibold hover:bg-primary/10 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                            <button class="flex-1 bg-primary-soft text-primary py-3 rounded-button font-semibold hover:bg-primary-soft/70 transition-colors h-[44px]">
                                 <i class="fa-solid fa-download ml-2"></i>ייצא תוכנית PDF
                             </button>
-                            <button class="px-6 py-3 border-2 border-primary text-primary rounded-card font-semibold hover:bg-primary/5 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                            <button class="px-6 py-3 border border-primary text-primary rounded-button font-semibold hover:bg-primary-soft/30 transition-colors h-[44px]">
                                 <i class="fa-solid fa-share-nodes ml-2"></i>שתף עם מנהל
                             </button>
                         </div>
@@ -433,39 +698,38 @@
             <!-- Right Sidebar -->
             <div class="col-span-3 space-y-6 sticky top-24">
                 <!-- Matching Questionnaire Card -->
-                <div id="matching-questionnaire" class="bg-white p-6 rounded-card shadow-card border-t-4 border-accent" aria-labelledby="questionnaire-heading">
+                <div id="matching-questionnaire" class="bg-bg p-6 rounded-card shadow-card border-t-4 border-accent">
                     <div class="flex items-center gap-3 mb-3">
-                        <i class="fa-solid fa-list-check text-accent-dark text-2xl" aria-hidden="true"></i>
-                        <h3 id="questionnaire-heading" class="text-lg font-bold text-primary">שאלון התאמה</h3>
+                        <i class="fa-solid fa-list-check text-accent-dark text-2xl"></i>
+                        <h3 class="text-lg font-bold text-primary">שאלון התאמה</h3>
                     </div>
-                    <p class="text-sm text-neutral-dark mb-4">עזור/י לנו לדייק את ההתאמות עבורך. השלמת השאלון תשפר את איכות הנתונים שלך.</p>
-                    <a routerLink="/questionnaire" class="block w-full bg-accent-dark text-white font-bold py-3 rounded-card hover:bg-accent-dark/90 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-dark focus:ring-offset-2 text-center">
+                    <p class="text-sm text-text-primary mb-4">עזור/י לנו לדייק את ההתאמות עבורך. השלמת השאלון תשפר את איכות הנתונים שלך.</p>
+                    <a routerLink="/questionnaire" class="block w-full bg-primary-dark text-white font-bold py-3 rounded-button hover:bg-primary transition-colors h-[44px] text-center leading-[20px]">
                         התחל/י שאלון (5 דק')
-                        <i class="fa-solid fa-arrow-left ml-2 text-xs" aria-hidden="true"></i>
+                        <i class="fa-solid fa-arrow-left ml-2 text-xs"></i>
                     </a>
                 </div>
 
                 <!-- AI Guidance Card -->
-                <div id="ai-guidance" class="bg-gradient-to-br from-primary to-accent-dark text-white p-6 rounded-card shadow-panel" aria-labelledby="ai-heading">
+                <div id="ai-guidance" class="bg-gradient-to-br from-primary to-primary-dark text-white p-6 rounded-card shadow-panel">
                     <div class="flex items-center gap-3 mb-4">
-                        <i class="fa-solid fa-robot text-2xl" aria-hidden="true"></i>
-                        <h3 id="ai-heading" class="text-lg font-bold">הכוונה חכמה</h3>
+                        <i class="fa-solid fa-robot text-2xl"></i>
+                        <h3 class="text-lg font-bold">הכוונה חכמה</h3>
                     </div>
                     <p class="text-sm mb-4">התייעצ/י עם ה-AI שלנו כדי לקבל הכוונה אישית למסלול הקריירה שלך.</p>
                     
                     <div class="relative mb-3">
-                        <label for="ai-question" class="sr-only">שאל/י שאלה</label>
-                        <textarea id="ai-question" rows="3" placeholder="שאל/י אותי כל דבר..." class="w-full bg-white/20 border-2 border-white/30 rounded-card p-3 text-sm text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition-colors"></textarea>
+                        <textarea rows="3" placeholder="שאל/י אותי כל דבר..." class="w-full bg-white/20 border border-white/30 rounded-button p-3 text-sm text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition-colors"></textarea>
                     </div>
 
                     <div class="space-y-2 mb-4 text-xs">
                         <p class="font-semibold">נסה/י לשאול:</p>
-                        <button class="block w-full text-right bg-white/15 hover:bg-white/25 p-2.5 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-white border border-white/20">"מה כדאי לי ללמוד כדי להתקדם בארגון?"</button>
-                        <button class="block w-full text-right bg-white/15 hover:bg-white/25 p-2.5 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-white border border-white/20">"מה התפקיד שהכי מתאים לי כרגע?"</button>
+                        <button class="block w-full text-right bg-white/15 hover:bg-white/25 p-2.5 rounded-button transition-colors border border-white/20">"מה כדאי לי ללמוד כדי להתקדם בארגון?"</button>
+                        <button class="block w-full text-right bg-white/15 hover:bg-white/25 p-2.5 rounded-button transition-colors border border-white/20">"מה התפקיד שהכי מתאים לי כרגע?"</button>
                     </div>
 
-                    <button class="w-full bg-white text-primary font-bold py-3 rounded-card hover:bg-neutral-extralight transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary">
-                        <i class="fa-solid fa-paper-plane ml-2" aria-hidden="true"></i>
+                    <button class="w-full bg-white text-primary font-bold py-3 rounded-button hover:bg-white/90 transition-colors h-[44px]">
+                        <i class="fa-solid fa-paper-plane ml-2"></i>
                         שלח/י שאלה
                     </button>
                 </div>

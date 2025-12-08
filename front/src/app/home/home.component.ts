@@ -58,12 +58,12 @@ export class HomeComponent implements OnInit {
     document.getElementById('matching-questionnaire')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  // Helper to get category border color class
-  getCategoryBorderClass(color: string): string {
+  // Helper to get job card border class based on category color
+  getJobCardBorderClass(color: string): string {
     const colorMap: { [key: string]: string } = {
-      'primary': 'border-primary/20 hover:border-primary',
-      'accent': 'border-accent/20 hover:border-accent/40',
-      'secondary': 'border-secondary/20 hover:border-secondary/40'
+      'primary': 'border-border-light hover:border-primary',
+      'accent': 'border-border-light hover:border-accent',
+      'secondary': 'border-border-light hover:border-secondary'
     };
     return colorMap[color] || colorMap['primary'];
   }
@@ -71,9 +71,9 @@ export class HomeComponent implements OnInit {
   // Helper to get category tag class
   getCategoryTagClass(color: string): string {
     const colorMap: { [key: string]: string } = {
-      'primary': 'bg-primary/20 text-primary border-primary/30',
-      'accent': 'bg-accent/30 text-accent-dark border-accent',
-      'secondary': 'bg-secondary/30 text-secondary border-secondary'
+      'primary': 'bg-primary/10 text-primary border-primary/20',
+      'accent': 'bg-accent/15 text-accent-dark border-accent/30',
+      'secondary': 'bg-secondary-light/60 text-secondary border-secondary/30'
     };
     return colorMap[color] || colorMap['primary'];
   }
@@ -82,7 +82,7 @@ export class HomeComponent implements OnInit {
   getProgressColorClass(color: string): string {
     const colorMap: { [key: string]: string } = {
       'primary': 'text-primary',
-      'accent': 'text-accent',
+      'accent': 'text-accent-dark',
       'secondary': 'text-secondary'
     };
     return colorMap[color] || colorMap['primary'];
@@ -101,7 +101,7 @@ export class HomeComponent implements OnInit {
   // Helper to get requirement dot color class
   getRequirementDotClass(color: string): string {
     const colorMap: { [key: string]: string } = {
-      'primary': 'text-primary',
+      'primary': 'text-primary-dark',
       'accent': 'text-accent-dark',
       'secondary': 'text-secondary'
     };
