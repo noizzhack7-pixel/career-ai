@@ -2,6 +2,7 @@ import { Component, OnInit, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EmployeeStore, PositionsStore } from '../stores';
+import { Position } from '../stores/models';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +20,13 @@ export class HomeComponent implements OnInit {
   isLoading = computed(() => 
     this.employeeStore.isLoading() || this.positionsStore.isLoading()
   );
+
+  // Top 3 positions by match percentage
+  topPositions = computed<Position[]>(() => {
+    return [...this.positionsStore.positions()]
+      .sort((a, b) => b.match_percentage - a.match_percentage)
+      .slice(0, 3);
+  });
 
   // Computed: Combined error state
   error = computed(() => 
