@@ -40,6 +40,102 @@ Interactive API documentation: `http://localhost:8000/docs`
 
 ---
 
+## ☁️ Use Supabase (managed Postgres) — recommended
+
+You can run the API locally and connect it to a managed Postgres (Supabase). This avoids running a local Postgres via Docker and works well for collaboration.
+
+### 1) Set up Supabase
+- Create a Supabase project at https://supabase.com
+- In SQL Editor → enable the `vector` extension:
+  ```sql
+  create extension if not exists vector;
+  ```
+- Copy the full connection string (Database → Connection string → URI). It looks like:
+  `postgresql://USER:PASSWORD@HOST:6543/postgres?sslmode=require`
+
+### 2) Configure the app
+- Create a `.env` file in the project root with at least:
+  ```env
+  SUPABASE_DB_URL=postgresql://USER:PASSWORD@HOST:6543/postgres?sslmode=require
+  # Optional
+  # OPENAI_API_KEY=...
+  ```
+
+Notes
+- The backend prefers `SUPABASE_DB_URL` when present and automatically appends `sslmode=require` if missing.
+- If you still use `DATABASE_URL`, it will be used when `SUPABASE_DB_URL` is not set.
+
+### 3) Initialize the schema on Supabase
+Run the initializer once to create the required tables.
+
+```bash
+python templates/dbint/init_db.py
+```
+
+What it does
+- Creates `positions`, `employees`, `hard_skills`, `soft_skills`, and `employee_skill_experience` if they don’t exist. On managed services, it will not attempt to create the database itself.
+
+Optional: seed demo data
+- The CSV-based seeder reads connection settings from the same env and uses relative paths. Run:
+  ```bash
+  python templates/dbint/schema.py
+  ```
+
+### 4) Run the API locally
+```bash
+uvicorn app.main:app --app-dir back --host 0.0.0.0 --port 8000 --reload
+```
+
+- API docs: http://localhost:8000/docs
+
+---
+
+## 🐳 Run with Docker Desktop
+
+1) Prerequisites
+- Install Docker Desktop and ensure it’s running.
+- Ensure no other services are using ports 8000 (API) or 5432 (Postgres).
+
+2) Start the stack from the project root
+```bash
+# Build images and start containers
+docker compose up --build
+
+# Or run in background
+docker compose up --build -d
+```
+
+What starts:
+- Backend API container (FastAPI) exposed at `http://localhost:8000`.
+- PostgreSQL with pgvector on `localhost:5432` (user: `admin`, password: `secret`, db: `career_ai`).
+- Persistent Docker volume `postgres_data` for the database.
+
+3) Verify
+- Open API docs: `http://localhost:8000/docs`
+- Logs:
+  - All: `docker compose logs -f`
+  - Web only: `docker compose logs -f web`
+  - DB only: `docker compose logs -f postgres`
+
+4) Stop and clean up
+```bash
+# Stop containers, keep volumes
+docker compose down
+
+# Stop and remove containers + volumes (fresh DB next run)
+docker compose down -v
+```
+
+5) Changing ports or credentials
+- Edit `docker-compose.yaml` port mappings or environment variables and rerun with `--build`.
+
+Notes
+- The Angular frontend in `front/` is not containerized by default; run it separately with Node if needed.
+- The Dockerfile uses `uv` to install Python dependencies according to `pyproject.toml` (lock optional).
+- If you are using Supabase instead of Docker Postgres, you can still run only the `web` container by passing `SUPABASE_DB_URL` as an environment variable or via `.env` and removing the `postgres` service from `docker-compose.yaml`.
+
+---
+
 ## 📌 API Endpoints
 
 All endpoints are prefixed with `/api/v1` and follow RESTful conventions.

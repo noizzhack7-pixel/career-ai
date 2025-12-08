@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Optional, List, Dict, Any
 from app.core.config import settings
+import logging
 
 
 class VectorDBClient:
@@ -17,10 +18,16 @@ class VectorDBClient:
         self.engine = create_engine(self.database_url, pool_pre_ping=True)
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
-        # Enable pgvector extension
-        with self.engine.connect() as conn:
-            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-            conn.commit()
+        # Enable pgvector extension (may require elevated privileges on managed DBs like Supabase)
+        try:
+            with self.engine.connect() as conn:
+                conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+                conn.commit()
+        except Exception as exc:
+            logging.getLogger(__name__).warning(
+                "Could not ensure pgvector extension: %s. If you're using Supabase, enable the 'vector' extension in the SQL editor/dashboard.",
+                exc,
+            )
 
     def get_session(self) -> Session:
         """Get a new database session"""

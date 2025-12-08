@@ -4,18 +4,39 @@ import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_values, Json
 
-# Database connection
-conn = psycopg2.connect(
-    dbname="your_database",
-    user="your_user",
-    password="your_password",
-    host="localhost",
-    port="5432"
-)
+def _connect():
+    """Connect to Postgres using env-driven configuration. Supports Supabase.
+
+    Uses (in order of precedence):
+      - SUPABASE_DB_URL (preferred for Supabase)
+      - DATABASE_URL (generic Postgres URL)
+      - PG* components (PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE)
+    Automatically enforces sslmode=require for Supabase URLs when missing.
+    """
+    url = os.getenv("SUPABASE_DB_URL") or os.getenv("DATABASE_URL")
+    if url:
+        if ("supabase.co" in url) and ("sslmode=" not in url):
+            sep = "&" if "?" in url else "?"
+            url = f"{url}{sep}sslmode=require"
+        return psycopg2.connect(url)
+
+    host = os.getenv("PGHOST", "localhost")
+    port = os.getenv("PGPORT", "5432")
+    user = os.getenv("PGUSER", "your_user")
+    password = os.getenv("PGPASSWORD", "your_password")
+    dbname = os.getenv("PGDATABASE", "your_database")
+
+    connect_kwargs = dict(dbname=dbname, user=user, password=password, host=host, port=port)
+    if host not in {"localhost", "127.0.0.1", "postgres"}:
+        connect_kwargs["sslmode"] = "require"
+    return psycopg2.connect(**connect_kwargs)
+
+conn = _connect()
 cursor = conn.cursor()
 
-# Folder for CSV files
-folder_path = r"C:\Users\User\PycharmProjects\career-ai\templates"
+# Folder for CSV files (resolve relative to repo structure)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # templates/
+folder_path = os.getenv("DATA_FOLDER", os.path.join(BASE_DIR))
 
 
 # Helper functions
@@ -110,19 +131,20 @@ def upsert_employee_skills():
     conn.commit()
 
 
-# Insert skills
-insert_skills(os.path.join(folder_path, "hard_skills.csv"), "hard_skills")
-insert_skills(os.path.join(folder_path, "soft_skills.csv"), "soft_skills")
+if __name__ == "__main__":
+    # Insert skills
+    insert_skills(os.path.join(folder_path, "skills", "hard_skills.csv"), "hard_skills")
+    insert_skills(os.path.join(folder_path, "skills", "soft_skills.csv"), "soft_skills")
 
-# Insert positions
-insert_positions(os.path.join(folder_path, "positions.csv"))
+    # Insert positions
+    insert_positions(os.path.join(folder_path, "positions.csv"))
 
-# Insert employees
-insert_employees(os.path.join(folder_path, "employees.csv"))
+    # Insert employees
+    insert_employees(os.path.join(folder_path, "employees.csv"))
 
-# Populate employee skills JSONB table (manually or dynamically based on your own rules)
-upsert_employee_skills()
+    # Populate employee skills JSONB table (example payload)
+    upsert_employee_skills()
 
-# Close connection
-cursor.close()
-conn.close()
+    # Close connection
+    cursor.close()
+    conn.close()
