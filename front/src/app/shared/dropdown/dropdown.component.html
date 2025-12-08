@@ -1,0 +1,28 @@
+<div class="relative" #dropdownRef>
+    <button (click)="toggleDropdown($event)" 
+            [style.width]="width"
+            class="flex items-center justify-between bg-white border-2 border-neutral-light rounded-card py-2.5 pr-4 pl-3 text-sm cursor-pointer hover:border-primary/50 hover:bg-primary-light/10 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            [class.font-bold]="selectedValue !== defaultValue || alwaysBold"
+            [class.text-primary]="selectedValue !== defaultValue || alwaysBold"
+            [class.text-neutral-dark]="selectedValue === defaultValue || alwaysBold"
+            [class.border-primary/40]="selectedValue !== defaultValue || alwaysBold">
+        <span>{{ getSelectedLabel() }}</span>
+        <i class="fa-solid fa-chevron-down text-xs transition-transform" [class.rotate-180]="isOpen()"></i>
+    </button>
+    
+    <!-- Dropdown Menu -->
+    <div *ngIf="isOpen()" 
+         class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-primary/20 rounded-card shadow-panel z-50 overflow-hidden max-h-[250px] overflow-y-auto">
+        <div *ngFor="let option of options; let i = index">
+            <div (click)="selectOption(option.value)" 
+                 class="px-4 py-3 cursor-pointer transition-all flex items-center gap-2"
+                 [class]="selectedValue === option.value ? 'bg-primary-light text-primary font-bold' : 'text-neutral-dark hover:bg-primary-light/50 hover:text-primary'">
+                <i *ngIf="option.icon" [class]="option.icon" class="text-sm" [class.text-primary]="selectedValue === option.value"></i>
+                <span>{{ option.label }}</span>
+                <i *ngIf="selectedValue === option.value" class="fa-solid fa-check mr-auto text-primary text-xs"></i>
+            </div>
+            <div *ngIf="i < options.length - 1" class="border-t border-neutral-light/30"></div>
+        </div>
+    </div>
+</div>
+

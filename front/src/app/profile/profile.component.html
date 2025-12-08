@@ -695,13 +695,12 @@
                 <div *ngIf="selectedWishType() === 'role'">
                     <div class="mb-4">
                         <label class="text-sm font-semibold text-text-primary mb-2 block">בחרי תפקיד</label>
-                        <select class="w-full border-2 border-border-light rounded-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                            <option>בחרי תפקיד מהרשימה...</option>
-                            <option>ראש צוות פיתוח Backend</option>
-                            <option>ארכיטקט תוכנה בכיר</option>
-                            <option>מנהל/ת מוצר טכני</option>
-                            <option>Tech Lead</option>
-                        </select>
+                        <app-dropdown
+                            [options]="roleOptions"
+                            [selectedValue]="selectedRole()"
+                            [defaultValue]="''"
+                            (selectionChange)="selectedRole.set($event)">
+                        </app-dropdown>
                     </div>
                     <label class="flex items-center gap-2 cursor-pointer p-3 bg-accent/10 rounded-card border border-accent/20">
                         <input type="checkbox" checked class="w-5 h-5 text-primary rounded focus:ring-2 focus:ring-primary">

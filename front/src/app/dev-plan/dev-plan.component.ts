@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { EmployeeStore, PositionsStore } from '../stores';
 import { Position } from '../stores/models';
+import { DropdownComponent, DropdownOption } from '../shared/dropdown/dropdown.component';
 
 // Local interfaces for this page
 interface SkillGap {
@@ -42,7 +43,7 @@ interface FilterState {
 @Component({
   selector: 'app-dev-plan',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, DropdownComponent],
   templateUrl: './dev-plan.component.html',
   styleUrls: ['./dev-plan.component.css']
 })
@@ -116,6 +117,35 @@ export class DevPlanComponent implements OnInit {
     const displayed = this.displayedPositions().length;
     return total - displayed;
   });
+
+  // Dropdown options
+  categoryFilterOptions: DropdownOption[] = [
+    { value: 'all', label: 'כל הקטגוריות', icon: 'fa-solid fa-layer-group' },
+    { value: 'טכנולוגיה', label: 'טכנולוגיה', icon: 'fa-solid fa-laptop-code' },
+    { value: 'כספים', label: 'כספים', icon: 'fa-solid fa-chart-line' },
+    { value: 'משאבי אנוש', label: 'משאבי אנוש', icon: 'fa-solid fa-users' },
+    { value: 'לוגיסטיקה', label: 'לוגיסטיקה', icon: 'fa-solid fa-truck' }
+  ];
+
+  sortFilterOptions: DropdownOption[] = [
+    { value: 'match', label: 'מיין לפי התאמה', icon: 'fa-solid fa-trophy' },
+    { value: 'date', label: 'מיין לפי תאריך פרסום', icon: 'fa-solid fa-calendar' },
+    { value: 'grade', label: 'מיין לפי דרגה', icon: 'fa-solid fa-ranking-star' }
+  ];
+
+  minMatchOptions: DropdownOption[] = [
+    { value: 'all', label: 'כל הרמות', icon: 'fa-solid fa-sliders' },
+    { value: '85', label: '85% ומעלה', icon: 'fa-solid fa-star' },
+    { value: '75', label: '75% - 84%', icon: 'fa-solid fa-star-half-alt' },
+    { value: '65', label: '65% - 74%', icon: 'fa-regular fa-star' }
+  ];
+
+  dateRangeOptions: DropdownOption[] = [
+    { value: 'all', label: 'כל התקופות', icon: 'fa-solid fa-calendar-days' },
+    { value: 'week', label: 'שבוע אחרון', icon: 'fa-solid fa-calendar-week' },
+    { value: 'month', label: 'חודש אחרון', icon: 'fa-solid fa-calendar' },
+    { value: 'quarter', label: '3 חודשים אחרונים', icon: 'fa-solid fa-calendar-alt' }
+  ];
 
   ngOnInit(): void {
     this.loadData();

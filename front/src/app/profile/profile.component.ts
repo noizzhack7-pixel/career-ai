@@ -15,11 +15,12 @@ import {
   NotificationItem,
   CareerPreferences
 } from '../stores/models';
+import { DropdownComponent, DropdownOption } from '../shared/dropdown/dropdown.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, DropdownComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
@@ -41,6 +42,16 @@ export class ProfileComponent implements OnInit {
   readonly error = this._error.asReadonly();
   readonly showWishlistModal = this._showWishlistModal.asReadonly();
   readonly selectedWishType = this._selectedWishType.asReadonly();
+
+  // Dropdown options
+  selectedRole = signal<string>('');
+  roleOptions: DropdownOption[] = [
+    { value: '', label: 'בחרי תפקיד מהרשימה...', icon: 'fa-solid fa-briefcase' },
+    { value: 'team-lead', label: 'ראש צוות פיתוח Backend', icon: 'fa-solid fa-users' },
+    { value: 'architect', label: 'ארכיטקט תוכנה בכיר', icon: 'fa-solid fa-sitemap' },
+    { value: 'pm', label: 'מנהל/ת מוצר טכני', icon: 'fa-solid fa-clipboard-list' },
+    { value: 'tech-lead', label: 'Tech Lead', icon: 'fa-solid fa-user-tie' }
+  ];
 
   // Computed signals
   readonly fullName = computed(() => this._profile()?.name ?? '');

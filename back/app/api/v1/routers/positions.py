@@ -20,6 +20,13 @@ DATA_DIR = Path(__file__).parent.parent.parent.parent.parent / "data"
 class PositionRequirement(BaseModel):
     skill: str
     status: str
+    note: str | None = None
+
+
+class SkillMatch(BaseModel):
+    name: str
+    matched: bool
+    gap: str | None = None
 
 
 class MatchingPosition(BaseModel):
@@ -36,6 +43,13 @@ class MatchingPosition(BaseModel):
     work_model: str
     description: str
     requirements: List[PositionRequirement]
+    responsibilities: List[str] | None = None
+    posted_time: str | None = None
+    is_open: bool | None = None
+    hard_skills_match: List[SkillMatch] | None = None
+    soft_skills_match: List[SkillMatch] | None = None
+    experience_match: List[SkillMatch] | None = None
+    match_summary: str | None = None
 
 
 def load_json_file(filename: str) -> dict | list:

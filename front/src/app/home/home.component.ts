@@ -39,11 +39,11 @@ export class HomeComponent implements OnInit {
 
   selectPosition(positionId: string): void {
     this.positionsStore.selectPosition(positionId);
-    
-    // Scroll to IDP section after a short delay
-    setTimeout(() => {
-      document.getElementById('idp-connected')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+      
+      // Scroll to IDP section after a short delay
+      setTimeout(() => {
+        document.getElementById('idp-connected')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
   }
 
   closeIDP(): void {

@@ -146,18 +146,18 @@
                             משרות מתאימות ({{ filteredPositions().length }})
                         </h2>
                         <div class="flex items-center gap-3">
-                            <select class="border-2 border-neutral-light rounded-card py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                                <option>כל הקטגוריות</option>
-                                <option>טכנולוגיה</option>
-                                <option>כספים</option>
-                                <option>משאבי אנוש</option>
-                                <option>לוגיסטיקה</option>
-                            </select>
-                            <select class="border-2 border-neutral-light rounded-card py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                                <option>מיין לפי התאמה</option>
-                                <option>מיין לפי תאריך פרסום</option>
-                                <option>מיין לפי דרגה</option>
-                            </select>
+                            <app-dropdown
+                                [options]="categoryFilterOptions"
+                                [selectedValue]="'all'"
+                                [defaultValue]="'all'"
+                                [width]="'160px'">
+                            </app-dropdown>
+                            <app-dropdown
+                                [options]="sortFilterOptions"
+                                [selectedValue]="'match'"
+                                [defaultValue]="'match'"
+                                [width]="'180px'">
+                            </app-dropdown>
                         </div>
                     </div>
 
@@ -259,14 +259,12 @@
                     <div class="space-y-5">
                         <div>
                             <label class="text-sm font-semibold text-neutral-dark mb-2 block">רמת התאמה מינימלית</label>
-                            <select [ngModel]="filters().minMatchLevel" 
-                                    (ngModelChange)="updateFilter('minMatchLevel', $event)"
-                                    class="w-full border-2 border-neutral-light rounded-card py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                                <option value="all">כל הרמות</option>
-                                <option value="85">85% ומעלה</option>
-                                <option value="75">75% - 84%</option>
-                                <option value="65">65% - 74%</option>
-                            </select>
+                            <app-dropdown
+                                [options]="minMatchOptions"
+                                [selectedValue]="filters().minMatchLevel"
+                                [defaultValue]="'all'"
+                                (selectionChange)="updateFilter('minMatchLevel', $event)">
+                            </app-dropdown>
                         </div>
                         
                         <div>
@@ -356,14 +354,12 @@
 
                         <div>
                             <label class="text-sm font-semibold text-neutral-dark mb-2 block">תאריך פרסום</label>
-                            <select [ngModel]="filters().dateRange" 
-                                    (ngModelChange)="updateFilter('dateRange', $event)"
-                                    class="w-full border-2 border-neutral-light rounded-card py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                                <option value="all">כל התקופות</option>
-                                <option value="week">שבוע אחרון</option>
-                                <option value="month">חודש אחרון</option>
-                                <option value="quarter">3 חודשים אחרונים</option>
-                            </select>
+                            <app-dropdown
+                                [options]="dateRangeOptions"
+                                [selectedValue]="filters().dateRange"
+                                [defaultValue]="'all'"
+                                (selectionChange)="updateFilter('dateRange', $event)">
+                            </app-dropdown>
                         </div>
                     </div>
                     <div class="flex gap-2 mt-6 pt-4 border-t border-neutral-light">
