@@ -18,24 +18,26 @@
       theme: {
         extend: {
           colors: {
-            primary: { DEFAULT: '#541388', light: '#EAD8FD', dark: '#650F54' },
-            secondary: { DEFAULT: '#FB8F67' },
-            accent: { DEFAULT: '#9DD9D2', dark: '#650F54' },
-            neutral: { 'dark': '#1F2937', 'medium': '#6B7280', 'light': '#E5E7EB', 'extralight': '#F9FAFB' },
+            primary: { DEFAULT: '#650F54', dark: '#541388', soft: '#EAD8FD' },
+            secondary: { DEFAULT: '#FB8F67', light: '#FFE3DA' },
+            accent: { DEFAULT: '#9DD9D2', dark: '#4F8A82' },
+            text: { primary: '#2A2A2A', secondary: '#5A5A5A' },
+            border: { light: '#E6E6E6' },
+            bg: { DEFAULT: '#FFFFFF' },
             status: { success: '#16A34A', warning: '#FACC15', danger: '#DC2626', info: '#2563EB' }
           },
           fontFamily: { 'heebo': ['Heebo', 'sans-serif'] },
-          borderRadius: { 'card': '8px', 'pill': '999px' },
+          borderRadius: { 'card': '16px', 'button': '8px', 'pill': '999px' },
           boxShadow: {
-            'card': '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-            'panel': '0 10px 15px -3px rgb(0 0 0 / 0.1)'
+            'card': '0 2px 8px rgba(0, 0, 0, 0.04)',
+            'panel': '0 4px 12px rgba(0, 0, 0, 0.08)'
           }
         }
       }
     }
   </script>
 </head>
-<body class="bg-neutral-extralight font-heebo text-neutral-dark">
+<body class="bg-[#F8F9FA] font-heebo text-text-primary">
   <app-root></app-root>
 </body>
 </html>
