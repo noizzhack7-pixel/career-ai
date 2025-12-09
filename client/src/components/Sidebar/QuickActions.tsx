@@ -8,7 +8,7 @@ export const QuickActions = () => {
         <Zap className="w-5 h-5" />
         פעולות מהירות
       </h3>
-      
+
       <div className="space-y-2">
         <button className="w-full text-right bg-primary-light/20 hover:bg-primary-light/40 p-3 rounded-card transition-colors flex items-center gap-3 group">
           <ClipboardList className="text-primary w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -22,10 +22,10 @@ export const QuickActions = () => {
           <GraduationCap className="text-secondary w-5 h-5 group-hover:scale-110 transition-transform" />
           <span className="font-semibold text-neutral-dark">עדכן השכלה</span>
         </button>
-        <button className="w-full text-right bg-status-success/10 hover:bg-status-success/20 p-3 rounded-card transition-colors flex items-center gap-3 group">
+        {/* <button className="w-full text-right bg-status-success/10 hover:bg-status-success/20 p-3 rounded-card transition-colors flex items-center gap-3 group">
           <Plus className="text-status-success w-5 h-5 group-hover:scale-110 transition-transform" />
           <span className="font-semibold text-neutral-dark">הוסף המלצה</span>
-        </button>
+        </button> */}
       </div>
     </section>
   );

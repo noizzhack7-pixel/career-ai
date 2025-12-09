@@ -1,7 +1,23 @@
-import React from 'react';
-import { Sparkles, Plus, Brain, Code } from 'lucide-react';
+import React, { useState } from 'react';
+import { Sparkles, Plus, Brain, Code, ChevronDown, ChevronUp } from 'lucide-react';
 
-export const Skills = () => {
+interface SkillsProps {
+  employeeData?: any;
+}
+
+export const Skills: React.FC<SkillsProps> = ({ employeeData }) => {
+  const employee = employeeData;
+  const [softSkillsExpanded, setSoftSkillsExpanded] = useState(false);
+  const [hardSkillsExpanded, setHardSkillsExpanded] = useState(false);
+
+  const softSkills = employee?.structured_employees?.soft_skills || [];
+  const visibleSoftSkills = softSkillsExpanded ? softSkills : softSkills.slice(0, 5);
+  const hasMoreSoftSkills = softSkills.length > 5;
+
+  const hardSkills = employee?.structured_employees?.hard_skills || [];
+  const visibleHardSkills = hardSkillsExpanded ? hardSkills : hardSkills.slice(0, 5);
+  const hasMoreHardSkills = hardSkills.length > 5;
+
   return (
     <section id="skills-section" className="bg-white p-8 rounded-card shadow-card">
       <div className="flex items-center justify-between mb-6">
@@ -9,10 +25,10 @@ export const Skills = () => {
           <Sparkles className="w-6 h-6" />
           מיומנויות
         </h2>
-        <button className="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
+        {/* <button className="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
           <Plus className="w-3 h-3" />
           הוסף מיומנות
-        </button>
+        </button> */}
       </div>
 
       <div className="space-y-6">
@@ -21,9 +37,43 @@ export const Skills = () => {
             <Brain className="text-accent-dark w-6 h-6" />
             <h3 className="text-xl font-bold text-accent-dark">מיומנויות בין אישיות</h3>
           </div>
-          
+
           <div className="space-y-4">
-            <div>
+            {visibleSoftSkills.map((skill: any, index: number) => (
+              <div key={index}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-neutral-dark">{skill.skill}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-neutral-medium">רמה:</span>
+                    <span className="font-bold text-accent-dark">{skill.level}/5</span>
+                  </div>
+                </div>
+                <div className="w-full bg-neutral-light rounded-full h-2.5">
+                  <div className="bg-accent-dark h-2.5 rounded-full" style={{ width: `${skill.level * 20}%` }}></div>
+                </div>
+              </div>
+            ))}
+
+            {hasMoreSoftSkills && (
+              <button
+                onClick={() => setSoftSkillsExpanded(!softSkillsExpanded)}
+                className="w-full flex items-center justify-center gap-2 py-2 mt-2 text-sm font-semibold text-accent-dark hover:bg-accent/10 rounded-lg transition-colors"
+              >
+                {softSkillsExpanded ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    הצג פחות
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    הצג עוד {softSkills.length - 5} מיומנויות
+                  </>
+                )}
+              </button>
+            )}
+
+            {/* <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="font-semibold text-neutral-dark">מנהיגות</span>
                 <div className="flex items-center gap-2">
@@ -86,18 +136,57 @@ export const Skills = () => {
               <div className="w-full bg-neutral-light rounded-full h-2.5">
                 <div className="bg-accent-dark h-2.5 rounded-full" style={{ width: '100%' }}></div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
         <div className="bg-primary/5 p-6 rounded-card border-2 border-primary/20">
-          <div className="flex items-center gap-3 mb-5">
-            <Code className="text-primary w-6 h-6" />
-            <h3 className="text-xl font-bold text-primary">מיומנויות תפקיד</h3>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <Code className="text-primary w-6 h-6" />
+              <h3 className="text-xl font-bold text-primary">מיומנויות תפקיד</h3>
+            </div>
+            <button className="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
+              <Plus className="w-3 h-3" />
+              הוסף מיומנות
+            </button>
           </div>
-          
+
           <div className="space-y-4">
-            <div>
+            {visibleHardSkills.map((skill: any, index: number) => (
+              <div key={index}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-neutral-dark">{skill.skill}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-neutral-medium">רמה:</span>
+                    <span className="font-bold text-primary">{skill.level}/5</span>
+                  </div>
+                </div>
+                <div className="w-full bg-neutral-light rounded-full h-2.5">
+                  <div className="bg-primary h-2.5 rounded-full" style={{ width: `${skill.level * 20}%` }}></div>
+                </div>
+              </div>
+            ))}
+
+            {hasMoreHardSkills && (
+              <button
+                onClick={() => setHardSkillsExpanded(!hardSkillsExpanded)}
+                className="w-full flex items-center justify-center gap-2 py-2 mt-2 text-sm font-semibold text-primary hover:bg-primary/10 rounded-lg transition-colors"
+              >
+                {hardSkillsExpanded ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    הצג פחות
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    הצג עוד {hardSkills.length - 5} מיומנויות
+                  </>
+                )}
+              </button>
+            )}
+            {/* <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="font-semibold text-neutral-dark">Java & Spring Boot</span>
                 <div className="flex items-center gap-2">
@@ -179,7 +268,7 @@ export const Skills = () => {
               <div className="w-full bg-neutral-light rounded-full h-2.5">
                 <div className="bg-status-warning h-2.5 rounded-full" style={{ width: '40%' }}></div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

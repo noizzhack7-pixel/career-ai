@@ -18,7 +18,13 @@ import {
   ArrowUp
 } from 'lucide-react';
 
-export const ProfileHero = () => {
+interface ProfileHeroProps {
+  employeeData?: any;
+}
+
+export const ProfileHero: React.FC<ProfileHeroProps> = ({ employeeData }) => {
+  const employee = employeeData;
+
   return (
     <section id="profile-hero" className="bg-white rounded-card shadow-card overflow-hidden mb-8">
       <div className="relative">
@@ -35,9 +41,9 @@ export const ProfileHero = () => {
         <div className="absolute top-40 right-12">
           <div className="relative">
             <img
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              alt="תמונת פרופיל של תמר כהן"
-              className="w-48 h-48 rounded-full border-8 border-white shadow-panel"
+              src={employee?.photo_url || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+              alt={`תמונת פרופיל של ${employee?.name || 'משתמש'}`}
+              className="w-48 h-48 rounded-full border-8 border-white shadow-panel object-cover"
             />
             <button className="absolute bottom-2 left-2 w-12 h-12 bg-primary rounded-full flex items-center justify-center hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-white shadow-card">
               <Camera className="text-white w-5 h-5" />
@@ -50,41 +56,43 @@ export const ProfileHero = () => {
         <div className="flex justify-between items-start mb-8">
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-3">
-              <h1 className="text-4xl font-bold text-primary">תמר כהן</h1>
+              <h1 className="text-4xl font-bold text-primary">{employee?.name || 'טוען...'}</h1>
               <span className="bg-status-success/20 text-status-success px-4 py-1.5 rounded-pill text-sm font-bold flex items-center gap-2">
                 <Circle className="w-2 h-2 fill-current" />
-                פעילה
+                פעיל/ה
               </span>
             </div>
-            <p className="text-xl font-semibold text-neutral-dark mb-4">מפתחת תוכנה בכירה</p>
+            <p className="text-xl font-semibold text-neutral-dark mb-4">{employee?.current_job || 'תפקיד לא מוגדר'}</p>
 
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
                 <Building className="text-primary w-4 h-4" />
-                <span className="font-semibold text-primary">חטיבת טכנולוגיות</span>
-                <span className="text-neutral-medium">|</span>
-                <span className="text-neutral-dark">מחלקת פיתוח Backend</span>
-                <span className="text-neutral-medium">|</span>
-                <span className="text-neutral-dark">צוות ליבה</span>
+                <span className="font-semibold text-primary">{employee?.department || 'מחלקה'}</span>
+                {employee?.division && (
+                  <>
+                    <span className="text-neutral-medium">|</span>
+                    <span className="text-neutral-dark">{employee?.division}</span>
+                  </>
+                )}
               </div>
 
               <div className="flex items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <CalendarDays className="text-accent-dark w-4 h-4" />
                   <span className="text-neutral-medium">ותק:</span>
-                  <span className="font-semibold text-neutral-dark">5 שנים ו-3 חודשים</span>
+                  <span className="font-semibold text-neutral-dark">{employee?.office_seniority + ' שנים' || 'לא מוגדר'}</span>
                 </div>
-                <div className="w-px h-4 bg-neutral-medium"></div>
+                {/* <div className="w-px h-4 bg-neutral-medium"></div>
                 <div className="flex items-center gap-2">
                   <Layers className="text-accent-dark w-4 h-4" />
                   <span className="text-neutral-medium">דרגה:</span>
-                  <span className="font-semibold text-neutral-dark">Senior Developer</span>
-                </div>
+                  <span className="font-semibold text-neutral-dark">{employee?.grade || 'לא מוגדר'}</span>
+                </div> */}
                 <div className="w-px h-4 bg-neutral-medium"></div>
                 <div className="flex items-center gap-2">
                   <User className="text-accent-dark w-4 h-4" />
                   <span className="text-neutral-medium">מנהל/ת ישיר/ה:</span>
-                  <span className="font-semibold text-neutral-dark">דני לוי</span>
+                  <span className="font-semibold text-neutral-dark">{employee?.manager_name || 'דני לוי'}</span>
                 </div>
               </div>
 
@@ -92,18 +100,26 @@ export const ProfileHero = () => {
                 <div className="flex items-center gap-2">
                   <MapPin className="text-accent-dark w-4 h-4" />
                   <span className="text-neutral-medium">מיקום:</span>
-                  <span className="font-semibold text-neutral-dark">מטה כללי, בניין אלון</span>
+                  <span className="font-semibold text-neutral-dark">{employee?.location || 'מטה כללי, בניין אלון'}</span>
                 </div>
-                <div className="w-px h-4 bg-neutral-medium"></div>
-                <div className="flex items-center gap-2">
-                  <Mail className="text-accent-dark w-4 h-4" />
-                  <span className="font-semibold text-neutral-dark">tamar.cohen@company.co.il</span>
-                </div>
-                <div className="w-px h-4 bg-neutral-medium"></div>
-                <div className="flex items-center gap-2">
-                  <Phone className="text-accent-dark w-4 h-4" />
-                  <span className="font-semibold text-neutral-dark">03-1234567</span>
-                </div>
+                {employee?.email && (
+                  <>
+                    <div className="w-px h-4 bg-neutral-medium"></div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="text-accent-dark w-4 h-4" />
+                      <span className="font-semibold text-neutral-dark">{employee.email}</span>
+                    </div>
+                  </>
+                )}
+                {employee?.phone && (
+                  <>
+                    <div className="w-px h-4 bg-neutral-medium"></div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="text-accent-dark w-4 h-4" />
+                      <span className="font-semibold text-neutral-dark">{employee.phone}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -177,7 +193,7 @@ export const ProfileHero = () => {
               </div>
               <div>
                 <p className="text-3xl font-bold text-status-success">68%</p>
-                <p className="text-xs text-neutral-dark font-medium">התקדמות IDP</p>
+                <p className="text-xs text-neutral-dark font-medium">התקדמות תוכנית הפיתוח</p>
               </div>
             </div>
           </div>

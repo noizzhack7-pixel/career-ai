@@ -24,23 +24,23 @@ import { Dashboard } from "./components/Dashboard";
 import { MatchAndDevelopment } from "./components/MatchAndDevelopment";
 import { SkillsQuestionnaire } from "./components/SkillsQuestionnaire";
 
-const ProfilePage = () => (
+const ProfilePage = ({ employeeData }: { employeeData?: any }) => (
   <>
-    <ProfileHero />
+    <ProfileHero employeeData={employeeData} />
 
     <div className="grid grid-cols-12 gap-8">
       <div className="col-span-8 space-y-8">
-        <About />
-        <Skills />
-        <Education />
+        <About employeeData={employeeData} />
+        <Skills employeeData={employeeData} />
+        <Education employeeData={employeeData} />
         <Experience />
-        <Recommendations />
-        <Wishlist />
+        {/* <Recommendations /> */}
+        {/* <Wishlist /> */}
       </div>
 
       <div className="col-span-4 space-y-6">
         <CareerPreferences />
-        <Languages />
+        <Languages employeeData={employeeData} />
         <TargetRole />
         <QuickActions />
         <Notifications />
@@ -223,7 +223,7 @@ export default function App() {
           />
           <Route path="/questionnaire" element={<SkillsQuestionnaire />} />
           <Route path="/questionnaire-test" element={<SkillsQuestionnaire testMode />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProfilePage employeeData={employeeData} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

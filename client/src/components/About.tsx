@@ -1,7 +1,12 @@
 import React from 'react';
 import { User, Pen } from 'lucide-react';
 
-export const About = () => {
+interface AboutProps {
+  employeeData?: any;
+}
+
+export const About: React.FC<AboutProps> = ({ employeeData }) => {
+  const employee = employeeData;
   return (
     <section id="about-section" className="bg-white p-8 rounded-card shadow-card">
       <div className="flex items-center justify-between mb-6">
@@ -15,9 +20,9 @@ export const About = () => {
         </button>
       </div>
       <p className="text-neutral-dark leading-relaxed text-base">
-        מפתחת תוכנה בכירה עם למעלה מ-5 שנות ניסיון בפיתוח מערכות Backend מורכבות. מתמחה בטכנולוגיות Java ו-Spring Boot, עם דגש על ארכיטקטורת Microservices ו-REST API. בעלת ניסיון מוכח בהובלת פרויקטים טכנולוגיים ובעבודת צוות. מחפשת הזדמנויות להתפתח לתפקידי הובלה טכנית וניהול.
+        {employee?.structured_employees?.short_summary}
       </p>
-      
+
       <div className="mt-6 pt-6 border-t border-neutral-light">
         <h3 className="text-lg font-bold text-primary mb-4">תחומי עניין מקצועיים</h3>
         <div className="flex flex-wrap gap-2">
