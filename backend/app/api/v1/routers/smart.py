@@ -71,7 +71,6 @@ def _get_position(position_id: int):
     - position_id (bigint)
     - position_name (varchar)
     - description (text)
-    - category, embedding, fulltext, created_at...
     """
     resp = (
         supabase.table("positions")
@@ -103,7 +102,8 @@ def _get_profile(profile_id: int):
 
 def _get_profile_by_position_id(position_id: int):
     """
-    Get the first profile for a position (MVP: 1 profile per position).
+    Get the first profile for a position (MVP: 1 profile per position),
+    used in /gaps. For matching we now rely on the RPC, which can use many profiles.
     """
     resp = (
         supabase.table("profiles")
@@ -140,8 +140,10 @@ def _parse_skills(skills_json):
     return result
 
 
-def _analyze_skill_gaps(candidate_skills: Dict[str, int],
-                        required_skills: Dict[str, int]) -> List[SkillGap]:
+def _analyze_skill_gaps(
+    candidate_skills: Dict[str, int],
+    required_skills: Dict[str, int]
+) -> List[SkillGap]:
     gaps: List[SkillGap] = []
     for skill_name, req_level in required_skills.items():
         cand_level = candidate_skills.get(skill_name, 0)
@@ -178,9 +180,11 @@ def get_top_candidates_for_position(
     position_id: int = Query(...),
     limit: int = Query(10, ge=1, le=100),
 ):
+    # validate position exists (for name / 404)
     position = _get_position(position_id)
-    profile = _get_profile_by_position_id(position_id)
 
+    # RPC now returns: candidate_id, first_name, last_name,
+    # profile_id, profile_name, position_name, score
     rpc = supabase.rpc(
         "match_candidates_for_position",
         {"p_position_id": position_id, "p_limit": limit},
@@ -192,12 +196,13 @@ def get_top_candidates_for_position(
         MatchResult(
             candidate_id=row["candidate_id"],
             position_id=position_id,
-            profile_id=profile["profile_id"],
-            name=f"{row.get('first_name','')} {row.get('last_name','')}".strip(),
+            profile_id=row["profile_id"],
+            name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
             score=row["score"],
             extra={
-                "position_name": position["position_name"],
-                "profile_name": profile["profile_name"],
+                # per-candidate profile info from SQL
+                "position_name": row.get("position_name") or position["position_name"],
+                "profile_name": row.get("profile_name"),
             },
         )
         for row in rows
@@ -225,7 +230,7 @@ def get_similar_candidates(
     return [
         MatchResult(
             candidate_id=row["candidate_id"],
-            name=f"{row.get('first_name','')} {row.get('last_name','')}".strip(),
+            name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
             score=row["score"],
         )
         for row in rows
@@ -288,11 +293,25 @@ def get_similar_positions(
         for row in rows
     ]
 
+def _get_profiles_for_position(position_id: int) -> List[Dict[str, Any]]:
+    """
+    Return ALL profiles for a given position_id.
+    """
+    resp = (
+        supabase.table("profiles")
+        .select(
+            "profile_id, position_id, profile_name, position_name, "
+            "hard_skills, soft_skills"
+        )
+        .eq("position_id", position_id)
+        .execute()
+    )
+    return resp.data or []
 
 # -------------------------------------------------------------------
 # 5️⃣ Skill gap analysis (candidate vs profile for position)
 # -------------------------------------------------------------------
-@router.get("/gaps", response_model=SkillGapResponse)
+@router.get("/gaps", response_model=List[SkillGapResponse])
 def get_skill_gaps(
     candidate_id: int = Query(...),
     position_id: int = Query(...),
@@ -300,41 +319,48 @@ def get_skill_gaps(
     candidate = _get_candidate(candidate_id)
     position = _get_position(position_id)
 
-    cand_name = f"{candidate.get('first_name','')} {candidate.get('last_name','')}".strip()
+    cand_name = f"{candidate.get('first_name', '')} {candidate.get('last_name', '')}".strip()
     pos_name = position["position_name"]
 
     # Candidate skills
     cand_hard = _parse_skills(candidate.get("hard_skills"))
     cand_soft = _parse_skills(candidate.get("soft_skills"))
 
-    # Required skills from profile (by position_id only)
-    try:
-        profile = _get_profile_by_position_id(position_id)
-    except HTTPException:
-        profile = None
-
-    req_hard = _parse_skills(profile["hard_skills"]) if profile else {}
-    req_soft = _parse_skills(profile["soft_skills"]) if profile else {}
-
-    hard_gaps = _analyze_skill_gaps(cand_hard, req_hard)
-    soft_gaps = _analyze_skill_gaps(cand_soft, req_soft)
+    # All profiles for this position
+    profiles = _get_profiles_for_position(position_id)
+    if not profiles:
+        raise HTTPException(status_code=404, detail="No profiles found for this position")
 
     from collections import Counter
 
-    summary = {
-        "total_required_hard": len(req_hard),
-        "total_required_soft": len(req_soft),
-        "hard_status_counts": dict(Counter(g.status for g in hard_gaps)),
-        "soft_status_counts": dict(Counter(g.status for g in soft_gaps)),
-        "profile_id": profile["profile_id"] if profile else None,
-    }
+    responses: List[SkillGapResponse] = []
 
-    return SkillGapResponse(
-        candidate_id=candidate_id,
-        position_id=position_id,
-        candidate_name=cand_name or None,
-        position_name=pos_name,
-        hard_skill_gaps=hard_gaps,
-        soft_skill_gaps=soft_gaps,
-        summary=summary,
-    )
+    for profile in profiles:
+        req_hard = _parse_skills(profile.get("hard_skills"))
+        req_soft = _parse_skills(profile.get("soft_skills"))
+
+        hard_gaps = _analyze_skill_gaps(cand_hard, req_hard)
+        soft_gaps = _analyze_skill_gaps(cand_soft, req_soft)
+
+        summary = {
+            "total_required_hard": len(req_hard),
+            "total_required_soft": len(req_soft),
+            "hard_status_counts": dict(Counter(g.status for g in hard_gaps)),
+            "soft_status_counts": dict(Counter(g.status for g in soft_gaps)),
+            "profile_id": profile["profile_id"],
+            "profile_name": profile.get("profile_name"),
+        }
+
+        responses.append(
+            SkillGapResponse(
+                candidate_id=candidate_id,
+                position_id=position_id,
+                candidate_name=cand_name or None,
+                position_name=pos_name,
+                hard_skill_gaps=hard_gaps,
+                soft_skill_gaps=soft_gaps,
+                summary=summary,
+            )
+        )
+
+    return responses
