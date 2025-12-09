@@ -3,8 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from app.models.Skill import HardSkill, SoftSkill
-from app.models.Position import Position
+from backend.app.models.Skill import HardSkill, SoftSkill
+from backend.app.models.Position import Position
 
 
 class Employee(BaseModel):
