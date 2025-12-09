@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, Plus, Brain, Code, ChevronDown, ChevronUp } from 'lucide-react';
+import { SkillsRadarChart } from './questionnaire/RadarChart';
 
 interface SkillsProps {
   employeeData?: any;
@@ -18,6 +19,10 @@ export const Skills: React.FC<SkillsProps> = ({ employeeData }) => {
   const visibleHardSkills = hardSkillsExpanded ? hardSkills : hardSkills.slice(0, 5);
   const hasMoreHardSkills = hardSkills.length > 5;
 
+  // Prepare data for radar chart - use soft skills
+  const softSkillLabels = softSkills.map((skill: any) => skill.skill);
+  const softSkillScores = softSkills.map((skill: any) => skill.level);
+
   return (
     <section id="skills-section" className="bg-white p-8 rounded-card shadow-card">
       <div className="flex items-center justify-between mb-6">
@@ -32,14 +37,32 @@ export const Skills: React.FC<SkillsProps> = ({ employeeData }) => {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-accent/5 p-6 rounded-card border-2 border-accent/20">
+        <div className="bg-accent/5 p-6 rounded-card border-2 border-accent/20"
+          style={{ paddingBottom: "0rem" }}>
           <div className="flex items-center gap-3 mb-5">
             <Brain className="text-accent-dark w-6 h-6" />
             <h3 className="text-xl font-bold text-accent-dark">מיומנויות בין אישיות</h3>
           </div>
 
-          <div className="space-y-4">
-            {visibleSoftSkills.map((skill: any, index: number) => (
+          <div>
+            {/* Radar Chart for Soft Skills */}
+            {softSkillLabels.length > 0 && (
+              <div className="flex justify-center">
+                <div style={{ width: "400px", height: "400px" }}>
+                  <SkillsRadarChart
+                    labels={softSkillLabels}
+                    myScores={softSkillScores}
+                    backgroundColor="rgba(139, 92, 246, 0.25)"
+                    borderColor="rgba(139, 92, 246, 0.8)"
+                    pointColor="rgba(139, 92, 246, 0.8)"
+                    gridColor="rgba(139, 92, 246, 0.12)"
+                  />
+                </div>
+              </div>
+            )}
+
+
+            {/* {visibleSoftSkills.map((skill: any, index: number) => (
               <div key={index}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-semibold text-neutral-dark">{skill.skill}</span>
@@ -71,7 +94,7 @@ export const Skills: React.FC<SkillsProps> = ({ employeeData }) => {
                   </>
                 )}
               </button>
-            )}
+            )} */}
 
             {/* <div>
               <div className="flex items-center justify-between mb-2">

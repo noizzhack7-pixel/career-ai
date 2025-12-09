@@ -265,20 +265,23 @@ export const SkillsQuestionnaire: React.FC<SkillsQuestionnaireProps> = ({ testMo
       </AnimatePresence>
 
       <div className="flex items-center justify-between mt-8 pt-6 border-t border-neutral-200">
-        <button
-          type="button"
-          onClick={() => {
-            setCurrentStep((s) => Math.max(0, s - 1));
-            setTimeout(() => {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 100);
-          }}
-          disabled={currentStep === 0}
-          className="group flex items-center justify-center gap-3 w-44 px-8 py-2 rounded-xl bg-white border-2 border-neutral-200 text-neutral-700 font-semibold hover:border-purple-300 hover:bg-purple-50 hover:text-purple-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-neutral-200 disabled:hover:text-neutral-700 transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer"
-        >
-          <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-          <span>הקודם</span>
-        </button>
+        {currentStep > 0 ? (
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentStep((s) => Math.max(0, s - 1));
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 100);
+            }}
+            className="group flex items-center justify-center gap-3 w-44 px-8 py-2 rounded-xl bg-white border-2 border-neutral-200 text-neutral-700 font-semibold hover:border-purple-300 hover:bg-purple-50 hover:text-purple-700 transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer"
+          >
+            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            <span>הקודם</span>
+          </button>
+        ) : (
+          <div className="w-44"></div>
+        )}
 
         <div className="flex items-center gap-2 text-sm text-neutral-500">
           <span>עמוד</span>
@@ -479,7 +482,7 @@ export const SkillsQuestionnaire: React.FC<SkillsQuestionnaireProps> = ({ testMo
           </div>
 
           <p className="text-start text-neutral-medium font-semibold text-lg">
-            ענה על כל השאלות כדי לזהות את החוזקות המקצועיות שלך ולשפר את איכות ההתאמות
+            ענה.י על כל השאלות כדי לזהות את החוזקות המקצועיות שלך ולשפר את איכות ההתאמות
           </p>
 
           <div className="w-full">
@@ -490,7 +493,7 @@ export const SkillsQuestionnaire: React.FC<SkillsQuestionnaireProps> = ({ testMo
                 {/* Progress fill - anchored to right, expands left for RTL */}
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${barProgress - 1}%` }}
+                  animate={{ width: `${barProgress - 0.6}%` }}
                   transition={{ type: "spring", stiffness: 120, damping: 20 }}
                   className="rounded-full"
                   style={{
@@ -498,7 +501,7 @@ export const SkillsQuestionnaire: React.FC<SkillsQuestionnaireProps> = ({ testMo
                     top: '4px',
                     bottom: '4px',
                     right: '4px',
-                    backgroundColor: '#541388'
+                    backgroundColor: '#bb7af0ff'
                   }}
                 />
 

@@ -25,7 +25,13 @@ export const Navbar = ({ onNavigate, currentView = 'dashboard', employeeData }: 
       <div className="max-w-[1600px] mx-auto px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
-            <img style={{ marginRight: '-1.5rem' }} src="/logo.png" alt="GO-PRO Logo" className="w-30 h-16 rounded-lg object-contain" />
+            <img
+              style={{ marginRight: '-1.5rem' }}
+              src="/logo.png"
+              alt="GO-PRO Logo"
+              className="w-30 h-16 rounded-lg object-contain cursor-pointer"
+              onClick={() => onNavigate?.('dashboard')}
+            />
 
             <div className="flex items-center gap-1">
               <a

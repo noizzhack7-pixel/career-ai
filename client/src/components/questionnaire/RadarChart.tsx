@@ -23,11 +23,19 @@ interface RadarChartProps {
   labels: string[];
   myScores: number[];
   marketScores?: number[];
+  backgroundColor?: string;
+  borderColor?: string;
+  pointColor?: string;
+  gridColor?: string;
 }
 
 export const SkillsRadarChart: React.FC<RadarChartProps> = ({
   labels,
   myScores,
+  backgroundColor = "rgba(59, 130, 246, 0.25)",
+  borderColor = "rgba(59, 130, 246, 0.8)",
+  pointColor = "rgba(59, 130, 246, 0.8)",
+  gridColor = "rgba(59, 130, 246, 0.12)",
 }) => {
   const data = {
     labels,
@@ -35,9 +43,9 @@ export const SkillsRadarChart: React.FC<RadarChartProps> = ({
       {
         label: "הציון שלי",
         data: myScores,
-        backgroundColor: "rgba(59, 130, 246, 0.25)",
-        borderColor: "rgba(59, 130, 246, 0.8)",
-        pointBackgroundColor: "rgba(59, 130, 246, 0.8)",
+        backgroundColor: backgroundColor,
+        borderColor: borderColor,
+        pointBackgroundColor: pointColor,
         pointBorderColor: "#fff",
         pointRadius: 3,
         pointHoverRadius: 5,

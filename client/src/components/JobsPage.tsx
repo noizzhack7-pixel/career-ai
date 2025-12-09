@@ -218,6 +218,19 @@ export const JobsPage = () => {
   const [selectedJobId, setSelectedJobId] = useState<number>(1);
   const [likedJobs, setLikedJobs] = useState<Set<number>>(new Set([1])); // Track liked jobs
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState<boolean>(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState<boolean>(false);
+  const [selectedSort, setSelectedSort] = useState<string>('התאמה הגבוהה ביותר');
+
+  const sortOptions = ['התאמה הגבוהה ביותר', 'החדשות ביותר'];
+
+  // Get all unique categories
+  const allCategories = Array.from(new Set(allJobsData.map(job => job.category))).sort();
+  const getCategoryLabel = (value: string) => {
+    if (value === 'all') return 'כל הקטגוריות';
+    const count = allJobsData.filter(job => job.category === value).length;
+    return `${value} (${count})`;
+  };
 
   const toggleLike = (jobId: number) => {
     setLikedJobs(prev => {
@@ -229,6 +242,14 @@ export const JobsPage = () => {
       }
       return newSet;
     });
+  };
+
+  const clearAllFilters = () => {
+    setCurrentView('all');
+    setSelectedCategory('all');
+    setShowOnlyIsrael(false);
+    setShowBestMatch(false);
+    setSearchQuery('');
   };
 
   const filteredJobs = (() => {
@@ -259,12 +280,30 @@ export const JobsPage = () => {
 
     switch (currentView) {
       case 'open':
-        return jobs.filter(job => job.isOpen);
+        jobs = jobs.filter(job => job.isOpen);
+        break;
       case 'matched':
-        return jobs.filter(job => job.matchPercent >= 80);
-      default:
-        return jobs;
+        jobs = jobs.filter(job => job.matchPercent >= 80);
+        break;
     }
+
+    // Apply sorting
+    if (selectedSort === 'התאמה הגבוהה ביותר') {
+      jobs = [...jobs].sort((a, b) => b.matchPercent - a.matchPercent);
+    } else if (selectedSort === 'החדשות ביותר') {
+      // Sort by postedTime - extract number of days from the Hebrew text
+      jobs = [...jobs].sort((a, b) => {
+        const getDateValue = (timeStr: string) => {
+          if (timeStr.includes('היום')) return 0;
+          if (timeStr.includes('יומיים')) return 2;
+          const match = timeStr.match(/(\d+)/);
+          return match ? parseInt(match[1]) : 999;
+        };
+        return getDateValue(a.postedTime) - getDateValue(b.postedTime);
+      });
+    }
+
+    return jobs;
   })();
 
   const selectedJob = allJobsData.find(j => j.id === selectedJobId) || allJobsData[0];
@@ -281,7 +320,7 @@ export const JobsPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex flex-col -m-10 px-8 py-3 max-w-[1800px] mx-auto overflow-y-hidden">
+    <div style={{ marginLeft: '-2rem', marginRight: '-2rem' }} className="min-h-[calc(100vh-80px)] flex flex-col -m-10 px-8 py-3 max-w-[1800px] overflow-y-hidden">
       <style>{`
         .job-detail-content h3 { font-size: 1.125rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #541388; }
         .job-detail-content p { font-size: 0.95rem; line-height: 1.6; color: #1F2937; margin-bottom: 1rem; }
@@ -299,16 +338,39 @@ export const JobsPage = () => {
       <div className="flex-shrink-0 mb-6">
         <div className="flex items-center justify-between mb-4 px-2">
           <h2 id="jobs-count" className="text-xl font-bold text-primary">
-            {currentView === 'open' ? `מציג ${filteredJobs.length} משרות פתוחות` : '156 משרות בארגון'}
+            {allJobsData.length} משרות בארגון
+            {/* {currentView === 'open' ? `מציג ${filteredJobs.length} משרות פתוחות` : '156 משרות בארגון'} */}
           </h2>
           <div className="flex items-center gap-2 text-sm">
-            <label htmlFor="sort-by" className="font-semibold">מיין לפי:</label>
+            <span className="font-semibold">מיין לפי:</span>
             <div className="relative">
-              <select id="sort-by" className="border-none bg-transparent font-bold text-primary focus:ring-0 appearance-none pr-4 pl-6 cursor-pointer">
-                <option>התאמה הגבוהה ביותר</option>
-                <option>החדשות ביותר</option>
-              </select>
-              <ChevronDown className="absolute top-1/2 -translate-y-1/2 left-0 text-primary w-4 h-4 pointer-events-none" />
+              <button
+                onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                className="flex items-center gap-1 font-bold text-primary cursor-pointer hover:text-primary-dark transition-colors"
+              >
+                <span style={{ width: '9rem' }}>{selectedSort}</span>
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isSortDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isSortDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsSortDropdownOpen(false)}
+                  />
+                  <div className="absolute top-full right-0 mt-1 bg-white rounded-card shadow-lg border border-neutral-light z-50 overflow-hidden min-w-[180px]">
+                    {sortOptions.map(option => (
+                      <button
+                        key={option}
+                        onClick={() => { setSelectedSort(option); setIsSortDropdownOpen(false); }}
+                        className={`w-full text-right px-4 py-2.5 text-sm transition-colors cursor-pointer ${selectedSort === option ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-dark hover:bg-neutral-extralight'}`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -330,18 +392,45 @@ export const JobsPage = () => {
             </div>
             <div className="col-span-2">
               <div className="relative">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors appearance-none"
+                <button
+                  onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                  className="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors flex items-center justify-between gap-2"
                 >
-                  <option value="all">כל הקטגוריות ({currentView === 'open' ? allJobsData.filter(j => j.isOpen).length : 156})</option>
-                  <option value="טכנולוגיה">טכנולוגיה ({allJobsData.filter(j => j.category === 'טכנולוגיה' && (currentView === 'open' ? j.isOpen : true)).length})</option>
-                  <option value="כספים">כספים ({allJobsData.filter(j => j.category === 'כספים' && (currentView === 'open' ? j.isOpen : true)).length})</option>
-                  <option value="משאבי אנוש">משאבי אנוש ({allJobsData.filter(j => j.category === 'משאבי אנוש' && (currentView === 'open' ? j.isOpen : true)).length})</option>
-                  <option value="לוגיסטיקה">לוגיסטיקה ({allJobsData.filter(j => j.category === 'לוגיסטיקה' && (currentView === 'open' ? j.isOpen : true)).length})</option>
-                </select>
-                <ChevronDown className="absolute top-1/2 -translate-y-1/2 left-3 text-neutral-medium w-4 h-4 pointer-events-none" />
+                  <span className="font-medium text-neutral-dark truncate">{getCategoryLabel(selectedCategory)}</span>
+                  <ChevronDown className={`text-neutral-medium w-4 h-4 flex-shrink-0 transition-transform duration-200 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isCategoryDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsCategoryDropdownOpen(false)}
+                    />
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-card shadow-lg border border-neutral-light z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className="max-h-60 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full">
+                        <button
+                          onClick={() => { setSelectedCategory('all'); setIsCategoryDropdownOpen(false); }}
+                          className={`w-full text-right px-4 py-2.5 text-sm transition-colors cursor-pointer ${selectedCategory === 'all' ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-dark hover:bg-neutral-extralight'}`}
+                        >
+                          כל הקטגוריות
+                        </button>
+                        {allCategories.map(category => {
+                          const count = allJobsData.filter(job => job.category === category).length;
+                          return (
+                            <button
+                              key={category}
+                              onClick={() => { setSelectedCategory(category); setIsCategoryDropdownOpen(false); }}
+                              className={`w-full text-right px-4 py-2.5 text-sm transition-colors cursor-pointer flex items-center justify-between gap-2 ${selectedCategory === category ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-dark hover:bg-neutral-extralight'}`}
+                            >
+                              <span>{category}</span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${selectedCategory === category ? 'bg-primary/20 text-primary' : 'bg-neutral-light text-neutral-medium'}`}>{count}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             <div className="col-span-5 flex items-center gap-3 justify-center">
@@ -385,7 +474,12 @@ export const JobsPage = () => {
               </button>
             </div>
             <div className="col-span-2 flex items-center justify-end gap-3">
-              <button className="text-sm text-primary hover:underline font-semibold">נקה הכל</button>
+              <button
+                onClick={clearAllFilters}
+                className="text-sm text-primary hover:underline font-semibold"
+              >
+                נקה הכל
+              </button>
 
             </div>
           </div>

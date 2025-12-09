@@ -160,7 +160,7 @@ export default function App() {
           <Route path="/positions" element={<JobsPage />} />
           <Route
             path="/my-positions"
-            element={<MatchAndDevelopment onNavigate={handleNavigate} />}
+            element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} />}
           />
           <Route path="/questionnaire" element={<SkillsQuestionnaire />} />
           <Route path="/questionnaire-test" element={<SkillsQuestionnaire testMode />} />

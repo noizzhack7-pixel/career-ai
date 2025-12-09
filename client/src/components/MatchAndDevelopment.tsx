@@ -29,7 +29,8 @@ import {
   Star
 } from 'lucide-react';
 
-export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashboard" | "home" | "jobs" | "match") => void }) => {
+
+export const MatchAndDevelopment = ({ onNavigate, employeeData }: { onNavigate?: (view: "dashboard" | "home" | "jobs" | "match") => void, employeeData?: any }) => {
   const [expandedJobId, setExpandedJobId] = React.useState<number | null>(null);
 
   const toggleDevelopmentPlan = (jobId: number) => {
@@ -42,7 +43,7 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-primary mb-2">התאמה ומסלול פיתוח</h1>
-            <p className="text-neutral-medium text-lg">גלי את התפקידים המתאימים לך ביותר ובני תוכנית פיתוח אישית</p>
+            <p className="text-neutral-medium text-lg">גלה.י את התפקידים המתאימים לך ביותר ובנה.י תוכנית פיתוח אישית</p>
           </div>
 
         </div>
@@ -53,18 +54,18 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
           <section id="profile-summary-bar" className="bg-white p-5 rounded-card shadow-card">
             <div className="flex items-center gap-6">
               <img
-                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg"
-                alt="תמר כהן"
+                src={employeeData?.photo_url}
+                alt={employeeData?.name}
                 className="w-20 h-20 rounded-full border-4 border-primary/30"
               />
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-primary mb-1">תמר כהן</h2>
-                <p className="text-neutral-dark font-semibold mb-2">מפתחת תוכנה בכירה | חטיבת טכנולוגיות</p>
+                <h2 className="text-2xl font-bold text-primary mb-1">{employeeData?.name}</h2>
+                <p className="text-neutral-dark font-semibold mb-2">{employeeData?.current_job} | {employeeData?.department}</p>
                 <div className="flex items-center gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="text-accent-dark w-4 h-4" />
                     <span className="text-neutral-medium">ותק:</span>
-                    <span className="font-semibold text-neutral-dark">5 שנים</span>
+                    <span className="font-semibold text-neutral-dark">{employeeData?.office_seniority} שנים</span>
                   </div>
                   <div className="w-px h-4 bg-neutral-medium"></div>
                   <div className="flex items-center gap-2">
