@@ -52,6 +52,23 @@ class SkillGapResponse(BaseModel):
 # -------------------------------------------------------------------
 # HELPERS
 # -------------------------------------------------------------------
+def _normalize_minmax(scores: List[float]) -> List[float]:
+    """
+    Normalize any list of real values to [0,1] while preserving order.
+    If all scores are equal, return 0.5 for all (neutral value).
+    """
+    if not scores:
+        return scores
+
+    min_s = min(scores)
+    max_s = max(scores)
+
+    if max_s == min_s:  # avoid division by zero; all equal
+        return [0.5] * len(scores)
+
+    return [((s - min_s) / (max_s - min_s))*100 for s in scores]
+
+
 def _get_candidate(candidate_id: int):
     resp = (
         supabase.table("structured_employees")
@@ -209,8 +226,12 @@ def get_top_candidates_for_position(
 
     rows = rpc.data or []
 
+    # ---- normalize scores to [0,1] while preserving order ----
+    scores = [row["score"] for row in rows]
+    norm_scores = _normalize_minmax(scores)
+
     results = []
-    for row in rows:
+    for row, norm_score in zip(rows, norm_scores):
         # fetch full profile to get description & skills
         profile = _get_profile(row["profile_id"])
 
@@ -220,7 +241,7 @@ def get_top_candidates_for_position(
                 position_id=position_id,
                 profile_id=row["profile_id"],
                 name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
-                score=row["score"],
+                score=norm_score,
                 extra={
                     # requested extra data
                     "profile_name": profile.get("profile_name"),
@@ -251,13 +272,17 @@ def get_similar_candidates(
 
     rows = rpc.data or []
 
+    # ---- normalize scores to [0,1] while preserving order ----
+    scores = [row["score"] for row in rows]
+    norm_scores = _normalize_minmax(scores)
+
     return [
         MatchResult(
             candidate_id=row["candidate_id"],
             name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
-            score=row["score"],
+            score=norm_score,
         )
-        for row in rows
+        for row, norm_score in zip(rows, norm_scores)
     ]
 
 
@@ -277,8 +302,12 @@ def get_top_positions_for_candidate(
 
     rows = rpc.data or []
 
+    # ---- normalize scores to [0,1] while preserving order ----
+    scores = [row["score"] for row in rows]
+    norm_scores = _normalize_minmax(scores)
+
     results: List[MatchResult] = []
-    for row in rows:
+    for row, norm_score in zip(rows, norm_scores):
         # row: profile_id, position_id, profile_name, position_name, score
         profile = _get_profile(row["profile_id"])
         position = _get_position(row["position_id"])
@@ -289,7 +318,7 @@ def get_top_positions_for_candidate(
                 position_id=row["position_id"],
                 profile_id=row["profile_id"],
                 name=row.get("position_name") or row.get("profile_name"),
-                score=row["score"],
+                score=norm_score,
                 extra={
                     # requested extra data per matching position
                     "profile_name": profile.get("profile_name"),
@@ -320,8 +349,12 @@ def get_similar_positions(
 
     rows = rpc.data or []
 
+    # ---- normalize scores to [0,1] while preserving order ----
+    scores = [row["score"] for row in rows]
+    norm_scores = _normalize_minmax(scores)
+
     results: List[MatchResult] = []
-    for row in rows:
+    for row, norm_score in zip(rows, norm_scores):
         profile = _get_profile(row["profile_id"])
         position = _get_position(row["position_id"])
 
@@ -330,7 +363,7 @@ def get_similar_positions(
                 position_id=row["position_id"],
                 profile_id=row["profile_id"],
                 name=row.get("position_name") or row.get("profile_name"),
-                score=row["score"],
+                score=norm_score,
                 extra={
                     "profile_name": profile.get("profile_name"),
                     "position_name": position.get("position_name"),
