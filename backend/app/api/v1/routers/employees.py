@@ -183,6 +183,16 @@ class EmployeeProfile(BaseModel):
     notifications: Optional[List[NotificationItem]] = None
 
 
+# Position assignment payloads
+class PositionEntry(BaseModel):
+    position_id: str
+    position_name: str
+
+
+class EmployeePositionsUpdate(BaseModel):
+    positions: List[PositionEntry]
+
+
 def load_json_file(filename: str) -> dict:
     """Load JSON data from file."""
     filepath = DATA_DIR / filename
@@ -359,6 +369,11 @@ async def get_employee(employee_number: int):
         )
 
         employee = emp_resp.data or {}
+        # Ensure positions is always returned as a list (JSONB array of position_id/name pairs)
+        if "positions" in employee and employee["positions"] is None:
+            employee["positions"] = []
+        elif "positions" not in employee:
+            employee["positions"] = []
         if struct_resp.data:
             employee["structured_employees"] = struct_resp.data
         return employee
@@ -379,6 +394,33 @@ async def update_employee(employee_number: int, employee: Employee):
         except Exception as exc:
             print(f"[employees] /{employee_number} Supabase update failed: {exc}")
     return {}
+
+
+@router.post("/{employee_number}/positions", response_model=dict)
+async def update_employee_positions(employee_number: int, payload: EmployeePositionsUpdate):
+    """
+    Update the employee's positions JSONB array with position_id and position_name entries.
+    """
+    client = supabase
+    if not client:
+        raise HTTPException(status_code=500, detail="Supabase client is not initialized.")
+
+    try:
+        update_payload = {"positions": [pos.model_dump() for pos in payload.positions]}
+        resp = (
+            client.table("employees")
+            .update(update_payload)
+            .eq("employee_number", employee_number)
+            .execute()
+        )
+        if not resp.data:
+            raise HTTPException(status_code=404, detail=f"Employee not found: {employee_number}")
+        return resp.data[0]
+    except HTTPException:
+        raise
+    except Exception as exc:
+        print(f"[employees] positions update {employee_number} failed: {exc}")
+        raise HTTPException(status_code=500, detail="Failed to update employee positions")
 
 
 @router.delete("/{employee_number}", status_code=204)
