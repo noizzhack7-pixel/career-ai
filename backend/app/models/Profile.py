@@ -2,7 +2,7 @@ import uuid
 from uuid import UUID
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from app.models.Skill import SoftSkill, HardSkill
+from backend.app.models.Skill import SoftSkill, HardSkill
 
 
 class Profile(BaseModel):

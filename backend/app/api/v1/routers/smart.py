@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+import ast
+import json
 import os
 from typing import List, Optional, Literal, Dict, Any
 
 import numpy as np
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, APIRouter
 from pydantic import BaseModel, Field
 from supabase import create_client, Client
-
+from dotenv import load_dotenv
+load_dotenv()
 # -------------------------------------------------------------------
 # CONFIG & CLIENT
 # -------------------------------------------------------------------
@@ -15,8 +18,7 @@ SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]  # service role key
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-app = FastAPI(title="GO-PRO Smart Matching API (Profiles ↔ Employees)")
+router = APIRouter(prefix="/smart", tags=["smart"])
 
 
 # -------------------------------------------------------------------
@@ -68,12 +70,39 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def _to_vec(value: Any) -> Optional[np.ndarray]:
+    """
+    Convert a value from Supabase (list, tuple, numpy array or stringified list)
+    into a 1D numpy array of floats.
+    """
     if value is None:
         return None
+
+    # If the embedding is stored as TEXT/VARCHAR and looks like "[0.1, 0.2, ...]"
+    if isinstance(value, str):
+        s = value.strip()
+        if not s:
+            return None
+
+        # Try JSON first
+        try:
+            value = json.loads(s)
+        except json.JSONDecodeError:
+            # Fallback to Python literal (e.g. if it's not strict JSON)
+            try:
+                value = ast.literal_eval(s)
+            except Exception:
+                # If we still can't parse, treat as invalid
+                return None
+
+    # Now we expect value to be list/tuple/np array
     arr = np.array(value, dtype=float)
+
+    # Ensure 1D
     if arr.ndim != 1:
-        return None
+        arr = arr.ravel()
+
     return arr
+
 
 
 def _get_candidate(candidate_id: int) -> Dict[str, Any]:
@@ -92,7 +121,7 @@ def _get_candidate(candidate_id: int) -> Dict[str, Any]:
 def _get_position(position_id: int) -> Dict[str, Any]:
     resp = (
         supabase.table("positions")
-        .select("position_id, position_name, description, profile_id")
+        .select("position_id, position_name, description")
         .eq("position_id", position_id)
         .single()
         .execute()
@@ -192,8 +221,8 @@ def _analyze_skill_gaps(
 # /smart/candidates/top
 # Top candidates for a position – via the PROFILE embedding
 # -------------------------------------------------------------------
-@app.get(
-    "/smart/candidates/top",
+@router.get(
+    "/candidates/top",
     response_model=List[MatchResult],
     summary="Top candidates for a position (profile → employees)",
 )
@@ -248,8 +277,8 @@ def get_top_candidates_for_position(
 # /smart/candidates/similar
 # Similar candidates to a given candidate (still candidate↔candidate)
 # -------------------------------------------------------------------
-@app.get(
-    "/smart/candidates/similar",
+@router.get(
+    "/candidates/similar",
     response_model=List[MatchResult],
     summary="Similar candidates (employee → employees)",
 )
@@ -298,8 +327,8 @@ def get_similar_candidates(
 # Top positions for a candidate – via PROFILE embeddings
 # We actually rank PROFILES, then map to positions.
 # -------------------------------------------------------------------
-@app.get(
-    "/smart/positions/top",
+@router.get(
+    "/positions/top",
     response_model=List[MatchResult],
     summary="Top positions for a candidate (candidate → profiles → positions)",
 )
@@ -349,8 +378,8 @@ def get_top_positions_for_candidate(
 # /smart/positions/similar
 # Similar positions – via PROFILE embeddings (profile ↔ profile)
 # -------------------------------------------------------------------
-@app.get(
-    "/smart/positions/similar",
+@router.get(
+    "/positions/similar",
     response_model=List[MatchResult],
     summary="Similar positions (via profile embeddings)",
 )
@@ -405,8 +434,8 @@ def get_similar_positions(
 # /smart/gaps
 # Skill gap analysis – candidate vs PROFILE (for the given position)
 # -------------------------------------------------------------------
-@app.get(
-    "/smart/gaps",
+@router.get(
+    "/gaps",
     response_model=SkillGapResponse,
     summary="Skill gap analysis for candidate vs position (via profile)",
 )

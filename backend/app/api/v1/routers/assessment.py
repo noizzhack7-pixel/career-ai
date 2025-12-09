@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Header
 from typing import Optional
-from app.models.Assessment import AssessmentQuestion, AssessmentSubmission, AssessmentResult
-from app.services.assessment import assessment_service
+from backend.app.models.Assessment import AssessmentQuestion, AssessmentSubmission, AssessmentResult
+from backend.app.services.assessment import assessment_service
 
 router = APIRouter(prefix="/assessment", tags=["assessment"])
 

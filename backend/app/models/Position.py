@@ -1,8 +1,8 @@
 import uuid
 from typing import List
 from pydantic import BaseModel, Field
-from app.models.BaseValues import PositionCategory
-from app.models.Profile import Profile
+from backend.app.models.BaseValues import PositionCategory
+from backend.app.models.Profile import Profile
 
 
 class Position(BaseModel):

@@ -1,6 +1,7 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.routers import skills, positions, candidates, smart, assessment
+from backend.app.api.v1.routers import skills, positions, candidates, smart, assessment
 
 app = FastAPI(
     title="Career AI API",
@@ -33,3 +34,6 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
+
+uvicorn.run(app, host="0.0.0.0", port=5000)

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from app.models.Position import Position
+from backend.app.models.Position import Position
 
 router = APIRouter(prefix="/positions", tags=["positions"])
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List, Union
-from app.models.Skill import HardSkill, SoftSkill
+from backend.app.models.Skill import HardSkill, SoftSkill
 
 router = APIRouter(prefix="/skills", tags=["skills"])
 

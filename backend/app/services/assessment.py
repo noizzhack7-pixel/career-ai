@@ -2,8 +2,8 @@ import json
 from typing import Dict, List
 from pathlib import Path
 from datetime import datetime
-from app.models.Assessment import AssessmentQuestion, CategoryScore, AssessmentResult
-from app.services.ai_service import ai_service
+from backend.app.models.Assessment import AssessmentQuestion, CategoryScore, AssessmentResult
+from backend.app.services.ai_service import ai_service
 
 
 class AssessmentService:
