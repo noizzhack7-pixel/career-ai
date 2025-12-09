@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import List, Optional, Literal
 from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
-from app.models.Employee import Employee as Employee
-from app.services.supabase_client import get_supabase_client
+from backend.app.models.Employee import Employee as Employee
+from backend.app.services.supabase_client import get_supabase_client
 
 router = APIRouter(prefix="/employees", tags=["employees"])
 supabase = get_supabase_client()
