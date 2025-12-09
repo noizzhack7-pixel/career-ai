@@ -8,13 +8,15 @@ interface MatchScoreProps {
   colorClass?: string;
   strokeWidth?: number;
   showLabel?: boolean;
+  showScore?: boolean;
 }
 
-export const MatchScore = ({ 
-  score, 
-  compact = false
+export const MatchScore = ({
+  score,
+  compact = false,
+  showScore = false
 }: MatchScoreProps) => {
-  
+
   // Determine level configuration based on score
   let config = {
     text: 'התאמה נמוכה',
@@ -23,13 +25,13 @@ export const MatchScore = ({
   };
 
   if (score >= 80) {
-    config = { text: 'התאמה מצויינת', color: '#650F54', fillPercent: 100 };
+    config = { text: 'התאמה מצויינת', color: '#650F54', fillPercent: showScore ? score : 100 };
   } else if (score >= 60) {
-    config = { text: 'התאמה גבוהה', color: '#8C2F7A', fillPercent: 70 };
+    config = { text: 'התאמה גבוהה', color: '#8C2F7A', fillPercent: showScore ? score : 70 };
   } else if (score >= 40) {
-    config = { text: 'התאמה טובה', color: '#CBA0E6', fillPercent: 50 };
+    config = { text: 'התאמה טובה', color: '#CBA0E6', fillPercent: showScore ? score : 50 };
   } else if (score >= 20) {
-    config = { text: 'התאמה בינונית', color: '#EAD8FD', fillPercent: 30 };
+    config = { text: 'התאמה בינונית', color: '#EAD8FD', fillPercent: showScore ? score : 30 };
   }
 
   // Dimensions
@@ -75,13 +77,17 @@ export const MatchScore = ({
 
       {/* Text Label */}
       <div className="absolute inset-0 flex flex-col justify-center items-center text-center leading-tight">
-        {compact ? (
-          <span className="text-[10px] text-neutral-dark whitespace-nowrap">{secondLine}</span>
+        {showScore ? (
+          <span className="text-xs text-neutral-600">{score}%</span>
         ) : (
-          <div className="flex flex-col items-center">
-            <span className="text-sm font-medium text-neutral-dark font-rubik">{firstLine}</span>
-            <span className="text-xs text-neutral-600">{secondLine}</span>
-          </div>
+          compact ? (
+            <span className="text-[10px] text-neutral-dark whitespace-nowrap">{secondLine}</span>
+          ) : (
+            <div className="flex flex-col items-center">
+              <span className="text-sm font-medium text-neutral-dark font-rubik">{firstLine}</span>
+              <span className="text-xs text-neutral-600">{secondLine}</span>
+            </div>
+          )
         )}
       </div>
     </div>

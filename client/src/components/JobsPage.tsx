@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MatchScore } from './MatchScore';
+import { Tooltip } from './Tooltip';
 import {
   Search,
   MapPin,
@@ -17,7 +18,8 @@ import {
   Check,
   Map as MapIcon, // re-aliased to avoid conflict
   ChevronDown,
-  Heart
+  Heart,
+  XCircle
 } from 'lucide-react';
 
 interface Job {
@@ -34,11 +36,28 @@ interface Job {
   description: string;
   responsibilities?: string[];
   requirements: {
+    skill?: string;
     text: string;
-    status: 'success' | 'warning';
+    status: string;
     note: string;
   }[];
   isOpen: boolean;
+  match_summary?: string;
+  hard_skills_match?: {
+    name?: string;
+    matched: boolean;
+    gap: any
+  }[];
+  soft_skills_match?: {
+    name?: string;
+    matched: boolean;
+    gap: any
+  }[];
+  experience_match?: {
+    name?: string;
+    matched: boolean;
+    gap: any
+  }[];
 }
 
 const allJobsData: Job[] = [
@@ -221,14 +240,67 @@ export const JobsPage = () => {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState<boolean>(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState<boolean>(false);
   const [selectedSort, setSelectedSort] = useState<string>('התאמה הגבוהה ביותר');
+  const [jobsData, setJobsData] = useState<Job[]>(allJobsData);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const sortOptions = ['התאמה הגבוהה ביותר', 'החדשות ביותר'];
+
+  // Fetch jobs from API
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:8000/api/v1/positions/matching');
+        if (!response.ok) {
+          throw new Error('Failed to fetch positions');
+        }
+        const data = await response.json();
+
+        // Transform API data to match Job interface if needed
+        const transformedJobs: Job[] = data.map((job: any, index: number) => ({
+          id: job.id || index + 1,
+          title: job.title || job.position_name || 'תפקיד',
+          department: job.department || job.division || 'מחלקה',
+          location: job.location || 'ישראל',
+          matchPercent: job.matchPercent || job.match_percent || Math.floor(Math.random() * 30) + 70,
+          matchLevel: job.matchLevel || (job.matchPercent >= 85 ? 'התאמה גבוהה' : 'התאמה בינונית'),
+          matchColor: job.matchColor || 'primary',
+          category: job.category || 'כללי',
+          categoryColor: job.category_color ? 'bg-' + job.category_color + '-100 text-' + job.category_color + '-800' : 'bg-blue-100 text-blue-800',
+          postedTime: job.postedTime || job.posted_time || 'פורסם לאחרונה',
+          description: job.description || '',
+          responsibilities: job.responsibilities || [],
+          requirements: job.requirements || [],
+          isOpen: job.isOpen !== undefined ? job.isOpen : true,
+          match_summary: job.match_summary || '',
+          hard_skills_match: job.hard_skills_match || [],
+          soft_skills_match: job.soft_skills_match || [],
+          experience_match: job.experience_match || []
+        }));
+
+        setJobsData(transformedJobs);
+
+        if (transformedJobs.length > 0) {
+          const sortedJobs = transformedJobs.sort((a, b) => b.matchPercent - a.matchPercent);
+          setSelectedJobId(sortedJobs[0].id);
+        }
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        // Keep using the fallback static data
+        setJobsData(allJobsData);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
 
   // Get all unique categories
   const allCategories = Array.from(new Set(allJobsData.map(job => job.category))).sort();
   const getCategoryLabel = (value: string) => {
     if (value === 'all') return 'כל הקטגוריות';
-    const count = allJobsData.filter(job => job.category === value).length;
+    const count = jobsData.filter(job => job.category === value).length;
     return `${value} (${count})`;
   };
 
@@ -264,7 +336,7 @@ export const JobsPage = () => {
   };
 
   const filteredJobs = (() => {
-    let jobs = allJobsData;
+    let jobs = jobsData;
 
     // Search filter
     if (searchQuery.trim()) {
@@ -317,7 +389,7 @@ export const JobsPage = () => {
     return jobs;
   })();
 
-  const selectedJob = allJobsData.find(j => j.id === selectedJobId) || allJobsData[0];
+  const selectedJob = jobsData.find(j => j.id === selectedJobId) || jobsData[0];
   const isLiked = likedJobs.has(selectedJobId);
 
   // Helper to get text color class based on matchColor prop string
@@ -349,7 +421,7 @@ export const JobsPage = () => {
       <div className="flex-shrink-0 mb-6">
         <div className="flex items-center justify-between mb-4 px-2">
           <h2 id="jobs-count" className="text-xl font-bold text-primary">
-            {allJobsData.length} משרות בארגון
+            {jobsData.length} משרות בארגון
             {/* {currentView === 'open' ? `מציג ${filteredJobs.length} משרות פתוחות` : '156 משרות בארגון'} */}
           </h2>
           <div className="flex items-center gap-2 text-sm">
@@ -431,8 +503,8 @@ export const JobsPage = () => {
                         >
                           כל הקטגוריות
                         </button>
-                        {allCategories.map(category => {
-                          const count = allJobsData.filter(job => job.category === category).length;
+                        {Array.from(new Set(jobsData.map(job => job.category))).sort().map(category => {
+                          const count = jobsData.filter(job => job.category === category).length;
                           return (
                             <button
                               key={category}
@@ -542,6 +614,7 @@ export const JobsPage = () => {
                       <MatchScore
                         score={job.matchPercent}
                         compact={true}
+                        showScore={true}
                       />
                     </div>
                   </div>
@@ -608,6 +681,7 @@ export const JobsPage = () => {
                             <MatchScore
                               score={selectedJob.matchPercent}
                               compact={true}
+                              showScore={true}
                             />
                           </div>
                         </div>
@@ -616,24 +690,32 @@ export const JobsPage = () => {
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-bold text-neutral-dark">התאמת מיומנויות תפקיד</p>
-                            <p className="text-sm font-bold text-status-success">4/5 מיומנויות</p>
+                            <p className="text-sm font-bold text-status-success">
+                              {selectedJob.hard_skills_match?.filter((skill) => skill.matched).length === selectedJob.hard_skills_match?.length ? (
+                                "התאמה מלאה"
+                              ) : (
+                                `${selectedJob.hard_skills_match?.filter((skill) => skill.matched).length}/${selectedJob.hard_skills_match?.length} מיומנויות`
+                              )}
+                            </p>
                           </div>
                           <div className="flex gap-2 flex-wrap">
-                            <span className="text-xs px-3 py-1 bg-status-success/10 text-status-success rounded-md font-medium">
-                              Java & Spring Boot
-                            </span>
-                            <span className="text-xs px-3 py-1 bg-status-success/10 text-status-success rounded-md font-medium">
-                              Microservices
-                            </span>
-                            <span className="text-xs px-3 py-1 bg-status-success/10 text-status-success rounded-md font-medium">
-                              ניסיון 5+ שנים
-                            </span>
-                            <span className="text-xs px-3 py-1 bg-status-success/10 text-status-success rounded-md font-medium">
-                              ארכיטקטורה
-                            </span>
-                            <span className="text-xs px-3 py-1 bg-status-warning/10 text-status-warning rounded-md font-medium">
-                              ניסיון ניהולי - פער קטן
-                            </span>
+                            {selectedJob.hard_skills_match?.map((skill, index) => (
+                              <span
+                                key={index}
+                                style={{
+                                  backgroundColor: !skill.matched ? "#dc26261a" : "",
+                                  color: !skill.matched ? "#dc2626" : ""
+                                }}
+                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.matched
+                                  ? "bg-status-success/10 text-status-success"
+                                  : ""
+                                  }`}
+                              >
+                                <Tooltip content={skill.gap}>
+                                  {skill.name}
+                                </Tooltip>
+                              </span>
+                            ))}
                           </div>
                         </div>
 
@@ -641,18 +723,32 @@ export const JobsPage = () => {
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-bold text-neutral-dark">מיומנויות בין-אישיות</p>
-                            <p className="text-sm font-bold text-status-success">התאמה מלאה</p>
+                            <p className="text-sm font-bold text-status-success">
+                              {selectedJob.soft_skills_match?.filter((skill) => skill.matched).length === selectedJob.soft_skills_match?.length ? (
+                                "התאמה מלאה"
+                              ) : (
+                                `${selectedJob.soft_skills_match?.filter((skill) => skill.matched).length}/${selectedJob.soft_skills_match?.length} מיומנויות`
+                              )}
+                            </p>
                           </div>
                           <div className="flex gap-2 flex-wrap">
-                            <span className="text-xs px-3 py-1 bg-accent/10 text-accent-dark rounded-md font-medium">
-                              מנהיגות
-                            </span>
-                            <span className="text-xs px-3 py-1 bg-accent/10 text-accent-dark rounded-md font-medium">
-                              קליטה מהירה
-                            </span>
-                            <span className="text-xs px-3 py-1 bg-accent/10 text-accent-dark rounded-md font-medium">
-                              למידה עצמית
-                            </span>
+                            {selectedJob.soft_skills_match?.map((skill, index) => (
+                              <span
+                                key={index}
+                                style={{
+                                  backgroundColor: !skill.matched ? "#dcd6261a" : "",
+                                  color: !skill.matched ? "#dcd626" : ""
+                                }}
+                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.matched
+                                  ? "bg-status-success/10 text-status-success"
+                                  : ""
+                                  }`}
+                              >
+                                <Tooltip content={skill.gap}>
+                                  {skill.name}
+                                </Tooltip>
+                              </span>
+                            ))}
                           </div>
                         </div>
 
@@ -660,24 +756,42 @@ export const JobsPage = () => {
                         <div className="mb-3">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-bold text-neutral-dark">ניסיון והשכלה</p>
-                            <p className="text-sm font-bold text-status-success">התאמה מלאה</p>
+                            <p className="text-sm font-bold text-status-success">
+                              {selectedJob.experience_match?.filter((skill) => skill.matched).length === selectedJob.experience_match?.length ? (
+                                "התאמה מלאה"
+                              ) : (
+                                `${selectedJob.experience_match?.filter((skill) => skill.matched).length}/${selectedJob.experience_match?.length} התאמות`
+                              )}
+                            </p>
                           </div>
                           <div className="flex gap-2 flex-wrap">
-                            <span className="text-xs px-3 py-1 bg-primary-light/50 text-primary rounded-md font-medium">
-                              תואר במדעי המחשב
-                            </span>
-                            <span className="text-xs px-3 py-1 bg-primary-light/50 text-primary rounded-md font-medium">
-                              5 שנות ניסיון רלוונטי
-                            </span>
+                            {selectedJob.experience_match?.map((skill, index) => (
+                              <span
+                                key={index}
+                                style={{
+                                  backgroundColor: !skill.matched ? "#dc26261a" : "",
+                                  color: !skill.matched ? "#dc2626" : ""
+                                }}
+                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.matched
+                                  ? "bg-status-success/10 text-status-success"
+                                  : ""
+                                  }`}
+                              >
+                                <Tooltip content={skill.gap}>
+                                  {skill.name}
+                                </Tooltip>
+                              </span>
+                            ))}
                           </div>
                         </div>
 
                         {/* Summary */}
-                        <div className="bg-white/60 p-3 rounded-card border border-primary/20">
+                        <div className="bg-white/60 p-3 rounded-card border border-primary/20 mt-2">
                           <p className="text-xs text-neutral-dark leading-relaxed flex items-start gap-1">
                             <Lightbulb className="text-primary w-3 h-3 mt-0.5 flex-shrink-0" />
                             <span>
-                              <span className="font-bold">סיכום:</span> הפרופיל שלך מתאים מאוד לתפקיד הזה. יש לך את כל המיומנויות הטכניות הנדרשות והחוזקות הבין-אישיות המתאימות. פער קטן בניסיון ניהולי ניתן לסגירה בקלות.
+                              <span className="font-bold">סיכום: </span>
+                              {selectedJob.match_summary}
                             </span>
                           </p>
                         </div>
@@ -716,15 +830,27 @@ export const JobsPage = () => {
                     <h3>דרישות התפקיד וניתוח פערים</h3>
                     <div className="space-y-3">
                       {selectedJob.requirements.map((req, idx) => (
-                        <div key={idx} className="flex items-start gap-3 p-2 border-b border-neutral-light/50 last:border-0">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-neutral-dark">{req.text}</span>
+                        <div key={idx} className="flex items-center gap-3 p-2 border-b border-neutral-light/50 last:border-0">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
+                          <span className="text-neutral-dark">{req.skill}</span>
+                          {req.status === 'יש' ? (
+                            <Tooltip content={req.note || 'דרישה מתקיימת'}>
+                              <CheckCircle className="w-4 h-4 text-status-success flex-shrink-0" />
+                            </Tooltip>
+                          ) : (
+                            <Tooltip content={req.status || 'דרישה חסרה'}>
+                              <XCircle style={{ color: 'darkred' }} className="w-4 h-4 text-status-error flex-shrink-0" />
+                            </Tooltip>
+                          )}
+                          {req.status === 'חסר' && (
+                            <span className="text-sm text-neutral-medium ml-2">({req.note})</span>
+                          )}
                         </div>
                       ))}
                     </div>
 
-                    <h3>על הצוות</h3>
-                    <p>צוות הליבה אחראי על פיתוח ותחזוקת השירותים המרכזיים של הארגון. אנחנו צוות דינמי, שאוהב אתגרים טכנולוגיים ועובד בשיתוף פעולה הדוק. אנחנו מאמינים בלמידה מתמדת, שיתוף ידע ופיתוח אישי של כל חברי הצוות.</p>
+                    {/* <h3>על הצוות</h3>
+                    <p>צוות הליבה אחראי על פיתוח ותחזוקת השירותים המרכזיים של הארגון. אנחנו צוות דינמי, שאוהב אתגרים טכנולוגיים ועובד בשיתוף פעולה הדוק. אנחנו מאמינים בלמידה מתמדת, שיתוף ידע ופיתוח אישי של כל חברי הצוות.</p> */}
                   </div>
                 </div>
               </>
