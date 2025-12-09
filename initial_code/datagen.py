@@ -1,9 +1,10 @@
 import marvin
 import os
-os.environ["OPENAI_API_KEY"] = "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"
 from pydantic import BaseModel, Field
 from typing import Dict, List
 import pandas as pd
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # ---------- 1. Schema ----------
