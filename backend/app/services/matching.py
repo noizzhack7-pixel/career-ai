@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 import numpy as np
-from app.models.Candidate import Candidate
+from app.models.Employee import Employee
 from app.models.Position import Position
 from app.models.Skill import HardSkill, SoftSkill
 from app.services.ingestion import ingestion_service
@@ -40,10 +40,10 @@ class SkillGapDetail:
 
 
 class MatchingService:
-    """Service for AI-powered matching between candidates and positions using hybrid scoring"""
+    """Service for AI-powered matching between employees and positions using hybrid scoring"""
 
     def __init__(self):
-        self.candidates_table = "candidates"
+        self.employees_table = "employees"
         self.positions_table = "positions"
 
     # ---- Internal helpers ----
@@ -90,15 +90,15 @@ class MatchingService:
 
         return min(1.0, max(0.0, final_score))  # Clamp to [0, 1]
 
-    def get_top_candidates_for_position(
+    def get_top_employees_for_position(
         self,
         position_id: str,
         limit: int = 10
     ) -> List[Dict[str, Any]]:
         """
-        Find top matching candidates for a position
+        Find top matching employees for a position
 
-        Returns list of dicts with candidate info and match details
+        Returns list of dicts with employee info and match details
         """
         # 1. Get position (from ingestion service for MVP)
         position = ingestion_service.get_position(position_id)
@@ -119,14 +119,14 @@ class MatchingService:
             required_soft.extend(profile.soft_skills)
 
         # 4. Try pgvector ANN search first
-        ann_results = self._db_search(self.candidates_table, pos_vec_list, limit)
+        ann_results = self._db_search(self.employees_table, pos_vec_list, limit)
 
         results: List[Dict[str, Any]] = []
 
         if ann_results:
-            # Use ANN hits as candidates and then do hybrid rescoring
+            # Use ANN hits as employees and then do hybrid rescoring
             for hit in ann_results:
-                cand = ingestion_service.get_candidate(hit["id"])  # Prefer in-memory object for detailed overlap
+                cand = ingestion_service.get_employee(hit["id"])  # Prefer in-memory object for detailed overlap
                 if not cand:
                     # Fallback minimal info from metadata
                     md = hit.get("metadata", {}) or {}
@@ -141,7 +141,7 @@ class MatchingService:
                         "details": {
                             "matching_skills": [],
                             "category_match": False,
-                            "note": "Candidate metadata not loaded; returning semantic-only score"
+                            "note": "Employee metadata not loaded; returning semantic-only score"
                         },
                     })
                     continue
@@ -165,14 +165,14 @@ class MatchingService:
 
                 score = self.calculate_hybrid_score(sim, overlap, category_match)
 
-                candidate_hard_dict = {s.skill: s.level for s in cand.hard_skills}
+                employee_hard_dict = {s.skill: s.level for s in cand.hard_skills}
                 matched_skills = [
                     s.skill for s in required_hard
-                    if s.skill in candidate_hard_dict and candidate_hard_dict[s.skill] >= s.level * 0.8
+                    if s.skill in employee_hard_dict and employee_hard_dict[s.skill] >= s.level * 0.8
                 ]
 
                 results.append({
-                    "id": cand.candidate_id,
+                    "id": cand.employee_id,
                     "name": cand.name,
                     "score": round(float(score), 4),
                     "semantic_similarity": round(float(sim), 4),
@@ -183,10 +183,10 @@ class MatchingService:
                     },
                 })
         else:
-            # Fallback: brute-force over in-memory candidates
-            for cand in ingestion_service.list_candidates():
-                # 4. Vectorize candidate
-                cand_vec = np.array(vectorization_service.vectorize_candidate(cand))
+            # Fallback: brute-force over in-memory employees
+            for cand in ingestion_service.list_employees():
+                # 4. Vectorize employee
+                cand_vec = np.array(vectorization_service.vectorize_employee(cand))
                 if cand_vec.size == 0:
                     continue
 
@@ -213,15 +213,15 @@ class MatchingService:
 
                 score = self.calculate_hybrid_score(sim, overlap, category_match)
 
-                # Build details: matching skills list where candidate level >= 80% of required
-                candidate_hard_dict = {s.skill: s.level for s in cand.hard_skills}
+                # Build details: matching skills list where employee level >= 80% of required
+                employee_hard_dict = {s.skill: s.level for s in cand.hard_skills}
                 matched_skills = [
                     s.skill for s in required_hard
-                    if s.skill in candidate_hard_dict and candidate_hard_dict[s.skill] >= s.level * 0.8
+                    if s.skill in employee_hard_dict and employee_hard_dict[s.skill] >= s.level * 0.8
                 ]
 
                 results.append({
-                    "id": cand.candidate_id,
+                    "id": cand.employee_id,
                     "name": cand.name,
                     "score": round(float(score), 4),
                     "semantic_similarity": round(float(sim), 4),
@@ -236,21 +236,21 @@ class MatchingService:
         results.sort(key=lambda r: r["score"], reverse=True)
         return results[:limit]
 
-    def get_top_positions_for_candidate(
+    def get_top_positions_for_employee(
         self,
-        candidate_id: str,
+        employee_id: str,
         limit: int = 10
     ) -> List[Dict[str, Any]]:
         """
-        Find top matching positions for a candidate
+        Find top matching positions for a employee
 
         Returns list of dicts with position info and match details
         """
-        candidate = ingestion_service.get_candidate(candidate_id)
-        if not candidate:
+        employee = ingestion_service.get_employee(employee_id)
+        if not employee:
             return []
 
-        cand_vec_list = vectorization_service.vectorize_candidate(candidate)
+        cand_vec_list = vectorization_service.vectorize_employee(employee)
         cand_vec = np.array(cand_vec_list)
         if cand_vec.size == 0:
             return []
@@ -287,17 +287,17 @@ class MatchingService:
                     req_soft.extend(profile.soft_skills)
 
                 overlap = vectorization_service.calculate_skill_overlap(
-                    candidate.hard_skills,
-                    candidate.soft_skills,
+                    employee.hard_skills,
+                    employee.soft_skills,
                     req_hard,
                     req_soft,
                 )
 
                 category_match = False
-                if candidate.current_position and candidate.current_position.category == pos.category:
+                if employee.current_position and employee.current_position.category == pos.category:
                     category_match = True
                 else:
-                    for past in candidate.past_positions:
+                    for past in employee.past_positions:
                         if past.category == pos.category:
                             category_match = True
                             break
@@ -306,7 +306,7 @@ class MatchingService:
 
                 matched_skills = [
                     s.skill for s in req_hard
-                    if any(cs.skill == s.skill and cs.level >= s.level * 0.8 for cs in candidate.hard_skills)
+                    if any(cs.skill == s.skill and cs.level >= s.level * 0.8 for cs in employee.hard_skills)
                 ]
 
                 results.append({
@@ -339,17 +339,17 @@ class MatchingService:
                     req_soft.extend(profile.soft_skills)
 
                 overlap = vectorization_service.calculate_skill_overlap(
-                    candidate.hard_skills,
-                    candidate.soft_skills,
+                    employee.hard_skills,
+                    employee.soft_skills,
                     req_hard,
                     req_soft,
                 )
 
                 category_match = False
-                if candidate.current_position and candidate.current_position.category == pos.category:
+                if employee.current_position and employee.current_position.category == pos.category:
                     category_match = True
                 else:
-                    for past in candidate.past_positions:
+                    for past in employee.past_positions:
                         if past.category == pos.category:
                             category_match = True
                             break
@@ -358,7 +358,7 @@ class MatchingService:
 
                 matched_skills = [
                     s.skill for s in req_hard
-                    if any(cs.skill == s.skill and cs.level >= s.level * 0.8 for cs in candidate.hard_skills)
+                    if any(cs.skill == s.skill and cs.level >= s.level * 0.8 for cs in employee.hard_skills)
                 ]
 
                 results.append({
@@ -378,39 +378,39 @@ class MatchingService:
         results.sort(key=lambda r: r["score"], reverse=True)
         return results[:limit]
 
-    def get_similar_candidates(
+    def get_similar_employees(
         self,
-        candidate_id: str,
+        employee_id: str,
         limit: int = 10
     ) -> List[Dict[str, Any]]:
         """
-        Find similar candidates based on skills and experience
+        Find similar employees based on skills and experience
         Uses only vector similarity
         """
-        pivot = ingestion_service.get_candidate(candidate_id)
+        pivot = ingestion_service.get_employee(employee_id)
         if not pivot:
             return []
-        pivot_vec_list = vectorization_service.vectorize_candidate(pivot)
+        pivot_vec_list = vectorization_service.vectorize_employee(pivot)
         pivot_vec = np.array(pivot_vec_list)
         if pivot_vec.size == 0:
             return []
 
         results: List[Dict[str, Any]] = []
 
-        ann_results = self._db_search(self.candidates_table, pivot_vec_list, limit + 1)
+        ann_results = self._db_search(self.employees_table, pivot_vec_list, limit + 1)
         if ann_results:
             for hit in ann_results:
                 hit_id = hit.get("id")
-                if hit_id == candidate_id:
+                if hit_id == employee_id:
                     continue
                 sim = float(hit.get("similarity", 0.0))
-                cand = ingestion_service.get_candidate(hit_id)
+                cand = ingestion_service.get_employee(hit_id)
                 if cand:
                     pivot_skills = set(s.skill for s in pivot.hard_skills)
                     cand_skills = set(s.skill for s in cand.hard_skills)
                     common = sorted(list(pivot_skills & cand_skills))
                     results.append({
-                        "id": cand.candidate_id,
+                        "id": cand.employee_id,
                         "name": cand.name,
                         "score": round(float(sim), 4),
                         "semantic_similarity": round(float(sim), 4),
@@ -433,10 +433,10 @@ class MatchingService:
                         },
                     })
         else:
-            for cand in ingestion_service.list_candidates():
-                if cand.candidate_id == candidate_id:
+            for cand in ingestion_service.list_employees():
+                if cand.employee_id == employee_id:
                     continue
-                cand_vec = np.array(vectorization_service.vectorize_candidate(cand))
+                cand_vec = np.array(vectorization_service.vectorize_employee(cand))
                 if cand_vec.size == 0:
                     continue
                 sim = self._cosine_similarity(pivot_vec, cand_vec)
@@ -444,7 +444,7 @@ class MatchingService:
                 cand_skills = set(s.skill for s in cand.hard_skills)
                 common = sorted(list(pivot_skills & cand_skills))
                 results.append({
-                    "id": cand.candidate_id,
+                    "id": cand.employee_id,
                     "name": cand.name,
                     "score": round(float(sim), 4),
                     "semantic_similarity": round(float(sim), 4),
@@ -538,11 +538,11 @@ class MatchingService:
 
     def analyze_skill_gaps(
         self,
-        candidate: Candidate,
+        employee: Employee,
         position: Position
     ) -> Dict[str, Any]:
         """
-        Comprehensive skill gap analysis between candidate and position
+        Comprehensive skill gap analysis between employee and position
 
         Returns:
             - Overall readiness score (0-100)
@@ -557,14 +557,14 @@ class MatchingService:
             required_hard_skills.extend(profile.hard_skills)
             required_soft_skills.extend(profile.soft_skills)
 
-        # Build candidate skill dictionaries
-        candidate_hard_dict = {skill.skill: skill.level for skill in candidate.hard_skills}
-        candidate_soft_dict = {skill.skill: skill.level for skill in candidate.soft_skills}
+        # Build employee skill dictionaries
+        employee_hard_dict = {skill.skill: skill.level for skill in employee.hard_skills}
+        employee_soft_dict = {skill.skill: skill.level for skill in employee.soft_skills}
 
         # Analyze hard skills gaps
         hard_skill_gaps = []
         for required_skill in required_hard_skills:
-            current_level = candidate_hard_dict.get(required_skill.skill, 0.0)
+            current_level = employee_hard_dict.get(required_skill.skill, 0.0)
             gap = SkillGapDetail(
                 skill_name=required_skill.skill,
                 required_level=required_skill.level,
@@ -575,7 +575,7 @@ class MatchingService:
         # Analyze soft skills gaps
         soft_skill_gaps = []
         for required_skill in required_soft_skills:
-            current_level = candidate_soft_dict.get(required_skill.skill, 0.0)
+            current_level = employee_soft_dict.get(required_skill.skill, 0.0)
             gap = SkillGapDetail(
                 skill_name=required_skill.skill,
                 required_level=required_skill.level,
@@ -649,25 +649,25 @@ class MatchingService:
 
     def _calculate_experience_match(
         self,
-        candidate: Candidate,
+        employee: Employee,
         position: Position
     ) -> float:
         """
-        Calculate how well candidate's experience matches position
+        Calculate how well employee's experience matches position
 
         Returns score 0-1
         """
-        candidate_positions = len(candidate.past_positions)
-        if candidate.current_position:
-            candidate_positions += 1
+        employee_positions = len(employee.past_positions)
+        if employee.current_position:
+            employee_positions += 1
 
         # Simple heuristic: more positions = more experience
         # In real implementation, you'd look at years, titles, etc.
-        if candidate_positions >= 3:
+        if employee_positions >= 3:
             return 1.0
-        elif candidate_positions >= 2:
+        elif employee_positions >= 2:
             return 0.8
-        elif candidate_positions >= 1:
+        elif employee_positions >= 1:
             return 0.6
         else:
             return 0.3

@@ -1,0 +1,343 @@
+<!-- Main Content -->
+<main class="max-w-[1800px] mx-auto py-8 px-8 min-h-[calc(100vh-64px)]">
+    <div class="flex flex-col">
+
+        <!-- Loading State -->
+        <div *ngIf="positionsStore.isLoading()" class="flex items-center justify-center h-full">
+            <div class="text-center">
+                <i class="fa-solid fa-spinner fa-spin text-4xl text-primary mb-4"></i>
+                <p class="text-neutral-medium">טוען משרות...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="positionsStore.error()" class="flex items-center justify-center h-full">
+            <div class="text-center">
+                <i class="fa-solid fa-exclamation-circle text-4xl text-status-danger mb-4"></i>
+                <p class="text-neutral-dark">{{ positionsStore.error() }}</p>
+                <button (click)="positionsStore.loadPositions()"
+                    class="mt-4 bg-primary text-white px-6 py-2 rounded-card hover:bg-primary-dark transition-colors">
+                    נסה שוב
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <ng-container *ngIf="!positionsStore.isLoading() && !positionsStore.error()">
+
+            <!-- Tabs Section -->
+            <section class="bg-white rounded-card shadow-card mb-6 flex-shrink-0">
+                <div class="flex border-b border-neutral-light">
+                    <button (click)="setView('all')"
+                        [class]="currentView() === 'all' ? 'border-b-[3px] border-primary text-primary font-bold' : 'text-neutral-medium hover:text-primary'"
+                        class="px-8 py-4 text-base font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset">
+                        כלל המשרות
+                    </button>
+                    <button (click)="setView('open')"
+                        [class]="currentView() === 'open' ? 'border-b-[3px] border-primary text-primary font-bold' : 'text-neutral-medium hover:text-primary'"
+                        class="px-8 py-4 text-base font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset">
+                        משרות פתוחות ({{ openJobsCount() }})
+                    </button>
+                </div>
+            </section>
+
+            <!-- Filter Bar -->
+            <section class="bg-white p-4 rounded-card shadow-card mb-6 flex-shrink-0">
+                <div class="grid grid-cols-12 gap-4 items-center">
+                    <div class="col-span-4 relative">
+                        <input type="text" [ngModel]="filters().search" (ngModelChange)="updateFilter('search', $event)"
+                            placeholder="חיפוש לפי שם משרה, מיומנות או מחלקה..."
+                            class="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 pr-10 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                        <i class="fa-solid fa-search absolute top-1/2 -translate-y-1/2 right-4 text-neutral-medium"></i>
+                    </div>
+                    <div class="col-span-2">
+                        <app-dropdown [options]="categoryOptions()" [selectedValue]="filters().category"
+                            [defaultValue]="'all'" (selectionChange)="updateFilter('category', $event)">
+                        </app-dropdown>
+                    </div>
+                    <div class="col-span-2">
+                        <app-dropdown [options]="locationOptions()" [selectedValue]="filters().location"
+                            [defaultValue]="'all'" (selectionChange)="updateFilter('location', $event)">
+                        </app-dropdown>
+                    </div>
+                    <div class="col-span-2">
+                        <app-dropdown [options]="gradeOptions" [selectedValue]="filters().grade" [defaultValue]="'all'"
+                            (selectionChange)="updateFilter('grade', $event)">
+                        </app-dropdown>
+                    </div>
+                    <div class="col-span-2 flex items-center justify-end gap-3">
+                        <button (click)="clearFilters()"
+                            class="hover:shadow-none text-sm text-primary hover:underline font-semibold">נקה
+                            הכל</button>
+                        <!-- <button
+                            class="bg-primary text-white font-bold py-2.5 px-6 rounded-card hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary">
+                            סנן
+                        </button> -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Two-Column Layout -->
+            <div class="grid grid-cols-12 gap-6">
+                <!-- Jobs List Column -->
+                <div class="col-span-4 flex flex-col">
+                    <div class="mb-4 px-2 flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-primary">מציג {{ filteredCount() }} משרות{{ currentView() ===
+                            'open' ? ' פתוחות' : '' }}</h2>
+                        <div class="flex items-center gap-3 text-sm">
+                            <label class="font-semibold text-neutral-medium">מיין לפי:</label>
+                            <app-dropdown [options]="sortOptions" [selectedValue]="sortBy()" [defaultValue]="'match'"
+                                [width]="'180px'" [alwaysBold]="true" (selectionChange)="setSortBy($event)"
+                                [noBG]="true">
+                            </app-dropdown>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <!-- Job Cards -->
+                        <div *ngFor="let position of filteredPositions()" (click)="selectPosition(position)"
+                            [class]="isSelected(position) ? 'bg-primary-light/40 border-primary' : 'bg-white hover:bg-primary-light/20 border-transparent'"
+                            class="border-r-4 p-4 rounded-card cursor-pointer transition-all shadow-card">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex-grow">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <h3 class="font-bold text-primary text-lg">{{ position.title }}</h3>
+                                        <span [class]="getCategoryColorClass(position.category_color)"
+                                            class="text-xs px-2 py-1 rounded-pill font-semibold">
+                                            {{ position.category }}
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-neutral-dark mb-1">{{ position.division }}</p>
+                                    <p class="text-xs text-neutral-medium">{{ position.location }} | {{
+                                        position.work_model }}</p>
+                                </div>
+                                <div class="text-center flex-shrink-0 mr-3">
+                                    <p [class]="getMatchColorClass(position.match_percentage)"
+                                        class="text-xl font-bold">{{ position.match_percentage }}%</p>
+                                    <p [class]="getMatchColorClass(position.match_percentage)"
+                                        class="text-xs font-semibold">{{ position.match_level }}</p>
+                                </div>
+                            </div>
+                            <div class="text-xs text-neutral-medium flex items-center gap-2">
+                                <i class="fa-solid fa-clock"></i>
+                                <span>{{ position.posted_time || 'פורסם לאחרונה' }}</span>
+                                <span *ngIf="position.is_open" class="mr-2 text-status-success font-semibold">
+                                    <i class="fa-solid fa-circle text-[6px] ml-1"></i>פתוחה
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Empty state -->
+                        <div *ngIf="filteredPositions().length === 0" class="text-center py-12">
+                            <i class="fa-solid fa-search text-4xl text-neutral-light mb-4"></i>
+                            <p class="text-neutral-medium">לא נמצאו משרות התואמות את החיפוש</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Details Column -->
+                <div class="col-span-8">
+                    <div *ngIf="positionsStore.selectedPosition() as position"
+                        class="bg-white rounded-card shadow-card">
+                        <!-- Header -->
+                        <div class="p-6 border-b border-neutral-light">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-grow">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <h1 class="text-3xl font-bold text-primary">{{ position.title }}</h1>
+                                        <span [class]="getCategoryColorClass(position.category_color)"
+                                            class="text-sm px-3 py-1.5 rounded-pill font-semibold">
+                                            {{ position.category }}
+                                        </span>
+                                        <span *ngIf="position.is_open"
+                                            class="text-xs px-3 py-1.5 rounded-pill bg-status-success/20 text-status-success font-bold border border-status-success/40">
+                                            <i class="fa-solid fa-circle text-[6px] ml-1 animate-pulse"></i>משרה פתוחה
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-4 text-sm text-neutral-medium">
+                                        <span><i class="fa-solid fa-building ml-1.5 text-primary"></i>{{
+                                            position.division }}</span>
+                                        <span><i class="fa-solid fa-clock ml-1.5 text-primary"></i>משרה מלאה</span>
+                                        <span class="text-neutral-medium/60">•</span>
+                                        <span class="text-xs">{{ position.posted_time || 'פורסם לאחרונה' }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button
+                                        class="bg-white text-neutral-medium font-medium py-2.5 px-5 rounded-card border border-neutral-light hover:bg-neutral-extralight transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-medium text-sm">
+                                        <i class="fa-regular fa-bookmark ml-2"></i>שמור
+                                    </button>
+                                    <button
+                                        class="bg-accent-dark text-white font-bold py-2.5 px-8 rounded-card hover:bg-accent-dark/90 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-dark shadow-md">
+                                        <i class="fa-solid fa-paper-plane ml-2"></i>הגש מועמדות
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Match Analysis Section -->
+                        <div
+                            class="p-6 bg-gradient-to-l from-primary/5 via-accent/5 to-primary/5 border-b border-neutral-light">
+                            <!-- Header Row -->
+                            <div class="flex items-center justify-between mb-6">
+                                <a routerLink="/dev-plan"
+                                    class="inline-flex items-center gap-2.5 bg-primary text-white font-bold py-3 px-5 rounded-card hover:bg-primary-dark transition-all shadow-md hover:shadow-lg text-sm whitespace-nowrap">
+                                    <i class="fa-solid fa-route text-base"></i>
+                                    <span>תוכנית הפיתוח שלי</span>
+                                </a>
+                                <h3 class="font-bold text-primary text-xl">למה אני מתאימה לתפקיד הזה?</h3>
+                            </div>
+
+                            <!-- Content Row: Circle on right, Skills on left -->
+                            <div class="flex items-start gap-8">
+                                <!-- Skills Content -->
+                                <div class="flex-grow">
+                                    <!-- Hard Skills Match -->
+                                    <div *ngIf="position.hard_skills_match && position.hard_skills_match.length > 0"
+                                        class="mb-5">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <p class="text-sm font-bold text-neutral-dark">התאמת מיומנויות תפקיד</p>
+
+                                            <p class="text-sm font-bold text-status-success">
+                                                {{ getMatchedSkillsCount(position.hard_skills_match) }}/{{
+                                                getTotalSkillsCount(position.hard_skills_match) }} מיומנויות
+                                            </p>
+                                        </div>
+                                        <div class="flex gap-2.5 flex-wrap flex-row">
+                                            <span *ngFor="let skill of position.hard_skills_match"
+                                                [class]="getSkillMatchClass(skill.matched)"
+                                                class="text-xs px-3 py-1.5 rounded-pill font-semibold border">
+                                                <i [class]="'fa-solid ' + getSkillIcon(skill.matched)"
+                                                    class="text-[10px] ml-1"></i>
+                                                {{ skill.name }}{{ skill.gap ? ' - ' + skill.gap : '' }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Soft Skills Match -->
+                                    <div *ngIf="position.soft_skills_match && position.soft_skills_match.length > 0"
+                                        class="mb-5">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <p class="text-sm font-bold text-neutral-dark">מיומנויות בין-אישיות</p>
+
+                                            <p class="text-sm font-bold text-status-success">
+                                                {{ getMatchedSkillsCount(position.soft_skills_match) }}/{{
+                                                getTotalSkillsCount(position.soft_skills_match) }} מיומנויות
+                                            </p>
+                                        </div>
+                                        <div class="flex gap-2.5 flex-wrap flex-row">
+                                            <span *ngFor="let skill of position.soft_skills_match"
+                                                class="text-xs px-3 py-1.5 bg-accent/15 text-accent-dark rounded-pill font-semibold border border-accent/40">
+                                                <i class="fa-solid fa-star text-[10px] ml-1"></i>{{ skill.name }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Experience Match -->
+                                    <div *ngIf="position.experience_match && position.experience_match.length > 0"
+                                        class="mb-5">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <p class="text-sm font-bold text-neutral-dark">ניסיון והשכלה</p>
+
+                                            <p class="text-sm font-bold text-status-success">
+                                                {{ getMatchedSkillsCount(position.experience_match) ===
+                                                getTotalSkillsCount(position.experience_match) ? 'התאמה מלאה' :
+                                                getMatchedSkillsCount(position.experience_match) + '/' +
+                                                getTotalSkillsCount(position.experience_match) }}
+                                            </p>
+                                        </div>
+                                        <div class="flex gap-2.5 flex-wrap flex-row">
+                                            <span *ngFor="let exp of position.experience_match"
+                                                class="text-xs px-3 py-1.5 bg-primary-light text-primary rounded-pill font-semibold">
+                                                <i class="fa-solid"
+                                                    [ngClass]="exp.name.includes('תואר') ? 'fa-graduation-cap' : 'fa-briefcase'"
+                                                    class="text-[10px] ml-1"></i>
+                                                {{ exp.name }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Summary -->
+                                    <div *ngIf="position.match_summary"
+                                        class="bg-white/70 p-4 rounded-card border border-primary/20">
+                                        <p class="text-sm text-neutral-dark leading-relaxed">
+                                            <i class="fa-solid fa-lightbulb text-primary ml-1.5"></i>
+                                            <span class="font-bold">סיכום:</span> {{ position.match_summary }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Match Circle (Right side in RTL) -->
+                                <div class="relative w-28 h-28 flex-shrink-0">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path class="text-neutral-light"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="currentColor" stroke-width="3.5"></path>
+                                        <path [class]="getMatchBgClass(position.match_percentage)"
+                                            [attr.stroke-dasharray]="position.match_percentage + ', 100'"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                                        </path>
+                                    </svg>
+                                    <div
+                                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                                        <p [class]="getMatchColorClass(position.match_percentage)"
+                                            class="text-3xl font-bold leading-none">{{ position.match_percentage }}%</p>
+                                        <p [class]="getMatchColorClass(position.match_percentage)"
+                                            class="text-[10px] font-bold mt-1 leading-none">{{ position.match_level }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job Description Content -->
+                        <div class="p-8">
+                            <h3 class="text-lg font-bold text-primary mt-0 mb-3">אודות התפקיד</h3>
+                            <p class="text-[0.95rem] leading-relaxed text-neutral-dark mb-4">{{ position.description }}
+                            </p>
+
+                            <div *ngIf="position.responsibilities && position.responsibilities.length > 0">
+                                <h3 class="text-lg font-bold text-primary mt-6 mb-3">תחומי אחריות</h3>
+                                <ul class="list-disc mr-6 mb-4 space-y-2">
+                                    <li *ngFor="let resp of position.responsibilities"
+                                        class="text-[0.95rem] text-neutral-dark">{{ resp }}</li>
+                                </ul>
+                            </div>
+
+                            <h3 class="text-lg font-bold text-primary mt-6 mb-3">דרישות התפקיד וניתוח פערים</h3>
+                            <div class="space-y-3">
+                                <div *ngFor="let req of position.requirements"
+                                    [class]="getRequirementStatusClass(req.status)"
+                                    class="flex items-start gap-4 p-4 rounded-card border-r-4">
+                                    <i [class]="'fa-solid ' + getRequirementIconClass(req.status)"
+                                        class="text-2xl mt-0.5 flex-shrink-0"></i>
+                                    <div>
+                                        <p class="font-bold text-neutral-dark mb-1">{{ req.skill }}</p>
+                                        <p [class]="getRequirementTextClass(req.status)" class="text-sm font-semibold">
+                                            {{ req.note }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="text-lg font-bold text-primary mt-6 mb-3">על הצוות</h3>
+                            <p class="text-[0.95rem] leading-relaxed text-neutral-dark">
+                                צוות הליבה אחראי על פיתוח ותחזוקת השירותים המרכזיים של הארגון. אנחנו צוות דינמי, שאוהב
+                                אתגרים טכנולוגיים ועובד בשיתוף פעולה הדוק. אנחנו מאמינים בלמידה מתמדת, שיתוף ידע ופיתוח
+                                אישי של כל חברי הצוות.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- No selection state -->
+                    <div *ngIf="!positionsStore.selectedPosition()"
+                        class="bg-white rounded-card shadow-card min-h-[400px] flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fa-solid fa-hand-pointer text-6xl text-neutral-light mb-4"></i>
+                            <p class="text-neutral-medium text-lg">בחר משרה מהרשימה לצפייה בפרטים</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</main>

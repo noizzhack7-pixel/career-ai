@@ -77,12 +77,12 @@ export class ApiService {
   // =====================
 
   static readonly ENDPOINTS = {
-    // Candidates
-    CANDIDATES: {
-      BASE: 'candidates',
-      ME: 'candidates/me',
-      PROFILE: (id: string) => `candidates/profile/${id}`,
-      BY_ID: (id: string) => `candidates/${id}`,
+    // Employees
+    EMPLOYEES: {
+      BASE: 'employees',
+      ME: 'employees/me',
+      PROFILE: (id: string) => `employees/profile/${id}`,
+      BY_ID: (id: string) => `employees/${id}`,
     },
     // Positions
     POSITIONS: {

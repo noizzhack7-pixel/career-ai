@@ -1,0 +1,452 @@
+<!-- Loading State -->
+<div *ngIf="isLoading()" class="min-h-screen flex items-center justify-center bg-neutral-extralight">
+    <div class="text-center">
+        <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-neutral-dark font-medium">טוען נתונים...</p>
+    </div>
+</div>
+
+<!-- Error State -->
+<div *ngIf="error() && !isLoading()" class="min-h-screen flex items-center justify-center bg-neutral-extralight p-4">
+    <div class="bg-white p-8 rounded-card shadow-card text-center max-w-md">
+        <i class="fa-solid fa-exclamation-triangle text-4xl text-secondary mb-4"></i>
+        <p class="text-neutral-dark mb-4">{{ error() }}</p>
+        <button (click)="loadData()" class="bg-primary text-white px-6 py-2 rounded-card font-semibold hover:bg-primary-dark">
+            נסה שוב
+        </button>
+    </div>
+</div>
+
+<!-- Main Content -->
+<ng-container *ngIf="!isLoading() && !error() && employeeStore.profile()">
+    <main id="main-matching-career" class="max-w-[1600px] mx-auto p-10">
+        
+        <!-- Page Header -->
+        <section id="page-header" class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-primary mb-2">התאמה ומסלול פיתוח</h1>
+                    <p class="text-neutral-medium text-lg">גלי את התפקידים המתאימים לך ביותר ובני תוכנית פיתוח אישית</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="bg-white border-2 border-primary text-primary px-6 py-3 rounded-card font-semibold hover:bg-primary-light/20 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-filter"></i>
+                        סנן תוצאות
+                    </button>
+                    <a routerLink="/questionnaire" class="bg-primary text-white px-6 py-3 rounded-card font-semibold hover:bg-primary-dark transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-list-check"></i>
+                        עדכן מיומנויות
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Main Column -->
+            <div class="col-span-8 space-y-8">
+                
+                <!-- Profile Summary Bar -->
+                <section id="profile-summary-bar" class="bg-white p-5 rounded-card shadow-card">
+                    <div class="flex items-center gap-6">
+                        <img [src]="employeeStore.avatar()" [alt]="employeeStore.fullName()" class="w-20 h-20 rounded-full border-4 border-primary/30">
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-bold text-primary mb-1">{{ employeeStore.fullName() }}</h2>
+                            <p class="text-neutral-dark font-semibold mb-2">{{ employeeStore.title() }} | {{ employeeStore.organization()?.division }}</p>
+                            <div class="flex items-center gap-6 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-calendar-days text-accent-dark"></i>
+                                    <span class="text-neutral-medium">ותק:</span>
+                                    <span class="font-semibold text-neutral-dark">{{ employeeStore.profile()?.details?.seniority }}</span>
+                                </div>
+                                <div class="w-px h-4 bg-neutral-medium"></div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-trophy text-accent-dark"></i>
+                                    <span class="text-neutral-medium">קודוס:</span>
+                                    <span class="font-semibold text-neutral-dark">{{ employeeStore.metrics()?.kudos }}</span>
+                                </div>
+                                <div class="w-px h-4 bg-neutral-medium"></div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-briefcase text-accent-dark"></i>
+                                    <span class="text-neutral-medium">משרות מתאימות:</span>
+                                    <span class="font-semibold text-status-success">{{ positionsStore.positionsCount() }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a routerLink="/profile" class="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                            לפרופיל המלא
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Matching Overview -->
+                <section id="matching-overview" class="bg-gradient-to-br from-primary/10 via-accent/5 to-primary-light/30 p-8 rounded-card shadow-card border-2 border-primary/20">
+                    <h2 class="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-chart-line"></i>
+                        סיכום התאמה
+                    </h2>
+                    <div class="grid grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-card shadow-card">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-16 h-16 bg-gradient-to-br from-status-success/20 to-status-success/30 rounded-full flex items-center justify-center">
+                                    <i class="fa-solid fa-check-double text-status-success text-2xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-4xl font-bold text-status-success">{{ highMatchJobs() }}</p>
+                                    <p class="text-sm text-neutral-medium">התאמה גבוהה</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-neutral-medium">משרות עם התאמה 85%+</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-card shadow-card">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-16 h-16 bg-gradient-to-br from-status-warning/20 to-status-warning/30 rounded-full flex items-center justify-center">
+                                    <i class="fa-solid fa-chart-simple text-status-warning text-2xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-4xl font-bold text-status-warning">{{ goodMatchJobs() }}</p>
+                                    <p class="text-sm text-neutral-medium">התאמה טובה</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-neutral-medium">משרות עם התאמה 75-84%</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-card shadow-card">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/30 rounded-full flex items-center justify-center">
+                                    <i class="fa-solid fa-bullseye text-primary text-2xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-4xl font-bold text-primary">{{ targetRoleMatch() }}%</p>
+                                    <p class="text-sm text-neutral-medium">תפקיד יעד</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-neutral-medium">התאמה לראש צוות פיתוח</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/60 backdrop-blur-sm p-5 rounded-card border border-primary/20">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-lightbulb text-status-warning text-2xl mt-1"></i>
+                            <div>
+                                <h3 class="font-bold text-primary mb-2">המלצה אישית</h3>
+                                <p class="text-sm text-neutral-dark leading-relaxed">
+                                    על בסיס הפרופיל שלך, אנו ממליצים להתמקד ב-<span class="font-bold text-primary">{{ highMatchJobs() }} משרות בעלות התאמה גבוהה</span> 
+                                    ולבנות תוכנית פיתוח ממוקדת. השלמת <span class="font-bold text-accent-dark">קורס Cloud Architecture</span> 
+                                    תגדיל את ההתאמה שלך ל-<span class="font-bold text-status-success">5 משרות נוספות</span>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Job Matches List -->
+                <section id="job-matches-list" class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
+                            <i class="fa-solid fa-briefcase"></i>
+                            משרות מתאימות ({{ filteredPositions().length }})
+                        </h2>
+                        <div class="flex items-center gap-3">
+                            <app-dropdown
+                                [options]="categoryFilterOptions"
+                                [selectedValue]="'all'"
+                                [defaultValue]="'all'"
+                                [width]="'160px'">
+                            </app-dropdown>
+                            <app-dropdown
+                                [options]="sortFilterOptions"
+                                [selectedValue]="'match'"
+                                [defaultValue]="'match'"
+                                [width]="'180px'">
+                            </app-dropdown>
+                        </div>
+                    </div>
+
+                    <!-- Job Cards -->
+                    <div *ngFor="let position of displayedPositions()" 
+                         class="bg-white rounded-card shadow-card hover:shadow-panel transition-shadow border-2 border-transparent hover:border-primary/30 cursor-pointer">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h3 class="text-2xl font-bold text-primary">{{ position.title }}</h3>
+                                        <span class="px-3 py-1 rounded-pill text-xs font-bold" [ngClass]="getCategoryBadgeClass(position.category)">
+                                            {{ position.category }}
+                                        </span>
+                                    </div>
+                                    <p class="text-neutral-medium mb-3">{{ position.division }} | {{ position.location }}</p>
+                                    <p class="text-neutral-dark text-sm leading-relaxed">{{ position.description }}</p>
+                                </div>
+                                <div class="flex flex-col items-center gap-2 mr-6">
+                                    <div class="relative w-24 h-24">
+                                        <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                                  fill="none" stroke="currentColor" stroke-width="3" class="text-neutral-light"></path>
+                                            <path [attr.stroke-dasharray]="position.match_percentage + ', 100'" 
+                                                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                                  fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" 
+                                                  [ngClass]="getMatchLevelClass(position.match_percentage)"></path>
+                                        </svg>
+                                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                                            <p class="text-2xl font-bold" [ngClass]="getMatchLevelClass(position.match_percentage)">{{ position.match_percentage }}%</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-bold px-3 py-1 rounded-pill" [ngClass]="getMatchLevelBgClass(position.match_percentage)">
+                                        {{ getMatchLevelLabel(position.match_percentage) }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Requirements -->
+                            <div class="mb-4">
+                                <p class="text-sm font-semibold text-neutral-dark mb-3">דרישות מרכזיות:</p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div *ngFor="let req of position.requirements" class="flex items-center gap-2 text-sm">
+                                        <i class="fa-solid" 
+                                           [ngClass]="req.status === 'יש' ? 'fa-check-circle text-status-success' : 'fa-exclamation-circle text-status-warning'"></i>
+                                        <span class="text-neutral-dark">{{ req.skill }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="flex items-center justify-between pt-4 border-t border-neutral-light">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <i class="fa-solid fa-location-dot text-primary"></i>
+                                        <span class="text-neutral-medium">{{ position.location }}</span>
+                                    </div>
+                                    <div class="w-px h-4 bg-neutral-medium"></div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <i class="fa-solid fa-clock text-primary"></i>
+                                        <span class="text-neutral-medium">{{ position.work_model }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="bg-white border-2 border-primary text-primary px-5 py-2 rounded-card text-sm font-semibold hover:bg-primary-light/20 transition-colors flex items-center gap-2">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        פרטים מלאים
+                                    </button>
+                                    <a routerLink="/" (click)="buildDevelopmentPlan(position)" 
+                                       class="bg-primary text-white px-5 py-2 rounded-card text-sm font-semibold hover:bg-primary-dark transition-colors flex items-center gap-2">
+                                        <i class="fa-solid fa-route"></i>
+                                        בנה תוכנית פיתוח
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Load More Button -->
+                    <div *ngIf="remainingJobsCount() > 0" class="text-center py-8">
+                        <button (click)="toggleShowMoreJobs()" 
+                                class="bg-white border-2 border-primary text-primary px-8 py-3 rounded-card font-semibold hover:bg-primary-light/20 transition-colors flex items-center gap-2 mx-auto">
+                            <i class="fa-solid" [ngClass]="showMoreJobs() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                            {{ showMoreJobs() ? 'הצג פחות' : 'טען עוד משרות (' + remainingJobsCount() + ' נוספות)' }}
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-span-4 space-y-6">
+                
+                <!-- Filters Panel -->
+                <section id="filters-panel" class="bg-white p-6 rounded-card shadow-card">
+                    <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders"></i>
+                        סינון והתאמה אישית
+                    </h3>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="text-sm font-semibold text-neutral-dark mb-2 block">רמת התאמה מינימלית</label>
+                            <app-dropdown
+                                [options]="minMatchOptions"
+                                [selectedValue]="filters().minMatchLevel"
+                                [defaultValue]="'all'"
+                                (selectionChange)="updateFilter('minMatchLevel', $event)">
+                            </app-dropdown>
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-neutral-dark mb-2 block">קטגוריות</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().categories.includes('טכנולוגיה')" 
+                                           (change)="toggleCategoryFilter('טכנולוגיה')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">טכנולוגיה</span>
+                                    <span class="text-xs text-neutral-medium mr-auto">(8)</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().categories.includes('כספים')" 
+                                           (change)="toggleCategoryFilter('כספים')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">כספים</span>
+                                    <span class="text-xs text-neutral-medium mr-auto">(2)</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().categories.includes('משאבי אנוש')" 
+                                           (change)="toggleCategoryFilter('משאבי אנוש')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">משאבי אנוש</span>
+                                    <span class="text-xs text-neutral-medium mr-auto">(1)</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().categories.includes('לוגיסטיקה')" 
+                                           (change)="toggleCategoryFilter('לוגיסטיקה')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">לוגיסטיקה</span>
+                                    <span class="text-xs text-neutral-medium mr-auto">(1)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-neutral-dark mb-2 block">דרגה</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().grades.includes('Senior Manager')" 
+                                           (change)="toggleGradeFilter('Senior Manager')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">Senior Manager</span>
+                                    <span class="text-xs text-neutral-medium mr-auto">(3)</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().grades.includes('Principal')" 
+                                           (change)="toggleGradeFilter('Principal')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">Principal</span>
+                                    <span class="text-xs text-neutral-medium mr-auto">(2)</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().grades.includes('Manager')" 
+                                           (change)="toggleGradeFilter('Manager')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">Manager</span>
+                                    <span class="text-xs text-neutral-medium mr-auto">(7)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-neutral-dark mb-2 block">מיקום</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().locations.includes('תל אביב')" 
+                                           (change)="toggleLocationFilter('תל אביב')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">תל אביב</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().locations.includes('היברידי')" 
+                                           (change)="toggleLocationFilter('היברידי')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">היברידי</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" [checked]="filters().locations.includes('עבודה מרחוק')" 
+                                           (change)="toggleLocationFilter('עבודה מרחוק')"
+                                           class="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-neutral-dark">עבודה מרחוק</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-neutral-dark mb-2 block">תאריך פרסום</label>
+                            <app-dropdown
+                                [options]="dateRangeOptions"
+                                [selectedValue]="filters().dateRange"
+                                [defaultValue]="'all'"
+                                (selectionChange)="updateFilter('dateRange', $event)">
+                            </app-dropdown>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-6 pt-4 border-t border-neutral-light">
+                        <button class="flex-1 bg-primary text-white py-2 rounded-card text-sm font-semibold hover:bg-primary-dark transition-colors">
+                            החל סינון
+                        </button>
+                        <button (click)="clearFilters()" class="px-4 bg-neutral-light text-neutral-dark py-2 rounded-card text-sm font-semibold hover:bg-neutral-medium/30 transition-colors">
+                            נקה
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Skills Gap Summary -->
+                <section id="skills-gap-summary" class="bg-gradient-to-br from-accent/10 to-primary-light/20 p-6 rounded-card shadow-card border-2 border-accent/30">
+                    <h3 class="text-lg font-bold text-accent-dark mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-bar"></i>
+                        סיכום פערי מיומנויות
+                    </h3>
+                    <div class="space-y-4">
+                        <div *ngFor="let gap of skillGaps()" class="bg-white/80 backdrop-blur-sm p-4 rounded-card">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-neutral-dark text-sm">{{ gap.name }}</span>
+                                <span class="text-xs px-2 py-1 rounded-pill font-bold" [ngClass]="getSeverityBadgeClass(gap.severity)">
+                                    {{ getSeverityLabel(gap.severity) }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-neutral-medium mb-2">נדרש ב-{{ gap.jobsRequiring }} משרות מתאימות</p>
+                            <button class="text-xs text-primary hover:underline font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                מצא קורסים מתאימים
+                            </button>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 bg-accent-dark text-white py-2.5 rounded-card text-sm font-semibold hover:bg-primary-dark transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-route"></i>
+                        בנה תוכנית פיתוח מלאה
+                    </button>
+                </section>
+
+                <!-- Recommended Courses -->
+                <section id="recommended-courses" class="bg-white p-6 rounded-card shadow-card">
+                    <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        קורסים מומלצים
+                    </h3>
+                    <div class="space-y-3">
+                        <div *ngFor="let course of courses()" 
+                             class="p-3 rounded-card border-r-4 hover:shadow-card transition-shadow cursor-pointer"
+                             [ngClass]="getCourseBorderClass(course.color)">
+                            <h4 class="font-bold text-neutral-dark text-sm mb-1">{{ course.title }}</h4>
+                            <p class="text-xs text-neutral-medium mb-2">משך: {{ course.duration }} | {{ course.format }}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold" [ngClass]="getCourseTextClass(course.color)">
+                                    יסגור {{ course.gapsClosing }} {{ course.gapsClosing === 1 ? 'פער' : 'פערים' }}
+                                </span>
+                                <button class="text-xs hover:underline font-semibold" [ngClass]="getCourseTextClass(course.color)">
+                                    פרטים
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 text-primary hover:underline text-sm font-semibold">
+                        צפה בכל הקורסים
+                        <i class="fa-solid fa-arrow-left mr-1 text-xs"></i>
+                    </button>
+                </section>
+
+                <!-- Career Insights -->
+                <section id="career-insights" class="bg-gradient-to-br from-primary to-accent-dark text-white p-6 rounded-card shadow-panel">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        תובנות קריירה
+                    </h3>
+                    <div class="space-y-4">
+                        <div *ngFor="let insight of insights()" class="bg-white/10 backdrop-blur-sm p-4 rounded-card">
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid text-xl mt-1" [ngClass]="[insight.icon, insight.iconColor]"></i>
+                                <div>
+                                    <h4 class="font-bold text-sm mb-1">{{ insight.title }}</h4>
+                                    <p class="text-xs text-white/90">{{ insight.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</ng-container>
+

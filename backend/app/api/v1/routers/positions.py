@@ -3,15 +3,40 @@
 import json
 from pathlib import Path
 from typing import List
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
-from backend.app.models.Position import Position
+from app.models.Position import Position
+from app.services.supabase_client import get_supabase_client
 
 router = APIRouter(prefix="/positions", tags=["positions"])
+supabase = get_supabase_client()
 
 # Data directory
 DATA_DIR = Path(__file__).parent.parent.parent.parent.parent / "data"
 
+# Hardcoded mock employee ID
+MOCK_POSITION_NUMBER = '70000501'
+
+# Hardcoded fields to enrich the returned position payload
+HARD_CODED_POSITION_FIELDS = {
+    "Requirements": [
+        "5+ years experience building distributed systems",
+        "B.Sc. in Computer Science or equivalent practical experience",
+        "Hands-on with cloud infrastructure (AWS/Azure/GCP)",
+    ],
+    "Responsibillities": [
+        "Design and own critical backend services end-to-end",
+        "Collaborate with product to refine technical scope and milestones",
+        "Mentor team members and drive engineering best practices",
+    ],
+    "location": "תל אביב",
+    "position_type": "משרה מלאה",
+    "skills": [
+        "ארכיטקטורה:5",
+        "Python:4",
+        "Microservices:4",
+    ],
+}
 
 # =====================
 # Matching Position models
@@ -20,6 +45,13 @@ DATA_DIR = Path(__file__).parent.parent.parent.parent.parent / "data"
 class PositionRequirement(BaseModel):
     skill: str
     status: str
+    note: str | None = None
+
+
+class SkillMatch(BaseModel):
+    name: str
+    matched: bool
+    gap: str | None = None
 
 
 class MatchingPosition(BaseModel):
@@ -36,6 +68,13 @@ class MatchingPosition(BaseModel):
     work_model: str
     description: str
     requirements: List[PositionRequirement]
+    responsibilities: List[str] | None = None
+    posted_time: str | None = None
+    is_open: bool | None = None
+    hard_skills_match: List[SkillMatch] | None = None
+    soft_skills_match: List[SkillMatch] | None = None
+    experience_match: List[SkillMatch] | None = None
+    match_summary: str | None = None
 
 
 def load_json_file(filename: str) -> dict | list:
@@ -63,9 +102,16 @@ async def create_positions(positions: List[Position]):
     return positions
 
 
-@router.get("/", response_model=List[Position])
+@router.get("/", response_model=List[dict])
 async def get_all_positions():
     """Retrieve all positions"""
+    client = supabase
+    if client:
+        try:
+            resp = client.table("positions").select("*").execute()
+            return resp.data or []
+        except Exception as exc:
+            print(f"[positions] Supabase fetch all failed: {exc}")
     return []
 
 
@@ -88,11 +134,27 @@ async def get_matching_position(position_id: str):
             return MatchingPosition(**job)
     raise HTTPException(status_code=404, detail=f"Position not found: {position_id}")
 
+@router.get("/me", response_model=dict)
+async def get_current_position(position_id: str = Header(default=MOCK_POSITION_NUMBER, alias="X-User-ID")):
+    """
+    Get the current employee (based on X-User-ID header, or default mock)
+    """
+    # Use the get_position function to fetch the position with mock_position_number
+    return await get_position(position_id)
 
-@router.get("/{position_id}", response_model=Position)
+@router.get("/{position_id}", response_model=dict)
 async def get_position(position_id: str):
     """Retrieve a specific position by ID"""
-    raise HTTPException(status_code=404, detail="Position not found")
+    client = supabase
+    position_data: dict = {}
+    if client:
+        try:
+            resp = client.table("positions").select("*").eq("position_id", position_id).single().execute()
+            position_data = resp.data or {}
+        except Exception as exc:
+            print(f"[positions] /{position_id} Supabase fetch failed: {exc}")
+    # Always include the hardcoded fields, even if Supabase is unavailable
+    return {**position_data, **HARD_CODED_POSITION_FIELDS}
 
 
 @router.put("/{position_id}", response_model=Position)

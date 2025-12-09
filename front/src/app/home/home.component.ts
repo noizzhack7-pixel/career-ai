@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { EmployeeStore, PositionsStore } from '../stores';
+import { Router, RouterLink } from '@angular/router';
+import { EmployeeStore, PositionsStore, AssessmentStore } from '../stores';
+import { Position } from '../stores/models';
 
 @Component({
   selector: 'app-home',
@@ -14,11 +15,20 @@ export class HomeComponent implements OnInit {
   // Inject stores
   readonly employeeStore = inject(EmployeeStore);
   readonly positionsStore = inject(PositionsStore);
+  readonly assessmentStore = inject(AssessmentStore);
+  private router = inject(Router);
 
   // Computed: Combined loading state
   isLoading = computed(() => 
     this.employeeStore.isLoading() || this.positionsStore.isLoading()
   );
+
+  // Top 3 positions by match percentage
+  topPositions = computed<Position[]>(() => {
+    return [...this.positionsStore.positions()]
+      .sort((a, b) => b.match_percentage - a.match_percentage)
+      .slice(0, 3);
+  });
 
   // Computed: Combined error state
   error = computed(() => 
@@ -39,11 +49,11 @@ export class HomeComponent implements OnInit {
 
   selectPosition(positionId: string): void {
     this.positionsStore.selectPosition(positionId);
-    
-    // Scroll to IDP section after a short delay
-    setTimeout(() => {
-      document.getElementById('idp-connected')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+      
+      // Scroll to IDP section after a short delay
+      setTimeout(() => {
+        document.getElementById('idp-connected')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
   }
 
   closeIDP(): void {
@@ -55,6 +65,15 @@ export class HomeComponent implements OnInit {
 
   scrollToQuestionnaire(): void {
     document.getElementById('matching-questionnaire')?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  startQuestionnaire(): void {
+    // Reset assessment state and scroll to top before navigating
+    this.assessmentStore.fullReset();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.router.navigate(['/questionnaire']).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   // Helper to get job card border class based on category color

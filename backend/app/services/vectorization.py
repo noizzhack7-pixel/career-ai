@@ -11,7 +11,7 @@ except ImportError:
     print("Warning: sentence_transformers not installed. ML features will be disabled.")
     print("Install with: pip install sentence-transformers")
 
-from app.models.Candidate import Candidate
+from app.models.Employee import Employee
 from app.models.Position import Position
 from app.models.Skill import HardSkill, SoftSkill
 from app.core.config import settings
@@ -49,38 +49,38 @@ class VectorizationService:
         else:
             return "Beginner level"
 
-    def _format_candidate_text(self, candidate: Candidate) -> str:
-        """Convert candidate to rich text description for semantic embedding"""
+    def _format_employee_text(self, employee: Employee) -> str:
+        """Convert employee to rich text description for semantic embedding"""
 
         # Calculate experience
-        total_positions = len(candidate.past_positions)
-        if candidate.current_position:
+        total_positions = len(employee.past_positions)
+        if employee.current_position:
             total_positions += 1
 
         # Format hard skills
         hard_skills_text = "\n".join([
             f"- {skill.skill}: {self._level_to_text(skill.level)} ({skill.level}/5.0)"
-            for skill in candidate.hard_skills
+            for skill in employee.hard_skills
         ])
 
         # Format soft skills
         soft_skills_text = "\n".join([
             f"- {skill.skill}: {self._level_to_text(skill.level)} ({skill.level}/5.0)"
-            for skill in candidate.soft_skills
+            for skill in employee.soft_skills
         ])
 
         # Build experience section
         experience_text = ""
-        if candidate.current_position:
-            experience_text += f"- Current: {candidate.current_position.name} in {candidate.current_position.category}\n"
+        if employee.current_position:
+            experience_text += f"- Current: {employee.current_position.name} in {employee.current_position.category}\n"
 
-        if candidate.past_positions:
-            past_names = [p.name for p in candidate.past_positions[:3]]
+        if employee.past_positions:
+            past_names = [p.name for p in employee.past_positions[:3]]
             experience_text += f"- Previous roles: {', '.join(past_names)}\n"
 
         # Combine everything
         text = f"""
-{candidate.name} is a professional with {total_positions} position(s) in their career.
+{employee.name} is a professional with {total_positions} position(s) in their career.
 
 Technical Skills (Hard Skills):
 {hard_skills_text}
@@ -91,7 +91,7 @@ Professional Skills (Soft Skills):
 Work Experience:
 {experience_text}
 
-This candidate has demonstrated expertise in {len(candidate.hard_skills)} technical areas and {len(candidate.soft_skills)} professional competencies.
+This employee has demonstrated expertise in {len(employee.hard_skills)} technical areas and {len(employee.soft_skills)} professional competencies.
 """
         return text.strip()
 
@@ -165,9 +165,9 @@ This position requires {len(all_hard_skills)} technical skills and {len(all_soft
 
         return np.array(features)
 
-    def vectorize_candidate(self, candidate: Candidate) -> List[float]:
+    def vectorize_employee(self, employee: Employee) -> List[float]:
         """
-        Generate hybrid embedding vector for a candidate
+        Generate hybrid embedding vector for a employee
         Combines semantic (70%) + structured (30%) features
         """
         if not self.is_available():
@@ -175,13 +175,13 @@ This position requires {len(all_hard_skills)} technical skills and {len(all_soft
             return []
 
         # 1. Semantic embedding (384 dims)
-        text = self._format_candidate_text(candidate)
+        text = self._format_employee_text(employee)
         semantic_embedding = self.model.encode(text, convert_to_numpy=True)
 
         # 2. Structured features (8 dims)
         structured_features = self._create_structured_features(
-            candidate.hard_skills,
-            candidate.soft_skills
+            employee.hard_skills,
+            employee.soft_skills
         )
 
         # 3. Normalize structured features to same scale as semantic
@@ -224,32 +224,32 @@ This position requires {len(all_hard_skills)} technical skills and {len(all_soft
 
     def calculate_skill_overlap(
         self,
-        candidate_hard: List[HardSkill],
-        candidate_soft: List[SoftSkill],
+        employee_hard: List[HardSkill],
+        employee_soft: List[SoftSkill],
         position_hard: List[HardSkill],
         position_soft: List[SoftSkill]
     ) -> Dict[str, float]:
         """
         Calculate exact skill overlap for hybrid scoring
-        Returns percentage of required skills that candidate has at sufficient level
+        Returns percentage of required skills that employee has at sufficient level
         """
 
         if not position_hard and not position_soft:
             return {"hard_match": 1.0, "soft_match": 1.0, "overall_match": 1.0}
 
-        # Build candidate skill dictionaries
-        candidate_hard_dict = {skill.skill: skill.level for skill in candidate_hard}
-        candidate_soft_dict = {skill.skill: skill.level for skill in candidate_soft}
+        # Build employee skill dictionaries
+        employee_hard_dict = {skill.skill: skill.level for skill in employee_hard}
+        employee_soft_dict = {skill.skill: skill.level for skill in employee_soft}
 
         # Check hard skills
         hard_matches = 0
         hard_total = len(position_hard)
 
         for required_skill in position_hard:
-            if required_skill.skill in candidate_hard_dict:
-                candidate_level = candidate_hard_dict[required_skill.skill]
-                # Consider it a match if candidate is at least 80% of required level
-                if candidate_level >= required_skill.level * 0.8:
+            if required_skill.skill in employee_hard_dict:
+                employee_level = employee_hard_dict[required_skill.skill]
+                # Consider it a match if employee is at least 80% of required level
+                if employee_level >= required_skill.level * 0.8:
                     hard_matches += 1
 
         # Check soft skills
@@ -257,9 +257,9 @@ This position requires {len(all_hard_skills)} technical skills and {len(all_soft
         soft_total = len(position_soft)
 
         for required_skill in position_soft:
-            if required_skill.skill in candidate_soft_dict:
-                candidate_level = candidate_soft_dict[required_skill.skill]
-                if candidate_level >= required_skill.level * 0.8:
+            if required_skill.skill in employee_soft_dict:
+                employee_level = employee_soft_dict[required_skill.skill]
+                if employee_level >= required_skill.level * 0.8:
                     soft_matches += 1
 
         hard_match = hard_matches / hard_total if hard_total > 0 else 1.0

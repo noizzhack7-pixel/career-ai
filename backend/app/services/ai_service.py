@@ -9,7 +9,7 @@ project_root = Path(__file__).parent.parent.parent.parent
 env_path = project_root / ".env"
 if env_path.exists():
     load_dotenv(env_path)
-    print(f"Loaded .env from: {env_path}")
+    # print(f"Loaded .env from: {env_path}")
 else:
     # Try current directory
     load_dotenv()
