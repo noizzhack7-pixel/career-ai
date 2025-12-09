@@ -5,9 +5,9 @@ from app.models.Position import Position
 from app.models.Skill import HardSkill, SoftSkill
 
 
-class Candidate(BaseModel):
+class Employee(BaseModel):
     """
-    Represents a candidate with a structured set of skills
+    Represents a employee with a structured set of skills
     and employment history.
     """
 
@@ -15,22 +15,22 @@ class Candidate(BaseModel):
         ...,
         min_length=1,
         max_length=100,
-        description="Full name of the candidate.",
+        description="Full name of the employee.",
     )
 
-    candidate_id: str = Field(
+    employee_id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
-        description="Unique candidate identifier.",
+        description="Unique employee identifier.",
     )
 
     current_position: Optional[Position] = Field(
         default=None,
-        description="Optional current position for the candidate - if currently employed.",
+        description="Optional current position for the employee - if currently employed.",
     )
 
     past_positions: List[Position] = Field(
         default_factory=list,
-        description="List of previously held positions for the candidate.",
+        description="List of previously held positions for the employee.",
     )
 
     hard_skills: List[HardSkill] = Field(

@@ -4,55 +4,377 @@
     "title": "ראש צוות פיתוח",
     "category": "טכנולוגיה",
     "category_icon": "fa-laptop-code",
-    "category_color": "primary",
+    "category_color": "blue",
     "match_percentage": 92,
-    "match_level": "גבוהה",
+    "match_level": "התאמה גבוהה",
     "division": "חטיבת טכנולוגיות",
     "location": "תל אביב",
     "work_model": "היברידי",
-    "description": "הובלת צוות פיתוח Backend בטכנולוגיות Java ו-Spring, ניהול ארכיטקטורה ופיתוח מערכות מורכבות.",
+    "posted_time": "פורסם לפני יומיים",
+    "is_open": true,
+    "description": "אנו מחפשים ראש/ת צוות פיתוח מוכשר/ת להצטרף לחטיבת הטכנולוגיות שלנו ולהוביל צוות של מפתחי Backend מבריקים.",
+    "responsibilities": [
+      "ניהול מקצועי ואישי של צוות מפתחי Java.",
+      "הובלת תהליכי תכנון, ארכיטקטורה ו-Code Review.",
+      "אחריות על איכות הקוד, ביצועים ו-scalability של המערכות.",
+      "עבודה בסביבת Microservices ו-Cloud (AWS).",
+      "שיתוף פעולה עם צוותים אחרים בארגון להשגת מטרות משותפות."
+    ],
     "requirements": [
-      { "skill": "Java & Spring", "status": "מתאים" },
-      { "skill": "מנהיגות", "status": "חוזקה" },
-      { "skill": "ניהול פרויקטים", "status": "פער קטן" }
-    ]
+      { "skill": "ניסיון של 5+ שנים בפיתוח Java ו-Spring Boot", "status": "יש", "note": "תואם - יש לך 5 שנות ניסיון" },
+      { "skill": "ניסיון עם ארכיטקטורת Microservices", "status": "יש", "note": "תואם - מיומנות קיימת בפרופיל" },
+      { "skill": "מיומנויות מנהיגות והובלת צוות", "status": "יש", "note": "תואם - מיומנות רכה \"מנהיגות\" מופיעה כחוזקה" },
+      { "skill": "ניסיון של שנה לפחות בניהול צוות - יתרון", "status": "חסר", "note": "פער קטן - ניתן לסגירה באמצעות קורס ניהול והתנסות מעשית" },
+      { "skill": "ניסיון עם תשתיות ענן (AWS/GCP/Azure) - יתרון", "status": "חסר", "note": "פער - מומלץ קורס הסמכה AWS Solutions Architect" }
+    ],
+    "hard_skills_match": [
+      { "name": "Java & Spring Boot", "matched": true },
+      { "name": "Microservices", "matched": true },
+      { "name": "ניסיון 5+ שנים", "matched": true },
+      { "name": "ארכיטקטורה", "matched": true },
+      { "name": "ניסיון ניהולי", "matched": false, "gap": "פער קטן" }
+    ],
+    "soft_skills_match": [
+      { "name": "מנהיגות", "matched": true },
+      { "name": "קליטה מהירה", "matched": true },
+      { "name": "למידה עצמית", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "תואר במדעי המחשב", "matched": true },
+      { "name": "5 שנות ניסיון רלוונטי", "matched": true }
+    ],
+    "match_summary": "הפרופיל שלך מתאים מאוד לתפקיד הזה. יש לך את כל המיומנויות הטכניות הנדרשות והחוזקות הבין-אישיות המתאימות. פער קטן בניסיון ניהולי ניתן לסגירה בקלות."
   },
   {
     "id": "2",
     "title": "מנהל/ת תקציבים",
     "category": "כספים",
     "category_icon": "fa-chart-line",
-    "category_color": "accent",
+    "category_color": "green",
     "match_percentage": 81,
-    "match_level": "טובה",
+    "match_level": "התאמה טובה",
     "division": "חטיבת הכספים",
     "location": "ירושלים",
     "work_model": "היברידי",
-    "description": "ניהול תקציבי פרויקטים, ניתוח פיננסי ובקרה תקציבית לפרויקטים אסטרטגיים בארגון.",
+    "posted_time": "פורסם לפני 4 ימים",
+    "is_open": true,
+    "description": "אנו מחפשים מנהל/ת תקציבים מנוסה להצטרף לחטיבת הכספים ולנהל את תהליכי התקצוב הארגוניים.",
+    "responsibilities": [
+      "ניהול תהליכי תקצוב שנתיים ורב-שנתיים.",
+      "בקרה ומעקב אחר ביצוע תקציבי.",
+      "הכנת דוחות כספיים והצגתם בפני הנהלה.",
+      "שיתוף פעולה עם מנהלי יחידות לתכנון תקציבי."
+    ],
     "requirements": [
-      { "skill": "חשיבה אנליטית", "status": "חוזקה" },
-      { "skill": "Excel מתקדם", "status": "פער קטן" },
-      { "skill": "הכרת SAP", "status": "חסר" }
-    ]
+      { "skill": "תואר ראשון בכלכלה/חשבונאות", "status": "יש", "note": "תואם - תואר רלוונטי" },
+      { "skill": "ניסיון של 3+ שנים בניהול תקציבים", "status": "יש", "note": "תואם - 4 שנות ניסיון" },
+      { "skill": "שליטה מלאה ב-Excel ומערכות ERP", "status": "חסר", "note": "פער קטן - מומלץ קורס מתקדם" }
+    ],
+    "hard_skills_match": [
+      { "name": "ניהול תקציבים", "matched": true },
+      { "name": "Excel מתקדם", "matched": false, "gap": "פער קטן" },
+      { "name": "מערכות ERP", "matched": false, "gap": "חסר" }
+    ],
+    "soft_skills_match": [
+      { "name": "חשיבה אנליטית", "matched": true },
+      { "name": "דיוק ותשומת לב לפרטים", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "תואר בכלכלה/חשבונאות", "matched": true },
+      { "name": "4 שנות ניסיון רלוונטי", "matched": true }
+    ],
+    "match_summary": "יש לך רקע מתאים בניהול תקציבים. מומלץ להשלים ידע ב-Excel מתקדם ומערכות ERP."
   },
   {
     "id": "3",
     "title": "שותף/ה עסקי HR",
     "category": "משאבי אנוש",
     "category_icon": "fa-users",
-    "category_color": "secondary",
+    "category_color": "purple",
     "match_percentage": 73,
-    "match_level": "בינונית",
+    "match_level": "התאמה בינונית",
     "division": "חטיבת משאבי אנוש",
     "location": "חיפה",
     "work_model": "משרד מלא",
-    "description": "ליווי מנהלים בתהליכי פיתוח ארגוני, גיוס ושימור עובדים, וניהול תהליכי שינוי ארגוני.",
+    "posted_time": "פורסם לפני שבוע",
+    "is_open": false,
+    "description": "אנו מחפשים שותף/ה עסקי HR להצטרף לצוות משאבי האנוש ולתמוך ביחידות העסקיות.",
+    "responsibilities": [
+      "ליווי מנהלים בתהליכי גיוס ופיתוח עובדים.",
+      "ניהול תהליכי הערכה וביצועים.",
+      "פיתוח תוכניות שימור והתפתחות."
+    ],
     "requirements": [
-      { "skill": "תקשורת בין-אישית", "status": "חוזקה" },
-      { "skill": "ניהול שינוי ארגוני", "status": "פער" },
-      { "skill": "תואר בפסיכולוגיה", "status": "חסר" }
-    ]
+      { "skill": "תואר ראשון בניהול משאבי אנוש", "status": "יש", "note": "תואם" },
+      { "skill": "ניסיון של 2+ שנים כשותף עסקי", "status": "חסר", "note": "פער - שנה וחצי ניסיון" }
+    ],
+    "hard_skills_match": [
+      { "name": "ניהול משאבי אנוש", "matched": true },
+      { "name": "גיוס ומיון", "matched": true }
+    ],
+    "soft_skills_match": [
+      { "name": "תקשורת בין-אישית", "matched": true },
+      { "name": "אמפתיה", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "תואר בניהול משאבי אנוש", "matched": true },
+      { "name": "1.5 שנות ניסיון", "matched": false, "gap": "פער קטן" }
+    ],
+    "match_summary": "התאמה בינונית. נדרש להשלים ניסיון כשותף עסקי HR."
+  },
+  {
+    "id": "4",
+    "title": "מפתח/ת Fullstack",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-laptop-code",
+    "category_color": "blue",
+    "match_percentage": 89,
+    "match_level": "התאמה גבוהה",
+    "division": "חטיבת טכנולוגיות",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "posted_time": "פורסם לפני 3 ימים",
+    "is_open": true,
+    "description": "אנו מחפשים מפתח/ת Fullstack מוכשר/ת לפיתוח מערכות ליבה.",
+    "responsibilities": [
+      "פיתוח Frontend ו-Backend.",
+      "עבודה עם React ו-Node.js.",
+      "שיתוף פעולה עם צוותי מוצר ועיצוב."
+    ],
+    "requirements": [
+      { "skill": "ניסיון של 3+ שנים בפיתוח Fullstack", "status": "יש", "note": "תואם" },
+      { "skill": "שליטה ב-React ו-Node.js", "status": "יש", "note": "תואם" }
+    ],
+    "hard_skills_match": [
+      { "name": "React", "matched": true },
+      { "name": "Node.js", "matched": true },
+      { "name": "TypeScript", "matched": true }
+    ],
+    "soft_skills_match": [
+      { "name": "עבודת צוות", "matched": true },
+      { "name": "למידה עצמית", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "3+ שנות ניסיון", "matched": true }
+    ],
+    "match_summary": "התאמה מצוינת לתפקיד. יש לך את כל המיומנויות הנדרשות."
+  },
+  {
+    "id": "5",
+    "title": "אנליסט/ית דאטה",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-database",
+    "category_color": "blue",
+    "match_percentage": 84,
+    "match_level": "התאמה טובה",
+    "division": "חטיבת הדאטה",
+    "location": "מרוחק",
+    "work_model": "עבודה מרחוק",
+    "posted_time": "פורסם היום",
+    "is_open": true,
+    "description": "אנו מחפשים אנליסט/ית דאטה לניתוח נתונים עסקיים.",
+    "responsibilities": [
+      "ניתוח נתונים והפקת תובנות.",
+      "בניית דשבורדים ב-Tableau/Power BI.",
+      "עבודה עם SQL ו-Python."
+    ],
+    "requirements": [
+      { "skill": "ניסיון של 2+ שנים בניתוח דאטה", "status": "יש", "note": "תואם" },
+      { "skill": "שליטה ב-SQL ו-Python", "status": "יש", "note": "תואם" }
+    ],
+    "hard_skills_match": [
+      { "name": "SQL", "matched": true },
+      { "name": "Python", "matched": true },
+      { "name": "Tableau/Power BI", "matched": true }
+    ],
+    "soft_skills_match": [
+      { "name": "חשיבה אנליטית", "matched": true },
+      { "name": "הצגת נתונים", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "2+ שנות ניסיון", "matched": true }
+    ],
+    "match_summary": "התאמה טובה מאוד. מיומנויות הדאטה שלך מתאימות לתפקיד."
+  },
+  {
+    "id": "6",
+    "title": "מנהל/ת פרויקטים",
+    "category": "לוגיסטיקה",
+    "category_icon": "fa-tasks",
+    "category_color": "orange",
+    "match_percentage": 68,
+    "match_level": "התאמה בינונית",
+    "division": "חטיבת תפעול",
+    "location": "חיפה",
+    "work_model": "היברידי",
+    "posted_time": "פורסם לפני שבוע",
+    "is_open": false,
+    "description": "אנו מחפשים מנהל/ת פרויקטים לניהול פרויקטים תפעוליים.",
+    "responsibilities": [
+      "ניהול פרויקטים מקצה לקצה.",
+      "תיאום בין צוותים.",
+      "ניהול לוחות זמנים ותקציבים."
+    ],
+    "requirements": [
+      { "skill": "ניסיון של 3+ שנים בניהול פרויקטים", "status": "חסר", "note": "פער - שנתיים ניסיון" }
+    ],
+    "hard_skills_match": [
+      { "name": "ניהול פרויקטים", "matched": false, "gap": "פער" }
+    ],
+    "soft_skills_match": [
+      { "name": "ארגון", "matched": true },
+      { "name": "תקשורת", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "2 שנות ניסיון", "matched": false, "gap": "פער" }
+    ],
+    "match_summary": "נדרש לצבור עוד ניסיון בניהול פרויקטים."
+  },
+  {
+    "id": "7",
+    "title": "מנהל/ת מוצר",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-lightbulb",
+    "category_color": "blue",
+    "match_percentage": 79,
+    "match_level": "התאמה טובה",
+    "division": "חטיבת מוצר",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "posted_time": "פורסם לפני 5 ימים",
+    "is_open": true,
+    "description": "אנו מחפשים מנהל/ת מוצר להובלת אסטרטגיית המוצר.",
+    "responsibilities": [
+      "הגדרת חזון ואסטרטגיה.",
+      "עבודה עם צוותי פיתוח ועיצוב.",
+      "ניתוח שוק ומתחרים."
+    ],
+    "requirements": [
+      { "skill": "ניסיון של 3+ שנים בניהול מוצר", "status": "יש", "note": "תואם" }
+    ],
+    "hard_skills_match": [
+      { "name": "ניהול מוצר", "matched": true },
+      { "name": "Agile/Scrum", "matched": true }
+    ],
+    "soft_skills_match": [
+      { "name": "חשיבה אסטרטגית", "matched": true },
+      { "name": "תקשורת", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "3+ שנות ניסיון", "matched": true }
+    ],
+    "match_summary": "התאמה טובה לתפקיד ניהול מוצר."
+  },
+  {
+    "id": "8",
+    "title": "ארכיטקט/ית תוכנה",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-sitemap",
+    "category_color": "blue",
+    "match_percentage": 88,
+    "match_level": "התאמה גבוהה",
+    "division": "חטיבת טכנולוגיות",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "posted_time": "פורסם לפני יום",
+    "is_open": true,
+    "description": "אנו מחפשים ארכיטקט/ית תוכנה להוביל את התכנון הטכני של מערכות הליבה.",
+    "responsibilities": [
+      "תכנון ארכיטקטורה למערכות מורכבות.",
+      "הגדרת סטנדרטים טכנולוגיים.",
+      "מנטורינג לצוותי הפיתוח.",
+      "בחינת טכנולוגיות חדשות."
+    ],
+    "requirements": [
+      { "skill": "ניסיון של 7+ שנים בפיתוח תוכנה", "status": "יש", "note": "תואם" },
+      { "skill": "ניסיון בתכנון ארכיטקטורה", "status": "יש", "note": "תואם" },
+      { "skill": "ידע ב-Cloud Architecture", "status": "חסר", "note": "פער קטן - מומלץ הסמכה" }
+    ],
+    "hard_skills_match": [
+      { "name": "System Design", "matched": true },
+      { "name": "Microservices", "matched": true },
+      { "name": "Cloud Architecture", "matched": false, "gap": "פער קטן" }
+    ],
+    "soft_skills_match": [
+      { "name": "מנהיגות טכנית", "matched": true },
+      { "name": "תקשורת", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "7+ שנות ניסיון", "matched": true }
+    ],
+    "match_summary": "התאמה גבוהה. מומלץ להשלים ידע ב-Cloud Architecture."
+  },
+  {
+    "id": "9",
+    "title": "DevOps Engineer",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-server",
+    "category_color": "blue",
+    "match_percentage": 76,
+    "match_level": "התאמה טובה",
+    "division": "חטיבת טכנולוגיות",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "posted_time": "פורסם לפני 3 ימים",
+    "is_open": true,
+    "description": "אנו מחפשים DevOps Engineer לניהול תשתיות ואוטומציה.",
+    "responsibilities": [
+      "ניהול תשתיות ענן.",
+      "בניית תהליכי CI/CD.",
+      "אוטומציה של תהליכים.",
+      "מוניטורינג ו-Alerting."
+    ],
+    "requirements": [
+      { "skill": "ניסיון עם Docker/Kubernetes", "status": "חסר", "note": "פער - נדרש קורס" },
+      { "skill": "ניסיון עם AWS/Azure", "status": "חסר", "note": "פער - מומלץ הסמכה" },
+      { "skill": "Scripting (Python/Bash)", "status": "יש", "note": "תואם" }
+    ],
+    "hard_skills_match": [
+      { "name": "Python/Bash", "matched": true },
+      { "name": "Docker/K8s", "matched": false, "gap": "חסר" },
+      { "name": "AWS/Azure", "matched": false, "gap": "חסר" }
+    ],
+    "soft_skills_match": [
+      { "name": "פתרון בעיות", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "רקע טכני", "matched": true }
+    ],
+    "match_summary": "נדרש להשלים ידע ב-Cloud ו-Containerization."
+  },
+  {
+    "id": "10",
+    "title": "מעצב/ת UX/UI",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-palette",
+    "category_color": "blue",
+    "match_percentage": 65,
+    "match_level": "התאמה בינונית",
+    "division": "חטיבת מוצר",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "posted_time": "פורסם לפני שבועיים",
+    "is_open": true,
+    "description": "אנו מחפשים מעצב/ת UX/UI לעיצוב חוויית משתמש למוצרים הדיגיטליים.",
+    "responsibilities": [
+      "עיצוב ממשקי משתמש.",
+      "ביצוע מחקרי משתמשים.",
+      "עבודה עם צוותי פיתוח."
+    ],
+    "requirements": [
+      { "skill": "ניסיון של 3+ שנים בעיצוב UX/UI", "status": "חסר", "note": "פער - נדרש ניסיון" },
+      { "skill": "שליטה ב-Figma/Sketch", "status": "חסר", "note": "פער - נדרש ידע" }
+    ],
+    "hard_skills_match": [
+      { "name": "Figma", "matched": false, "gap": "חסר" },
+      { "name": "UX Research", "matched": false, "gap": "חסר" }
+    ],
+    "soft_skills_match": [
+      { "name": "יצירתיות", "matched": true }
+    ],
+    "experience_match": [
+      { "name": "ניסיון בעיצוב", "matched": false, "gap": "חסר" }
+    ],
+    "match_summary": "נדרשת הכשרה משמעותית בתחום העיצוב."
   }
 ]
-
-

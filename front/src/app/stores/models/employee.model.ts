@@ -148,6 +148,7 @@ export interface ExtendedProfile {
   name: string;
   title: string;
   avatar: string;
+  photo_url?: string;
   cover_image: string;
   is_active: boolean;
   organization: Organization;
@@ -182,6 +183,7 @@ export interface EmployeeProfile {
   name: string;
   title: string;
   avatar: string;
+  photo_url?: string;
   cover_image: string;
   organization: Organization;
   details: UserDetails;

@@ -15,11 +15,12 @@ import {
   NotificationItem,
   CareerPreferences
 } from '../stores/models';
+import { DropdownComponent, DropdownOption } from '../shared/dropdown/dropdown.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, DropdownComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
@@ -42,10 +43,20 @@ export class ProfileComponent implements OnInit {
   readonly showWishlistModal = this._showWishlistModal.asReadonly();
   readonly selectedWishType = this._selectedWishType.asReadonly();
 
+  // Dropdown options
+  selectedRole = signal<string>('');
+  roleOptions: DropdownOption[] = [
+    { value: '', label: 'בחרי תפקיד מהרשימה...', icon: 'fa-solid fa-briefcase' },
+    { value: 'team-lead', label: 'ראש צוות פיתוח Backend', icon: 'fa-solid fa-users' },
+    { value: 'architect', label: 'ארכיטקט תוכנה בכיר', icon: 'fa-solid fa-sitemap' },
+    { value: 'pm', label: 'מנהל/ת מוצר טכני', icon: 'fa-solid fa-clipboard-list' },
+    { value: 'tech-lead', label: 'Tech Lead', icon: 'fa-solid fa-user-tie' }
+  ];
+
   // Computed signals
   readonly fullName = computed(() => this._profile()?.name ?? '');
   readonly title = computed(() => this._profile()?.title ?? '');
-  readonly avatar = computed(() => this._profile()?.avatar ?? '');
+  readonly avatar = computed(() => this._profile()?.avatar || this._profile()?.photo_url || '');
   readonly coverImage = computed(() => this._profile()?.cover_image ?? '');
   readonly isActive = computed(() => this._profile()?.is_active ?? false);
   readonly organization = computed(() => this._profile()?.organization ?? null);
@@ -74,9 +85,14 @@ export class ProfileComponent implements OnInit {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.api.get<ExtendedProfile>(ApiService.ENDPOINTS.CANDIDATES.ME).subscribe({
+    this.api.get<ExtendedProfile>(ApiService.ENDPOINTS.EMPLOYEES.ME).subscribe({
       next: (profile) => {
-        this._profile.set(profile);
+        // Prefer photo_url when present
+        const mergedProfile: ExtendedProfile = {
+          ...profile,
+          avatar: profile.photo_url || profile.avatar,
+        };
+        this._profile.set(mergedProfile);
         this._isLoading.set(false);
       },
       error: (error) => {

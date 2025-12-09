@@ -18,13 +18,15 @@
       theme: {
         extend: {
           colors: {
-            primary: { DEFAULT: '#650F54', dark: '#541388', soft: '#EAD8FD' },
+            primary: { DEFAULT: '#541388', light: '#EAD8FD', dark: '#650F54', soft: '#EAD8FD' },
             secondary: { DEFAULT: '#FB8F67', light: '#FFE3DA' },
-            accent: { DEFAULT: '#9DD9D2', dark: '#4F8A82' },
+            accent: { DEFAULT: '#9DD9D2', dark: '#650F54' },
+            neutral: { dark: '#1F2937', medium: '#6B7280', light: '#E5E7EB', extralight: '#F9FAFB' },
             text: { primary: '#2A2A2A', secondary: '#5A5A5A' },
             border: { light: '#E6E6E6' },
             bg: { DEFAULT: '#FFFFFF' },
-            status: { success: '#16A34A', warning: '#FACC15', danger: '#DC2626', info: '#2563EB' }
+            status: { success: '#16A34A', warning: '#FACC15', danger: '#DC2626', info: '#2563EB' },
+            category: { tech: '#7C3AED', finance: '#EC4899', hr: '#14B8A6', logistics: '#FACC15', operations: '#FB8F67' }
           },
           fontFamily: { 'heebo': ['Heebo', 'sans-serif'] },
           borderRadius: { 'card': '16px', 'button': '8px', 'pill': '999px' },

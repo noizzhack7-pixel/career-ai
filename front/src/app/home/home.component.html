@@ -214,9 +214,9 @@
                     <div class="p-6">
                         <div class="grid grid-cols-3 gap-5">
                             <!-- Dynamic Position Cards -->
-                            <div *ngFor="let position of positionsStore.positions()" 
+                            <div *ngFor="let position of topPositions()" 
                                  [id]="'job-card-' + position.id"
-                                 class="job-card relative border rounded-card p-6 hover:shadow-panel transition-all cursor-pointer bg-bg"
+                                 class="job-card relative border rounded-card p-6 hover:shadow-panel transition-all cursor-pointer bg-bg flex flex-col h-full"
                                  [ngClass]="getJobCardBorderClass(position.category_color)"
                                  [class.ring-2]="positionsStore.selectedPositionId() === position.id" 
                                  [class.ring-primary]="positionsStore.selectedPositionId() === position.id"
@@ -255,7 +255,7 @@
                                     </div>
                                 </div>
 
-                                <button class="w-full bg-primary text-white py-3 rounded-button text-sm font-semibold hover:bg-primary-dark transition-colors h-[44px]">
+                                <button class="mt-auto w-full bg-primary text-white py-3 rounded-button text-sm font-semibold hover:bg-primary-dark transition-colors h-[44px]">
                                     <i class="fa-solid fa-eye ml-2"></i>צפה בפירוט המשרה
                                 </button>
                             </div>
@@ -651,10 +651,10 @@
                         <h3 class="text-lg font-bold text-primary">שאלון התאמה</h3>
                     </div>
                     <p class="text-sm text-text-primary mb-4">עזור/י לנו לדייק את ההתאמות עבורך. השלמת השאלון תשפר את איכות הנתונים שלך.</p>
-                    <a routerLink="/questionnaire" class="block w-full bg-primary-dark text-white font-bold py-3 rounded-button hover:bg-primary transition-colors h-[44px] text-center leading-[20px]">
+                    <button (click)="startQuestionnaire()" class="block w-full bg-primary-dark text-white font-bold py-3 rounded-button hover:bg-primary transition-colors h-[44px] text-center leading-[20px]">
                         התחל/י שאלון (5 דק')
                         <i class="fa-solid fa-arrow-left ml-2 text-xs"></i>
-                    </a>
+                    </button>
                 </div>
 
                 <!-- AI Guidance Card -->

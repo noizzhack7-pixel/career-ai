@@ -22,9 +22,22 @@ button {
   transition: all 0.2s ease;
 }
 
-button:hover {
+button[class*="bg-"]:not(.bg-transparent):hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Underline text on hover for buttons without explicit background class */
+button:not([class*="bg-"]):hover,
+button.bg-transparent:hover {
+  text-decoration: underline;
+}
+
+button:not([class*="bg-"]):focus,
+button.bg-transparent:focus {
+  box-shadow: none !important;
+  outline: none !important;
+  border-color: inherit !important;
 }
 
 button:disabled {
@@ -32,4 +45,3 @@ button:disabled {
   cursor: not-allowed;
   transform: none;
 }
-

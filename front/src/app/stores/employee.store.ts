@@ -28,7 +28,10 @@ export class EmployeeStore {
   // Computed signals
   readonly fullName = computed(() => this._profile()?.name ?? '');
   readonly title = computed(() => this._profile()?.title ?? '');
-  readonly avatar = computed(() => this._profile()?.avatar ?? '');
+  readonly avatar = computed(() => {
+    const profile = this._profile();
+    return profile?.avatar || profile?.photo_url || '';
+  });
   readonly metrics = computed(() => this._profile()?.metrics ?? null);
   readonly softSkills = computed(() => this._profile()?.soft_skills ?? []);
   readonly hardSkills = computed(() => this._profile()?.hard_skills ?? []);
@@ -41,10 +44,16 @@ export class EmployeeStore {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.api.get<CandidateProfileResponse>(ApiService.ENDPOINTS.CANDIDATES.PROFILE(candidateId)).subscribe({
+    this.api.get<CandidateProfileResponse>(ApiService.ENDPOINTS.EMPLOYEES.PROFILE(candidateId)).subscribe({
       next: (data) => {
         const { idp, ...profile } = data;
-        this._profile.set(profile as EmployeeProfile);
+        // Prefer photo_url when present
+        const mergedProfile: EmployeeProfile = {
+          ...(profile as EmployeeProfile),
+          avatar: (profile as any).photo_url || (profile as EmployeeProfile).avatar,
+          photo_url: (profile as any).photo_url,
+        };
+        this._profile.set(mergedProfile);
         if (idp?.progress) {
           this._idpProgress.set(idp.progress);
         }
@@ -63,10 +72,16 @@ export class EmployeeStore {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.api.get<CandidateProfileResponse>(ApiService.ENDPOINTS.CANDIDATES.ME).subscribe({
+    this.api.get<CandidateProfileResponse>(ApiService.ENDPOINTS.EMPLOYEES.ME).subscribe({
       next: (data) => {
         const { idp, ...profile } = data;
-        this._profile.set(profile as EmployeeProfile);
+        // Prefer photo_url when present
+        const mergedProfile: EmployeeProfile = {
+          ...(profile as EmployeeProfile),
+          avatar: (profile as any).photo_url || (profile as EmployeeProfile).avatar,
+          photo_url: (profile as any).photo_url,
+        };
+        this._profile.set(mergedProfile);
         if (idp?.progress) {
           this._idpProgress.set(idp.progress);
         }

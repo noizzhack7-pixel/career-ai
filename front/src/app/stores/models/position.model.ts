@@ -2,7 +2,14 @@
 
 export interface PositionRequirement {
   skill: string;
-  status: string;
+  status: 'יש' | 'חסר' | string;
+  note?: string;
+}
+
+export interface SkillMatch {
+  name: string;
+  matched: boolean;
+  gap?: string;
 }
 
 export interface Position {
@@ -18,6 +25,13 @@ export interface Position {
   work_model: string;
   description: string;
   requirements: PositionRequirement[];
+  responsibilities?: string[];
+  posted_time?: string;
+  is_open?: boolean;
+  hard_skills_match?: SkillMatch[];
+  soft_skills_match?: SkillMatch[];
+  experience_match?: SkillMatch[];
+  match_summary?: string;
 }
 
 export interface PositionsState {
@@ -27,4 +41,10 @@ export interface PositionsState {
   error: string | null;
 }
 
-
+export interface PositionFilters {
+  search: string;
+  category: string;
+  location: string;
+  grade: string;
+  showOpenOnly: boolean;
+}
