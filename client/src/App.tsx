@@ -150,7 +150,7 @@ export default function App() {
 
       <main
         id="main-content"
-        className="max-w-[1600px] mx-auto p-10"
+        className="max-w-[1600px] mx-auto p-10 overflow-y-hidden"
       >
         <Routes>
           <Route

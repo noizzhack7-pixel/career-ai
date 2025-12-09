@@ -217,6 +217,7 @@ export const JobsPage = () => {
   const [showBestMatch, setShowBestMatch] = useState<boolean>(false);
   const [selectedJobId, setSelectedJobId] = useState<number>(1);
   const [likedJobs, setLikedJobs] = useState<Set<number>>(new Set([1])); // Track liked jobs
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const toggleLike = (jobId: number) => {
     setLikedJobs(prev => {
@@ -232,6 +233,17 @@ export const JobsPage = () => {
 
   const filteredJobs = (() => {
     let jobs = allJobsData;
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.trim().toLowerCase();
+      jobs = jobs.filter(job =>
+        job.title.toLowerCase().includes(query) ||
+        job.department.toLowerCase().includes(query) ||
+        job.category.toLowerCase().includes(query) ||
+        job.location.toLowerCase().includes(query)
+      );
+    }
 
     if (selectedCategory !== 'all') {
       jobs = jobs.filter(job => job.category === selectedCategory);
@@ -269,7 +281,7 @@ export const JobsPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex flex-col -m-10 p-8 max-w-[1800px] mx-auto overflow-y-auto">
+    <div className="min-h-[calc(100vh-80px)] flex flex-col -m-10 px-8 py-3 max-w-[1800px] mx-auto overflow-y-hidden">
       <style>{`
         .job-detail-content h3 { font-size: 1.125rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #541388; }
         .job-detail-content p { font-size: 0.95rem; line-height: 1.6; color: #1F2937; margin-bottom: 1rem; }
@@ -310,6 +322,8 @@ export const JobsPage = () => {
                 id="job-search"
                 type="text"
                 placeholder="חיפוש משרה..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 pr-10 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
               />
               <Search className="absolute top-1/2 -translate-y-1/2 right-4 text-neutral-medium w-4 h-4" />
@@ -382,43 +396,51 @@ export const JobsPage = () => {
       <div className="grid grid-cols-12 gap-6 flex-grow min-h-0">
 
         {/* Jobs List Column */}
-        <div className="col-span-4 h-full flex flex-col max-h-[calc(100vh-280px)]">
-          <div id="jobs-list-container" className="flex-grow overflow-y-auto pr-2 space-y-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
-            {filteredJobs.map(job => (
-              <div
-                key={job.id}
-                onClick={() => setSelectedJobId(job.id)}
-                className={`job-card ${job.id === selectedJobId ? 'bg-primary-light/40 border-primary' : 'bg-white hover:bg-primary-light/20 border-transparent'} border-r-4 p-4 rounded-card cursor-pointer transition-all`}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-grow">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-bold text-primary text-lg">{job.title}</h3>
-                      <span className={`text-xs px-2 py-1 rounded-pill ${job.categoryColor} font-semibold`}>{job.category}</span>
-                    </div>
-                    <p className="text-sm text-neutral-dark mb-1">
-                      {job.department} <span className="text-neutral-300">|</span> {
-                        job.category === 'טכנולוגיה' ? 'מחלקת פיתוח' :
-                          job.category === 'כספים' ? 'מחלקת חשבות' :
-                            job.category === 'משאבי אנוש' ? 'מחלקת גיוס' :
-                              'מחלקה כללית'
-                      }
-                    </p>
-
-                  </div>
-                  <div className="flex flex-col items-center flex-shrink-0 mr-3 gap-1">
-                    <MatchScore
-                      score={job.matchPercent}
-                      compact={true}
-                    />
-                  </div>
-                </div>
-                <div className="text-xs text-neutral-medium flex items-center gap-2">
-                  <Clock className="w-3 h-3" />
-                  <span>{job.postedTime}</span>
-                </div>
+        <div className="col-span-4 flex flex-col" style={{ maxHeight: "calc(100vh - 270px)" }}>
+          <div id="jobs-list-container" className="px-2 flex-grow overflow-y-auto pl-2 space-y-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+            {filteredJobs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <Search className="w-12 h-12 text-neutral-300 mb-4" />
+                <p className="text-neutral-medium text-sm">לא נמצאו משרות התואמות לחיפוש</p>
+                <p className="text-neutral-300 text-xs mt-1">נסה לשנות את מילות החיפוש או הסינון</p>
               </div>
-            ))}
+            ) : (
+              filteredJobs.map(job => (
+                <div
+                  key={job.id}
+                  onClick={() => setSelectedJobId(job.id)}
+                  className={`job-card ${job.id === selectedJobId ? 'bg-primary-light/40 border-primary' : 'bg-white hover:bg-primary-light/20 border-transparent'} border-r-4 p-4 rounded-card cursor-pointer transition-all`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-grow">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-bold text-primary text-lg">{job.title}</h3>
+                        <span className={`text-xs px-2 py-1 rounded-pill ${job.categoryColor} font-semibold`}>{job.category}</span>
+                      </div>
+                      <p className="text-sm text-neutral-dark mb-1">
+                        {job.department} <span className="text-neutral-300">|</span> {
+                          job.category === 'טכנולוגיה' ? 'מחלקת פיתוח' :
+                            job.category === 'כספים' ? 'מחלקת חשבות' :
+                              job.category === 'משאבי אנוש' ? 'מחלקת גיוס' :
+                                'מחלקה כללית'
+                        }
+                      </p>
+
+                    </div>
+                    <div className="flex flex-col items-center flex-shrink-0 mr-3 gap-1">
+                      <MatchScore
+                        score={job.matchPercent}
+                        compact={true}
+                      />
+                    </div>
+                  </div>
+                  <div className="text-xs text-neutral-medium flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>{job.postedTime}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -462,7 +484,7 @@ export const JobsPage = () => {
                 </div>
 
                 {/* Scrollable Content */}
-                <div className="p-6 scorllableJobDiv flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+                <div style={{ maxHeight: "calc(100vh - 400px)", marginLeft: "0.5rem", marginBottom: "0.5rem", marginTop: "0.5rem" }} className="p-6 flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
                   {/* Personal Match Analysis */}
                   <div className="mb-8 bg-transparent p-0">
                     <div className="space-y-6">
@@ -470,11 +492,11 @@ export const JobsPage = () => {
                       {/* Match Breakdown */}
                       <div>
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="font-bold text-primary text-lg">למה אני מתאימה לתפקיד הזה?</h3>
-                          <div className="flex items-center gap-3 bg-white/50 px-3 py-2 rounded-card border border-primary/10 w-full">
+                          <h3 className="font-bold text-primary text-lg">למה אני מתאימ.ה לתפקיד הזה?</h3>
+                          <div className="flex items-center gap-3 bg-white/50 px-3 py-2 rounded-card ">
                             <MatchScore
                               score={selectedJob.matchPercent}
-                              compact={false}
+                              compact={true}
                             />
                           </div>
                         </div>
