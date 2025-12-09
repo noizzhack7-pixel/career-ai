@@ -6,6 +6,15 @@ from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel, Field
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from typing import cast
+
+# LLM (LangChain)
+try:
+    from langchain_openai import ChatOpenAI  # type: ignore
+    from langchain_core.prompts import ChatPromptTemplate  # type: ignore
+except Exception:  # pragma: no cover - optional dependency at runtime
+    ChatOpenAI = None  # type: ignore
+    ChatPromptTemplate = None  # type: ignore
 
 load_dotenv()
 
@@ -48,7 +57,19 @@ class SkillGapResponse(BaseModel):
     soft_skill_gaps: List[SkillGap]
     summary: Dict[str, Any]
 
+class Course(BaseModel):
+    name: str
+    id: int
+    description: str
 
+class LearningRecommendationModel(BaseModel):
+    plan: str
+    ids: List[int]
+
+
+class LearningRecommendationResponse(BaseModel):
+    plan: str
+    courses: List[Course]
 # -------------------------------------------------------------------
 # HELPERS
 # -------------------------------------------------------------------
@@ -364,3 +385,129 @@ def get_skill_gaps(
         )
 
     return responses
+
+
+@router.post("/learning_recommendations", response_model=LearningRecommendationResponse)
+def get_learning_recommendations(employee_number: int, profile_id: int):
+    """
+    Build a prompt with employee info, target profile, skill gaps and available courses,
+    then use LangChain `with_structured_output` to get a LearningRecommendationModel,
+    finally return a LearningRecommendationResponse with plan and concrete course objects.
+    """
+    # 1) Fetch data
+    employee = _get_candidate(employee_number)
+    profile = _get_profile(profile_id)
+
+    # 2) Parse skills and compute gaps
+    cand_hard = _parse_skills(employee.get("hard_skills"))
+    cand_soft = _parse_skills(employee.get("soft_skills"))
+    req_hard = _parse_skills(profile.get("hard_skills"))
+    req_soft = _parse_skills(profile.get("soft_skills"))
+
+    hard_gaps = _analyze_skill_gaps(cand_hard, req_hard)
+    soft_gaps = _analyze_skill_gaps(cand_soft, req_soft)
+
+    # 3) Fetch courses catalog (assume courses table / endpoint exists)
+    try:
+        courses_resp = (
+            supabase.table("courses").select("id, course_name, course_description").execute()
+        )
+        courses_data = courses_resp.data or []
+    except Exception:  # fallback empty catalog if table absent
+        courses_data = []
+
+    # Map id->course for quick lookup later
+    id_to_course: Dict[int, Course] = {}
+    for c in courses_data:
+        try:
+            cid = int(c.get("id"))
+            id_to_course[cid] = Course(
+                id=cid,
+                name=str(c.get("course_name") or ""),
+                description=str(c.get("course_description") or ""),
+            )
+        except Exception:
+            continue
+    print(id_to_course)
+    # 4) Prepare LLM
+    if ChatOpenAI is None or ChatPromptTemplate is None:
+        raise HTTPException(status_code=500, detail="LLM dependencies are not available on server")
+
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    if not openai_key:
+        raise HTTPException(status_code=500, detail="OPENAI_API_KEY is not configured")
+
+    model_name = os.environ.get("OPENAI_MODEL", "gpt-4o")
+    llm = ChatOpenAI(model=model_name, temperature=0.2)
+    structured_llm = llm.with_structured_output(LearningRecommendationModel)
+
+    # 5) Build prompt
+    employee_name = f"{employee.get('first_name', '')} {employee.get('last_name', '')}".strip()
+    profile_name = str(profile.get("profile_name") or profile.get("position_name") or "")
+
+    def gaps_block(title: str, gaps: List[SkillGap]) -> str:
+        lines = [title + ":"]
+        if not gaps:
+            lines.append("  - none")
+        else:
+            for g in gaps:
+                lines.append(
+                    f"  - {g.skill}: candidate={g.candidate_level}, required={g.required_level}, gap={g.gap}, status={g.status}"
+                )
+        return "\n".join(lines)
+
+    def dict_block(title: str, d: Dict[str, int]) -> str:
+        lines = [title + ":"]
+        if not d:
+            lines.append("  - none")
+        else:
+            for k, v in sorted(d.items()):
+                lines.append(f"  - {k}: {v}")
+        return "\n".join(lines)
+
+    courses_block_lines = ["Available courses (choose relevant by ID):"]
+    if id_to_course:
+        for cid, course in sorted(id_to_course.items(), key=lambda x: x[0]):
+            courses_block_lines.append(f"  - [{cid}] {course.name}: {course.description}")
+    else:
+        courses_block_lines.append("  - (no courses available)")
+    courses_block = "\n".join(courses_block_lines)
+    print(courses_block)
+
+    full_prompt = "\n".join(
+        [
+            "You are an expert learning and development advisor.",
+            "Given the employee's current skills and the target profile requirements,",
+            "analyze the gaps and propose a concise, actionable learning plan.",
+            "Return a structured response with a textual plan and a list of course IDs that best address the gaps.",
+            "\nContext:",
+            f"Employee: {employee_name} (#{employee_number})",
+            f"Target profile: {profile_name} (#{profile_id})",
+            dict_block("Candidate hard skills", cand_hard),
+            dict_block("Candidate soft skills", cand_soft),
+            dict_block("Required hard skills", req_hard),
+            dict_block("Required soft skills", req_soft),
+            gaps_block("Hard skill gaps", hard_gaps),
+            gaps_block("Soft skill gaps", soft_gaps),
+            "\n" + courses_block,
+            "\nInstructions:",
+            "- Create a short plan (3-5 bullets) prioritizing the most impactful upskilling steps.",
+            "You must explain which gaps the courses help to reduce in order to meet the profiles requirements."
+            "- Select 1-3 course IDs that directly help close the most important gaps.",
+            "- Prefer beginner/intermediate where gaps are large; advanced for strengths only when useful.",
+            "respond ONLY in Hebrew!"
+        ]
+    )
+
+    prompt = ChatPromptTemplate.from_template("{input}")
+    print(full_prompt)
+    chain = prompt | structured_llm
+    rec: LearningRecommendationModel = cast(LearningRecommendationModel, chain.invoke({"input": full_prompt}))
+
+    # 6) Map ids back to Course objects and build response
+    selected_courses: List[Course] = []
+    for cid in rec.ids:
+        if cid in id_to_course:
+            selected_courses.append(id_to_course[cid])
+
+    return LearningRecommendationResponse(plan=rec.plan, courses=selected_courses)
