@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.app.api.v1.routers import skills, positions, candidates, smart, assessment
+from backend.app.api.v1.routers import skills, positions, smart, assessment
 
 app = FastAPI(
     title="Career AI API",
@@ -21,7 +21,6 @@ app.add_middleware(
 # Include routers
 app.include_router(skills.router, prefix="/api/v1")
 app.include_router(positions.router, prefix="/api/v1")
-app.include_router(candidates.router, prefix="/api/v1")
 app.include_router(smart.router, prefix="/api/v1")
 app.include_router(assessment.router, prefix="/api/v1")
 
