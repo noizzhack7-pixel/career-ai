@@ -73,6 +73,23 @@ class LearningRecommendationResponse(BaseModel):
 # -------------------------------------------------------------------
 # HELPERS
 # -------------------------------------------------------------------
+def _normalize_minmax(scores: List[float]) -> List[float]:
+    """
+    Normalize any list of real values to [0,1] while preserving order.
+    If all scores are equal, return 0.5 for all (neutral value).
+    """
+    if not scores:
+        return scores
+
+    min_s = min(scores)
+    max_s = max(scores)
+
+    if max_s == min_s:  # avoid division by zero; all equal
+        return [0.5] * len(scores)
+
+    return [((s - min_s) / (max_s - min_s))*100 for s in scores]
+
+
 def _get_candidate(candidate_id: int):
     resp = (
         supabase.table("structured_employees")
@@ -106,11 +123,12 @@ def _get_position(position_id: int):
 
 
 def _get_profile(profile_id: int):
+    # NOTE: include description here so we can send it back in responses
     resp = (
         supabase.table("profiles")
         .select(
             "profile_id, position_id, profile_name, position_name, "
-            "hard_skills, soft_skills"
+            "description, hard_skills, soft_skills"
         )
         .eq("profile_id", profile_id)
         .single()
@@ -130,7 +148,7 @@ def _get_profile_by_position_id(position_id: int):
         supabase.table("profiles")
         .select(
             "profile_id, position_id, profile_name, position_name, "
-            "hard_skills, soft_skills"
+            "description, hard_skills, soft_skills"
         )
         .eq("position_id", position_id)
         .limit(1_000)
@@ -191,6 +209,22 @@ def _analyze_skill_gaps(
     return gaps
 
 
+def _get_profiles_for_position(position_id: int) -> List[Dict[str, Any]]:
+    """
+    Return ALL profiles for a given position_id.
+    """
+    resp = (
+        supabase.table("profiles")
+        .select(
+            "profile_id, position_id, profile_name, position_name, "
+            "description, hard_skills, soft_skills"
+        )
+        .eq("position_id", position_id)
+        .execute()
+    )
+    return resp.data or []
+
+
 # -------------------------------------------------------------------
 # SMART ENDPOINTS (RPC POWERED)
 # -------------------------------------------------------------------
@@ -213,21 +247,32 @@ def get_top_candidates_for_position(
 
     rows = rpc.data or []
 
-    results = [
-        MatchResult(
-            candidate_id=row["candidate_id"],
-            position_id=position_id,
-            profile_id=row["profile_id"],
-            name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
-            score=row["score"],
-            extra={
-                # per-candidate profile info from SQL
-                "position_name": row.get("position_name") or position["position_name"],
-                "profile_name": row.get("profile_name"),
-            },
+    # ---- normalize scores to [0,1] while preserving order ----
+    scores = [row["score"] for row in rows]
+    norm_scores = _normalize_minmax(scores)
+
+    results = []
+    for row, norm_score in zip(rows, norm_scores):
+        # fetch full profile to get description & skills
+        profile = _get_profile(row["profile_id"])
+
+        results.append(
+            MatchResult(
+                candidate_id=row["candidate_id"],
+                position_id=position_id,
+                profile_id=row["profile_id"],
+                name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
+                score=norm_score,
+                extra={
+                    # requested extra data
+                    "profile_name": profile.get("profile_name"),
+                    "position_name": position.get("position_name"),
+                    "description": profile.get("description"),
+                    "hard_skills": profile.get("hard_skills"),
+                    "soft_skills": profile.get("soft_skills"),
+                },
+            )
         )
-        for row in rows
-    ]
 
     return results
 
@@ -248,13 +293,17 @@ def get_similar_candidates(
 
     rows = rpc.data or []
 
+    # ---- normalize scores to [0,1] while preserving order ----
+    scores = [row["score"] for row in rows]
+    norm_scores = _normalize_minmax(scores)
+
     return [
         MatchResult(
             candidate_id=row["candidate_id"],
             name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
-            score=row["score"],
+            score=norm_score,
         )
-        for row in rows
+        for row, norm_score in zip(rows, norm_scores)
     ]
 
 
@@ -274,17 +323,35 @@ def get_top_positions_for_candidate(
 
     rows = rpc.data or []
 
-    return [
-        MatchResult(
-            candidate_id=candidate_id,
-            position_id=row["position_id"],
-            profile_id=row["profile_id"],
-            name=row.get("position_name") or row.get("profile_name"),
-            score=row["score"],
-            extra={"profile_name": row.get("profile_name")},
+    # ---- normalize scores to [0,1] while preserving order ----
+    scores = [row["score"] for row in rows]
+    norm_scores = _normalize_minmax(scores)
+
+    results: List[MatchResult] = []
+    for row, norm_score in zip(rows, norm_scores):
+        # row: profile_id, position_id, profile_name, position_name, score
+        profile = _get_profile(row["profile_id"])
+        position = _get_position(row["position_id"])
+
+        results.append(
+            MatchResult(
+                candidate_id=candidate_id,
+                position_id=row["position_id"],
+                profile_id=row["profile_id"],
+                name=row.get("position_name") or row.get("profile_name"),
+                score=norm_score,
+                extra={
+                    # requested extra data per matching position
+                    "profile_name": profile.get("profile_name"),
+                    "position_name": position.get("position_name"),
+                    "description": profile.get("description"),
+                    "hard_skills": profile.get("hard_skills"),
+                    "soft_skills": profile.get("soft_skills"),
+                },
+            )
         )
-        for row in rows
-    ]
+
+    return results
 
 
 # 4️⃣ Similar positions (profile ↔ profile)
@@ -303,34 +370,36 @@ def get_similar_positions(
 
     rows = rpc.data or []
 
-    return [
-        MatchResult(
-            position_id=row["position_id"],
-            profile_id=row["profile_id"],
-            name=row.get("position_name") or row.get("profile_name"),
-            score=row["score"],
-            extra={"profile_name": row.get("profile_name")},
-        )
-        for row in rows
-    ]
+    # ---- normalize scores to [0,1] while preserving order ----
+    scores = [row["score"] for row in rows]
+    norm_scores = _normalize_minmax(scores)
 
-def _get_profiles_for_position(position_id: int) -> List[Dict[str, Any]]:
-    """
-    Return ALL profiles for a given position_id.
-    """
-    resp = (
-        supabase.table("profiles")
-        .select(
-            "profile_id, position_id, profile_name, position_name, "
-            "hard_skills, soft_skills"
+    results: List[MatchResult] = []
+    for row, norm_score in zip(rows, norm_scores):
+        profile = _get_profile(row["profile_id"])
+        position = _get_position(row["position_id"])
+
+        results.append(
+            MatchResult(
+                position_id=row["position_id"],
+                profile_id=row["profile_id"],
+                name=row.get("position_name") or row.get("profile_name"),
+                score=norm_score,
+                extra={
+                    "profile_name": profile.get("profile_name"),
+                    "position_name": position.get("position_name"),
+                    "description": profile.get("description"),
+                    "hard_skills": profile.get("hard_skills"),
+                    "soft_skills": profile.get("soft_skills"),
+                },
+            )
         )
-        .eq("position_id", position_id)
-        .execute()
-    )
-    return resp.data or []
+
+    return results
+
 
 # -------------------------------------------------------------------
-# 5️⃣ Skill gap analysis (candidate vs profile for position)
+# 5️⃣ Skill gap analysis (candidate vs ALL profiles for a position)
 # -------------------------------------------------------------------
 @router.get("/gaps", response_model=List[SkillGapResponse])
 def get_skill_gaps(
