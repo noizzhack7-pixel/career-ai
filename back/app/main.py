@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.routers import skills, positions, employees, smart, assessment
+from app.api.v1.routers import skills, positions, employees, smart, assessment, structured_employees
 
 app = FastAPI(
     title="Career AI API",
@@ -23,6 +23,7 @@ app.include_router(positions.router, prefix="/api/v1")
 app.include_router(employees.router, prefix="/api/v1")
 app.include_router(smart.router, prefix="/api/v1")
 app.include_router(assessment.router, prefix="/api/v1")
+app.include_router(structured_employees.router, prefix="/api/v1")
 
 
 @app.get("/")

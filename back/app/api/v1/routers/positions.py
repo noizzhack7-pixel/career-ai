@@ -3,15 +3,19 @@
 import json
 from pathlib import Path
 from typing import List
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from app.models.Position import Position
+from app.services.supabase_client import get_supabase_client
 
 router = APIRouter(prefix="/positions", tags=["positions"])
+supabase = get_supabase_client()
 
 # Data directory
 DATA_DIR = Path(__file__).parent.parent.parent.parent.parent / "data"
 
+# Hardcoded mock employee ID
+MOCK_POSITION_NUMBER = '70000501'
 
 # =====================
 # Matching Position models
@@ -77,9 +81,16 @@ async def create_positions(positions: List[Position]):
     return positions
 
 
-@router.get("/", response_model=List[Position])
+@router.get("/", response_model=List[dict])
 async def get_all_positions():
     """Retrieve all positions"""
+    client = supabase
+    if client:
+        try:
+            resp = client.table("positions").select("*").execute()
+            return resp.data or []
+        except Exception as exc:
+            print(f"[positions] Supabase fetch all failed: {exc}")
     return []
 
 
@@ -102,11 +113,25 @@ async def get_matching_position(position_id: str):
             return MatchingPosition(**job)
     raise HTTPException(status_code=404, detail=f"Position not found: {position_id}")
 
+@router.get("/me", response_model=dict)
+async def get_current_position(position_id: str = Header(default=MOCK_POSITION_NUMBER, alias="X-User-ID")):
+    """
+    Get the current employee (based on X-User-ID header, or default mock)
+    """
+    # Use the get_position function to fetch the position with mock_position_number
+    return await get_position(position_id)
 
-@router.get("/{position_id}", response_model=Position)
+@router.get("/{position_id}", response_model=dict)
 async def get_position(position_id: str):
     """Retrieve a specific position by ID"""
-    raise HTTPException(status_code=404, detail="Position not found")
+    client = supabase
+    if client:
+        try:
+            resp = client.table("positions").select("*").eq("id", position_id).single().execute()
+            return resp.data
+        except Exception as exc:
+            print(f"[positions] /{position_id} Supabase fetch failed: {exc}")
+    return {}
 
 
 @router.put("/{position_id}", response_model=Position)
