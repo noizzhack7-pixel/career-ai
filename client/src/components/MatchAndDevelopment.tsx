@@ -1,32 +1,32 @@
 import React from 'react';
 import { MatchScore } from './MatchScore';
-import { 
-  Filter, 
-  ListChecks, 
-  Calendar, 
-  Trophy, 
+import {
+  Filter,
+  ListChecks,
+  Calendar,
+  Trophy,
   Briefcase,
-  Heart, 
-  ArrowLeft, 
-  TrendingUp, 
-  CheckCheck, 
-  BarChart2, 
-  Target, 
-  Lightbulb, 
-  CheckCircle, 
-  AlertCircle, 
-  Users, 
-  CalendarX2, 
-  MapPin, 
-  Clock, 
-  Layers, 
-  Info, 
-  Route, 
-  ChevronDown, 
-  SlidersHorizontal, 
-  BarChart, 
-  GraduationCap, 
-  Star 
+  Heart,
+  ArrowLeft,
+  TrendingUp,
+  CheckCheck,
+  BarChart2,
+  Target,
+  Lightbulb,
+  CheckCircle,
+  AlertCircle,
+  Users,
+  CalendarX2,
+  MapPin,
+  Clock,
+  Layers,
+  Info,
+  Route,
+  ChevronDown,
+  SlidersHorizontal,
+  BarChart,
+  GraduationCap,
+  Star
 } from 'lucide-react';
 
 export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashboard" | "home" | "jobs" | "match") => void }) => {
@@ -44,7 +44,7 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
             <h1 className="text-4xl font-bold text-primary mb-2">התאמה ומסלול פיתוח</h1>
             <p className="text-neutral-medium text-lg">גלי את התפקידים המתאימים לך ביותר ובני תוכנית פיתוח אישית</p>
           </div>
-          
+
         </div>
       </section>
 
@@ -80,7 +80,7 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => onNavigate?.("home")}
                 className="text-primary hover:underline text-sm font-semibold flex items-center gap-2"
               >
@@ -90,13 +90,13 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
             </div>
           </section>
 
-          
+
 
           <section id="job-matches-list" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-primary flex items-center gap-3">
                 <Heart className="w-6 h-6" />
-משרות שאהבתי              </h2>
+                משרות שאהבתי              </h2>
               <div className="flex items-center gap-3">
                 <select className="border-2 border-neutral-light rounded-card py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
                   <option>כל הקטגוריות</option>
@@ -172,7 +172,7 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                       <div className="flex items-center gap-2">
                         <Heart className="text-rose-500 w-4 h-4 fill-current" />
                         <span className="text-neutral-dark font-semibold"> 24 אנשים אהבו את המשרה</span>
-                        
+
                       </div>
                     </div>
                   </div>
@@ -195,8 +195,8 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    
-                    <button 
+
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleDevelopmentPlan(1);
@@ -209,69 +209,69 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                   </div>
                 </div>
                 {expandedJobId === 1 && (
-                    <div className="mt-6 border-t border-neutral-light pt-6 animate-in slide-in-from-top-4 duration-300 cursor-default" onClick={(e) => e.stopPropagation()}>
-                        <div className="bg-neutral-50/50 rounded-xl p-6 border border-neutral-light/50">
-                            <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <Route className="w-5 h-5" />
-                                תוכנית פיתוח אישית
-                            </h3>
-                            
-                            <div className="bg-white p-5 rounded-xl border border-neutral-light shadow-sm mb-6">
-                                <h4 className="font-bold text-neutral-dark mb-4 flex items-center gap-2">
-                                    <ListChecks className="w-5 h-5 text-primary" />
-                                    דרישות התפקיד
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">ניסיון בניהול צוותים</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">מומחיות Java & Spring Boot</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">ניסיון בארכיטקטורת מערכות</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">ניסיון בניהול תקציבים</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">קורס ניהול פרויקטים מתקדם</span>
-                                    </div>
-                                </div>
-                            </div>
+                  <div className="mt-6 border-t border-neutral-light pt-6 animate-in slide-in-from-top-4 duration-300 cursor-default" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-neutral-50/50 rounded-xl p-6 border border-neutral-light/50">
+                      <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                        <Route className="w-5 h-5" />
+                        תוכנית פיתוח אישית
+                      </h3>
 
-                            {/* Next Steps */}
-                            <div className="bg-white p-5 rounded-xl border-l-4 border-primary shadow-sm">
-                                <h4 className="font-bold text-primary mb-4 flex items-center gap-2">
-                                    <Target className="w-5 h-5" />
-                                    הצעד הבא שלי
-                                </h4>
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
-                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">01</div>
-                                        <div className="flex-1">
-                                            <h5 className="font-bold text-neutral-dark text-sm">הירשם לקורס ניהול תקציבים</h5>
-                                            <p className="text-xs text-neutral-medium">נפתח בקרוב • מכללת הניהול</p>
-                                        </div>
-                                        <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
-                                    </div>
-                                    <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
-                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">02</div>
-                                        <div className="flex-1">
-                                            <h5 className="font-bold text-neutral-dark text-sm">תיאום שיחת מנטורינג</h5>
-                                            <p className="text-xs text-neutral-medium">עם סמנכ"ל כספים</p>
-                                        </div>
-                                        <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
-                                    </div>
-                                </div>
-                            </div>
+                      <div className="bg-white p-5 rounded-xl border border-neutral-light shadow-sm mb-6">
+                        <h4 className="font-bold text-neutral-dark mb-4 flex items-center gap-2">
+                          <ListChecks className="w-5 h-5 text-primary" />
+                          דרישות התפקיד
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">ניסיון בניהול צוותים</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">מומחיות Java & Spring Boot</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">ניסיון בארכיטקטורת מערכות</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">ניסיון בניהול תקציבים</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">קורס ניהול פרויקטים מתקדם</span>
+                          </div>
                         </div>
+                      </div>
+
+                      {/* Next Steps */}
+                      <div className="bg-white p-5 rounded-xl border-l-4 border-primary shadow-sm">
+                        <h4 className="font-bold text-primary mb-4 flex items-center gap-2">
+                          <Target className="w-5 h-5" />
+                          הצעד הבא שלי
+                        </h4>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">01</div>
+                            <div className="flex-1">
+                              <h5 className="font-bold text-neutral-dark text-sm">הירשם לקורס ניהול תקציבים</h5>
+                              <p className="text-xs text-neutral-medium">נפתח בקרוב • מכללת הניהול</p>
+                            </div>
+                            <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
+                          </div>
+                          <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">02</div>
+                            <div className="flex-1">
+                              <h5 className="font-bold text-neutral-dark text-sm">תיאום שיחת מנטורינג</h5>
+                              <p className="text-xs text-neutral-medium">עם סמנכ"ל כספים</p>
+                            </div>
+                            <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -372,7 +372,7 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                     <p className="text-neutral-medium mb-3">חטיבת מוצר | צוות Core Platform</p>
                     <div className="text-neutral-dark text-sm leading-relaxed">
                       <p>
-                      הובלה טכנית של פיתוח מוצר ליבה, עבודה צמודה עם Product Managers, קבלת החלטות ��כנולוגיות ומנטורינג של מפתחים.
+                        הובלה טכנית של פיתוח מוצר ליבה, עבודה צמודה עם Product Managers, קבלת החלטות ��כנולוגיות ומנטורינג של מפתחים.
                       </p>
                       <details className="group mt-2">
                         <summary className="list-none text-primary cursor-pointer hover:underline flex items-center gap-1 font-semibold text-sm">
@@ -539,7 +539,7 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
           </section>
         </div>
 
-        
+
       </div>
     </div>
   );

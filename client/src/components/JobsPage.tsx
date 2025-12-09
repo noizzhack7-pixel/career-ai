@@ -269,7 +269,7 @@ export const JobsPage = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-100px)] flex flex-col -m-10 p-8 max-w-[1800px] mx-auto overflow-hidden">
+    <div className="min-h-[calc(100vh-80px)] flex flex-col -m-10 p-8 max-w-[1800px] mx-auto overflow-y-auto">
       <style>{`
         .job-detail-content h3 { font-size: 1.125rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #541388; }
         .job-detail-content p { font-size: 0.95rem; line-height: 1.6; color: #1F2937; margin-bottom: 1rem; }
@@ -423,8 +423,11 @@ export const JobsPage = () => {
         </div>
 
         {/* Job Details Column */}
-        <div className="col-span-8 h-full">
-          <div id="job-detail-container" className="bg-white rounded-card shadow-card h-full overflow-y-auto relative [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+        <div className="col-span-8 h-full flex flex-col min-h-0">
+          <div
+            id="job-detail-container"
+            className="bg-white rounded-card shadow-card flex-1 max-h-[calc(100vh-220px)] overflow-y-auto relative [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
+          >
             {selectedJob && (
               <>
                 {/* Sticky Header - Title Only */}

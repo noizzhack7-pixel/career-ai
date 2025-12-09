@@ -1,21 +1,21 @@
 import React from 'react';
-import { 
-  Camera, 
-  Circle, 
-  Building, 
-  CalendarDays, 
-  Layers, 
-  User, 
-  MapPin, 
-  Mail, 
-  Phone, 
-  Pen, 
-  Share2, 
-  Download, 
-  Trophy, 
-  Briefcase, 
-  TrendingUp, 
-  ArrowUp 
+import {
+  Camera,
+  Circle,
+  Building,
+  CalendarDays,
+  Layers,
+  User,
+  MapPin,
+  Mail,
+  Phone,
+  Pen,
+  Share2,
+  Download,
+  Trophy,
+  Briefcase,
+  TrendingUp,
+  ArrowUp
 } from 'lucide-react';
 
 export const ProfileHero = () => {
@@ -23,10 +23,10 @@ export const ProfileHero = () => {
     <section id="profile-hero" className="bg-white rounded-card shadow-card overflow-hidden mb-8">
       <div className="relative">
         <div className="h-64 bg-gradient-to-l from-primary/20 via-accent/10 to-primary/20 overflow-hidden">
-          <img 
-            className="w-full h-full object-cover opacity-50" 
-            src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" 
-            alt="Cover background" 
+          <img
+            className="w-full h-full object-cover opacity-50"
+            src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80"
+            alt="Cover background"
           />
           <button className="absolute top-6 left-6 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-primary shadow-card">
             <Camera className="text-neutral-dark w-5 h-5" />
@@ -34,10 +34,10 @@ export const ProfileHero = () => {
         </div>
         <div className="absolute top-40 right-12">
           <div className="relative">
-            <img 
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
-              alt="תמונת פרופיל של תמר כהן" 
-              className="w-48 h-48 rounded-full border-8 border-white shadow-panel" 
+            <img
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+              alt="תמונת פרופיל של תמר כהן"
+              className="w-48 h-48 rounded-full border-8 border-white shadow-panel"
             />
             <button className="absolute bottom-2 left-2 w-12 h-12 bg-primary rounded-full flex items-center justify-center hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-white shadow-card">
               <Camera className="text-white w-5 h-5" />
@@ -57,7 +57,7 @@ export const ProfileHero = () => {
               </span>
             </div>
             <p className="text-xl font-semibold text-neutral-dark mb-4">מפתחת תוכנה בכירה</p>
-            
+
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
                 <Building className="text-primary w-4 h-4" />
@@ -67,7 +67,7 @@ export const ProfileHero = () => {
                 <span className="text-neutral-medium">|</span>
                 <span className="text-neutral-dark">צוות ליבה</span>
               </div>
-              
+
               <div className="flex items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <CalendarDays className="text-accent-dark w-4 h-4" />
@@ -87,7 +87,7 @@ export const ProfileHero = () => {
                   <span className="font-semibold text-neutral-dark">דני לוי</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <MapPin className="text-accent-dark w-4 h-4" />
