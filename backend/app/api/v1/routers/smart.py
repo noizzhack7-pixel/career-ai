@@ -559,6 +559,7 @@ def get_learning_recommendations(employee_number: int, profile_id: int):
             gaps_block("Hard skill gaps", hard_gaps),
             gaps_block("Soft skill gaps", soft_gaps),
             "\n" + courses_block,
+
             "\nInstructions:",
             "- Create a short plan (3-5 bullets) prioritizing the most impactful upskilling steps.",
             "You must explain which gaps the courses help to reduce in order to meet the profiles requirements."
