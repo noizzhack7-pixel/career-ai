@@ -28,7 +28,12 @@ def _to_json(value) -> str:
 
 async def gen_skills(n_soft: int = 10, n_hard: int = 10) -> Tuple[List[SoftSkill], List[HardSkill]]:
     soft = await marvin.generate_async(SoftSkill, n=n_soft)
-    hard = await marvin.generate_async(HardSkill, n=n_hard)
+    hard_instructions = (
+        "For each HardSkill include an integer 'experience' field (years) >= 0, "
+        "typically between 0 and 30. Use valid enum values for 'skill' and keep "
+        "levels within the allowed range."
+    )
+    hard = await marvin.generate_async(HardSkill, n=n_hard, instructions=hard_instructions)
     return soft, hard
 
 
@@ -36,7 +41,8 @@ async def gen_profiles(n: int = 10) -> List[Profile]:
     # Provide a light instruction to ensure realistic distributions
     instructions = (
         "Generate realistic skill profiles with a mix of 3-8 hard_skills and 3-8 soft_skills. "
-        "Names are optional but helpful. Use valid enums and levels within allowed range."
+        "Names are optional but helpful. Use valid enums and levels within allowed range. "
+        "For each hard_skill include 'experience' (years) as a non-negative integer, typically 0-30."
     )
     profiles = await marvin.generate_async(Profile, n=n, instructions=instructions)
     return profiles
@@ -54,6 +60,7 @@ async def gen_positions(n: int = 10) -> List[Position]:
 async def gen_employees(n: int = 25) -> List[Employee]:
     instructions = (
         "Generate employees with 4-10 hard_skills and 4-10 soft_skills using valid enums and levels. "
+        "For each hard_skill include 'experience' (years) as a non-negative integer, typically 0-30. "
         "Optionally include current_position and a small set of past_positions that make sense."
     )
     employees = await marvin.generate_async(Employee, n=n, instructions=instructions)
@@ -75,6 +82,7 @@ def skills_to_df(soft: List[SoftSkill], hard: List[HardSkill]) -> pd.DataFrame:
             "type": "hard",
             "skill": h.skill,
             "level": h.level,
+            "experience": getattr(h, "experience", None),
         })
     return pd.DataFrame(rows)
 
