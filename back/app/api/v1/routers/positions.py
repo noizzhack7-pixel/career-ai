@@ -17,6 +17,27 @@ DATA_DIR = Path(__file__).parent.parent.parent.parent.parent / "data"
 # Hardcoded mock employee ID
 MOCK_POSITION_NUMBER = '70000501'
 
+# Hardcoded fields to enrich the returned position payload
+HARD_CODED_POSITION_FIELDS = {
+    "Requirements": [
+        "5+ years experience building distributed systems",
+        "B.Sc. in Computer Science or equivalent practical experience",
+        "Hands-on with cloud infrastructure (AWS/Azure/GCP)",
+    ],
+    "Responsibillities": [
+        "Design and own critical backend services end-to-end",
+        "Collaborate with product to refine technical scope and milestones",
+        "Mentor team members and drive engineering best practices",
+    ],
+    "location": "תל אביב",
+    "position_type": "משרה מלאה",
+    "skills": [
+        "ארכיטקטורה:5",
+        "Python:4",
+        "Microservices:4",
+    ],
+}
+
 # =====================
 # Matching Position models
 # =====================
@@ -125,13 +146,15 @@ async def get_current_position(position_id: str = Header(default=MOCK_POSITION_N
 async def get_position(position_id: str):
     """Retrieve a specific position by ID"""
     client = supabase
+    position_data: dict = {}
     if client:
         try:
-            resp = client.table("positions").select("*").eq("id", position_id).single().execute()
-            return resp.data
+            resp = client.table("positions").select("*").eq("position_id", position_id).single().execute()
+            position_data = resp.data or {}
         except Exception as exc:
             print(f"[positions] /{position_id} Supabase fetch failed: {exc}")
-    return {}
+    # Always include the hardcoded fields, even if Supabase is unavailable
+    return {**position_data, **HARD_CODED_POSITION_FIELDS}
 
 
 @router.put("/{position_id}", response_model=Position)
