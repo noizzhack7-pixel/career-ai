@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { MatchScore } from './MatchScore';
-import { 
-  Search, 
-  MapPin, 
-  Building, 
-  Clock, 
-  Filter, 
-  Bookmark, 
-  Send, 
-  Lightbulb, 
-  CheckCircle, 
-  AlertTriangle, 
-  Star, 
-  GraduationCap, 
+import {
+  Search,
+  MapPin,
+  Building,
+  Clock,
+  Filter,
+  Bookmark,
+  Send,
+  Lightbulb,
+  CheckCircle,
+  AlertTriangle,
+  Star,
+  GraduationCap,
   Briefcase,
   Check,
   Map as MapIcon, // re-aliased to avoid conflict
@@ -260,7 +260,7 @@ export const JobsPage = () => {
 
   // Helper to get text color class based on matchColor prop string
   const getTextColorClass = (colorName: string) => {
-    switch(colorName) {
+    switch (colorName) {
       case 'primary': return 'text-primary';
       case 'accent-dark': return 'text-accent-dark';
       case 'secondary': return 'text-secondary';
@@ -305,87 +305,87 @@ export const JobsPage = () => {
         <section id="jobs-filter-bar" className="bg-white p-4 rounded-card shadow-card" aria-label="סינון משרות">
           <div className="grid grid-cols-12 gap-4 items-center">
             <div className="col-span-3 relative">
-            <label htmlFor="job-search" className="sr-only">חיפוש משרה</label>
-            <input 
-              id="job-search" 
-              type="text" 
-              placeholder="חיפוש משרה..." 
-              className="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 pr-10 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-            />
-            <Search className="absolute top-1/2 -translate-y-1/2 right-4 text-neutral-medium w-4 h-4" />
-          </div>
-          <div className="col-span-2">
-            <div className="relative">
-              <select 
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors appearance-none"
+              <label htmlFor="job-search" className="sr-only">חיפוש משרה</label>
+              <input
+                id="job-search"
+                type="text"
+                placeholder="חיפוש משרה..."
+                className="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 pr-10 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+              />
+              <Search className="absolute top-1/2 -translate-y-1/2 right-4 text-neutral-medium w-4 h-4" />
+            </div>
+            <div className="col-span-2">
+              <div className="relative">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors appearance-none"
+                >
+                  <option value="all">כל הקטגוריות ({currentView === 'open' ? allJobsData.filter(j => j.isOpen).length : 156})</option>
+                  <option value="טכנולוגיה">טכנולוגיה ({allJobsData.filter(j => j.category === 'טכנולוגיה' && (currentView === 'open' ? j.isOpen : true)).length})</option>
+                  <option value="כספים">כספים ({allJobsData.filter(j => j.category === 'כספים' && (currentView === 'open' ? j.isOpen : true)).length})</option>
+                  <option value="משאבי אנוש">משאבי אנוש ({allJobsData.filter(j => j.category === 'משאבי אנוש' && (currentView === 'open' ? j.isOpen : true)).length})</option>
+                  <option value="לוגיסטיקה">לוגיסטיקה ({allJobsData.filter(j => j.category === 'לוגיסטיקה' && (currentView === 'open' ? j.isOpen : true)).length})</option>
+                </select>
+                <ChevronDown className="absolute top-1/2 -translate-y-1/2 left-3 text-neutral-medium w-4 h-4 pointer-events-none" />
+              </div>
+            </div>
+            <div className="col-span-5 flex items-center gap-3 justify-center">
+              {/* Toggle: Open Jobs */}
+              <button
+                onClick={() => setCurrentView(currentView === 'open' ? 'all' : 'open')}
+                className="flex items-center gap-2 bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all hover:border-primary/30 group"
+                role="switch"
+                aria-checked={currentView === 'open'}
               >
-                <option value="all">כל הקטגוריות ({currentView === 'open' ? allJobsData.filter(j => j.isOpen).length : 156})</option>
-                <option value="טכנולוגיה">טכנולוגיה ({allJobsData.filter(j => j.category === 'טכנולוגיה' && (currentView === 'open' ? j.isOpen : true)).length})</option>
-                <option value="כספים">כספים ({allJobsData.filter(j => j.category === 'כספים' && (currentView === 'open' ? j.isOpen : true)).length})</option>
-                <option value="משאבי אנוש">משאבי אנוש ({allJobsData.filter(j => j.category === 'משאבי אנוש' && (currentView === 'open' ? j.isOpen : true)).length})</option>
-                <option value="לוגיסטיקה">לוגיסטיקה ({allJobsData.filter(j => j.category === 'לוגיסטיקה' && (currentView === 'open' ? j.isOpen : true)).length})</option>
-              </select>
-              <ChevronDown className="absolute top-1/2 -translate-y-1/2 left-3 text-neutral-medium w-4 h-4 pointer-events-none" />
+                <span className="text-xs text-neutral-dark font-medium group-hover:text-primary transition-colors">משרה פנויה</span>
+                <div className={`relative w-8 h-4 rounded-full transition-colors duration-200 flex-shrink-0 ${currentView === 'open' ? 'bg-primary' : 'bg-neutral-300'}`}>
+                  <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-200 ${currentView === 'open' ? 'right-0.5' : 'left-0.5'}`}></div>
+                </div>
+              </button>
+
+              {/* Toggle: Israel Only */}
+              <button
+                onClick={() => setShowOnlyIsrael(!showOnlyIsrael)}
+                className="flex items-center gap-2 bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all hover:border-primary/30 group"
+                role="switch"
+                aria-checked={showOnlyIsrael}
+              >
+                <span className="text-xs text-neutral-dark font-medium group-hover:text-primary transition-colors">ישראל בלבד</span>
+                <div className={`relative w-8 h-4 rounded-full transition-colors duration-200 flex-shrink-0 ${showOnlyIsrael ? 'bg-primary' : 'bg-neutral-300'}`}>
+                  <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-200 ${showOnlyIsrael ? 'right-0.5' : 'left-0.5'}`}></div>
+                </div>
+              </button>
+
+              {/* Toggle: Best Match */}
+              <button
+                onClick={() => setShowBestMatch(!showBestMatch)}
+                className="flex items-center gap-2 bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all hover:border-primary/30 group"
+                role="switch"
+                aria-checked={showBestMatch}
+              >
+                <span className="text-xs text-neutral-dark font-medium group-hover:text-primary transition-colors">התאמה גבוהה</span>
+                <div className={`relative w-8 h-4 rounded-full transition-colors duration-200 flex-shrink-0 ${showBestMatch ? 'bg-primary' : 'bg-neutral-300'}`}>
+                  <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-200 ${showBestMatch ? 'right-0.5' : 'left-0.5'}`}></div>
+                </div>
+              </button>
+            </div>
+            <div className="col-span-2 flex items-center justify-end gap-3">
+              <button className="text-sm text-primary hover:underline font-semibold">נקה הכל</button>
+
             </div>
           </div>
-          <div className="col-span-5 flex items-center gap-3 justify-center">
-            {/* Toggle: Open Jobs */}
-            <button 
-              onClick={() => setCurrentView(currentView === 'open' ? 'all' : 'open')}
-              className="flex items-center gap-2 bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all hover:border-primary/30 group"
-              role="switch"
-              aria-checked={currentView === 'open'}
-            >
-              <span className="text-xs text-neutral-dark font-medium group-hover:text-primary transition-colors">משרה פנויה</span>
-              <div className={`relative w-8 h-4 rounded-full transition-colors duration-200 flex-shrink-0 ${currentView === 'open' ? 'bg-primary' : 'bg-neutral-300'}`}>
-                <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-200 ${currentView === 'open' ? 'right-0.5' : 'left-0.5'}`}></div>
-              </div>
-            </button>
-
-            {/* Toggle: Israel Only */}
-            <button 
-              onClick={() => setShowOnlyIsrael(!showOnlyIsrael)}
-              className="flex items-center gap-2 bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all hover:border-primary/30 group"
-              role="switch"
-              aria-checked={showOnlyIsrael}
-            >
-              <span className="text-xs text-neutral-dark font-medium group-hover:text-primary transition-colors">ישראל בלבד</span>
-              <div className={`relative w-8 h-4 rounded-full transition-colors duration-200 flex-shrink-0 ${showOnlyIsrael ? 'bg-primary' : 'bg-neutral-300'}`}>
-                <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-200 ${showOnlyIsrael ? 'right-0.5' : 'left-0.5'}`}></div>
-              </div>
-            </button>
-
-            {/* Toggle: Best Match */}
-            <button 
-              onClick={() => setShowBestMatch(!showBestMatch)}
-              className="flex items-center gap-2 bg-neutral-extralight border-2 border-neutral-light rounded-card py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all hover:border-primary/30 group"
-              role="switch"
-              aria-checked={showBestMatch}
-            >
-              <span className="text-xs text-neutral-dark font-medium group-hover:text-primary transition-colors">התאמה גבוהה</span>
-              <div className={`relative w-8 h-4 rounded-full transition-colors duration-200 flex-shrink-0 ${showBestMatch ? 'bg-primary' : 'bg-neutral-300'}`}>
-                <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-200 ${showBestMatch ? 'right-0.5' : 'left-0.5'}`}></div>
-              </div>
-            </button>
-          </div>
-          <div className="col-span-2 flex items-center justify-end gap-3">
-            <button className="text-sm text-primary hover:underline font-semibold">נקה הכל</button>
-            
-          </div>
-        </div>
-      </section>
+        </section>
       </div>
 
       {/* Two-Column Layout */}
       <div className="grid grid-cols-12 gap-6 flex-grow min-h-0">
-        
+
         {/* Jobs List Column */}
-        <div className="col-span-4 h-full flex flex-col">
-          <div id="jobs-list-container" className="flex-grow overflow-y-auto pr-2 space-y-3">
+        <div className="col-span-4 h-full flex flex-col max-h-[calc(100vh-280px)]">
+          <div id="jobs-list-container" className="flex-grow overflow-y-auto pr-2 space-y-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
             {filteredJobs.map(job => (
-              <div 
+              <div
                 key={job.id}
                 onClick={() => setSelectedJobId(job.id)}
                 className={`job-card ${job.id === selectedJobId ? 'bg-primary-light/40 border-primary' : 'bg-white hover:bg-primary-light/20 border-transparent'} border-r-4 p-4 rounded-card cursor-pointer transition-all`}
@@ -399,16 +399,16 @@ export const JobsPage = () => {
                     <p className="text-sm text-neutral-dark mb-1">
                       {job.department} <span className="text-neutral-300">|</span> {
                         job.category === 'טכנולוגיה' ? 'מחלקת פיתוח' :
-                        job.category === 'כספים' ? 'מחלקת חשבות' :
-                        job.category === 'משאבי אנוש' ? 'מחלקת גיוס' :
-                        'מחלקה כללית'
+                          job.category === 'כספים' ? 'מחלקת חשבות' :
+                            job.category === 'משאבי אנוש' ? 'מחלקת גיוס' :
+                              'מחלקה כללית'
                       }
                     </p>
-                    
+
                   </div>
                   <div className="flex flex-col items-center flex-shrink-0 mr-3 gap-1">
-                    <MatchScore 
-                      score={job.matchPercent} 
+                    <MatchScore
+                      score={job.matchPercent}
                       compact={true}
                     />
                   </div>
@@ -423,15 +423,14 @@ export const JobsPage = () => {
         </div>
 
         {/* Job Details Column */}
-        <div className="col-span-8 h-full flex flex-col min-h-0">
+        <div className="col-span-8 h-full flex flex-col min-h-0 max-h-[calc(100vh-280px)]">
           <div
             id="job-detail-container"
-            className="bg-white rounded-card shadow-card flex-1 max-h-[calc(100vh-220px)] overflow-y-auto relative [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
-          >
+            className="bg-white rounded-card shadow-card flex-1 flex flex-col overflow-hidden">
             {selectedJob && (
               <>
                 {/* Sticky Header - Title Only */}
-                <div className="sticky top-0 z-20 bg-primary-light/40 backdrop-blur-sm p-6 border-b border-neutral-light shadow-sm">
+                <div className="flex-shrink-0 bg-primary-light/40 backdrop-blur-sm p-6 border-b border-neutral-light shadow-sm">
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
@@ -439,8 +438,8 @@ export const JobsPage = () => {
                         <span className={`text-sm px-3 py-1 rounded-pill ${selectedJob.categoryColor} font-semibold`}>{selectedJob.category}</span>
                         {selectedJob.isOpen && (
                           <div className="flex items-center gap-1.5 px-2">
-                             <span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
-                             <span className="text-sm font-bold text-status-success">משרה פנויה</span>
+                            <span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+                            <span className="text-sm font-bold text-status-success">משרה פנויה</span>
                           </div>
                         )}
                       </div>
@@ -451,7 +450,7 @@ export const JobsPage = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <button 
+                      <button
                         className={`${isLiked ? 'bg-rose-50 text-rose-600' : 'bg-gray-50 text-gray-500'} font-bold py-3 px-6 rounded-card hover:bg-rose-100 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 flex items-center gap-2`}
                         onClick={() => toggleLike(selectedJobId)}
                       >
@@ -463,23 +462,23 @@ export const JobsPage = () => {
                 </div>
 
                 {/* Scrollable Content */}
-                <div className="p-6">
+                <div className="p-6 scorllableJobDiv flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
                   {/* Personal Match Analysis */}
                   <div className="mb-8 bg-transparent p-0">
                     <div className="space-y-6">
-                      
+
                       {/* Match Breakdown */}
                       <div>
                         <div className="flex items-center justify-between mb-4">
                           <h3 className="font-bold text-primary text-lg">למה אני מתאימה לתפקיד הזה?</h3>
                           <div className="flex items-center gap-3 bg-white/50 px-3 py-2 rounded-card border border-primary/10 w-full">
-                            <MatchScore 
-                              score={selectedJob.matchPercent} 
+                            <MatchScore
+                              score={selectedJob.matchPercent}
                               compact={false}
                             />
                           </div>
                         </div>
-                        
+
                         {/* Skills Match */}
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
@@ -504,7 +503,7 @@ export const JobsPage = () => {
                             </span>
                           </div>
                         </div>
-                        
+
                         {/* Soft Skills Match */}
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
@@ -523,7 +522,7 @@ export const JobsPage = () => {
                             </span>
                           </div>
                         </div>
-                        
+
                         {/* Experience Match */}
                         <div className="mb-3">
                           <div className="flex items-center justify-between mb-2">
@@ -539,7 +538,7 @@ export const JobsPage = () => {
                             </span>
                           </div>
                         </div>
-                        
+
                         {/* Summary */}
                         <div className="bg-white/60 p-3 rounded-card border border-primary/20">
                           <p className="text-xs text-neutral-dark leading-relaxed flex items-start gap-1">
@@ -550,7 +549,7 @@ export const JobsPage = () => {
                           </p>
                         </div>
                       </div>
-                      
+
                       {/* Development Plan Area */}
                       <div className="pt-4 border-t border-primary/10">
                         <div className="flex items-center justify-between">
@@ -571,7 +570,7 @@ export const JobsPage = () => {
                   <div className="job-detail-content">
                     <h3>אודות התפקיד</h3>
                     <p>{selectedJob.description}</p>
-                    
+
                     {selectedJob.responsibilities && (
                       <>
                         <h3>תחומי אחריות</h3>
@@ -580,7 +579,7 @@ export const JobsPage = () => {
                         </ul>
                       </>
                     )}
-                    
+
                     <h3>דרישות התפקיד וניתוח פערים</h3>
                     <div className="space-y-3">
                       {selectedJob.requirements.map((req, idx) => (
