@@ -5,6 +5,7 @@ description = "Intelligent backend service for managing positions, candidates, a
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "flask>=3.0.0",
     "fastapi>=0.116.1",
     "httpx>=0.28.1",
     "pydantic-settings>=2.10.1",
