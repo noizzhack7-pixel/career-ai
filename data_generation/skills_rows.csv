@@ -1,0 +1,81 @@
+id,created_at,type,name
+1,2025-12-08 14:14:56.348269+00,soft,מוטיבציה והשקעה
+2,2025-12-08 14:14:56.348269+00,soft,ביצוע
+3,2025-12-08 14:14:56.348269+00,soft,מקצועיות
+4,2025-12-08 14:14:56.348269+00,soft,למידה וחשיבה
+5,2025-12-08 14:14:56.348269+00,soft,תפקוד בין אישי
+6,2025-12-08 14:14:56.348269+00,soft,ניהול ממשקים
+7,2025-12-08 14:14:56.348269+00,soft,הובלה לתוצאות
+8,2025-12-08 14:14:56.348269+00,soft,פיתוח עובדים
+9,2025-12-08 14:14:56.348269+00,soft,פיקוד ומנהיגות
+10,2025-12-08 14:14:56.348269+00,soft,תכנון וראיה אינטגרטיבית
+11,2025-12-08 14:14:56.348269+00,soft,מנהיגות
+12,2025-12-08 14:14:56.348269+00,soft,צוות
+13,2025-12-08 14:14:56.348269+00,soft,יצירתיות
+14,2025-12-08 14:14:56.348269+00,soft,אנליטיקה
+15,2025-12-08 14:14:56.348269+00,soft,ניהול זמן
+16,2025-12-08 14:14:56.348269+00,soft,תקשורת
+17,2025-12-08 14:14:56.348269+00,soft,חוסן
+18,2025-12-08 14:14:56.348269+00,soft,למידה עצמית
+19,2025-12-08 14:14:56.348269+00,hard,Interview Management
+20,2025-12-08 14:14:56.348269+00,hard,SQL
+21,2025-12-08 14:14:56.348269+00,hard,SQL Advanced
+22,2025-12-08 14:14:56.348269+00,hard,Data Analysis
+23,2025-12-08 14:14:56.348269+00,hard,Data Analysis Pro
+24,2025-12-08 14:14:56.348269+00,hard,Excel
+25,2025-12-08 14:14:56.348269+00,hard,Excel Advanced
+26,2025-12-08 14:14:56.348269+00,hard,Excel Professional
+27,2025-12-08 14:14:56.348269+00,hard,Data Visualization
+28,2025-12-08 14:14:56.348269+00,hard,ETL Foundations
+29,2025-12-08 14:14:56.348269+00,hard,Database Design
+30,2025-12-08 14:14:56.348269+00,hard,Python
+31,2025-12-08 14:14:56.348269+00,hard,Python for Data
+32,2025-12-08 14:14:56.348269+00,hard,Machine Learning Basics
+33,2025-12-08 14:14:56.348269+00,hard,Java
+34,2025-12-08 14:14:56.348269+00,hard,Java Advanced
+35,2025-12-08 14:14:56.348269+00,hard,Full Stack Development
+36,2025-12-08 14:14:56.348269+00,hard,Frontend Development
+37,2025-12-08 14:14:56.348269+00,hard,Backend Development
+38,2025-12-08 14:14:56.348269+00,hard,API Design & Integration
+39,2025-12-08 14:14:56.348269+00,hard,Version Control (Git)
+40,2025-12-08 14:14:56.348269+00,hard,Software Architecture Fundamentals
+41,2025-12-08 14:14:56.348269+00,hard,DevOps Foundations
+42,2025-12-08 14:14:56.348269+00,hard,CI/CD Pipelines
+43,2025-12-08 14:14:56.348269+00,hard,Cyber Defense Fundamentals
+44,2025-12-08 14:14:56.348269+00,hard,SOC Level 1
+45,2025-12-08 14:14:56.348269+00,hard,Information Security
+46,2025-12-08 14:14:56.348269+00,hard,Threat Analysis
+47,2025-12-08 14:14:56.348269+00,hard,Intelligence Analysis
+48,2025-12-08 14:14:56.348269+00,hard,Incident Response
+49,2025-12-08 14:14:56.348269+00,hard,Vulnerability Assessment
+50,2025-12-08 14:14:56.348269+00,hard,Security Architecture
+51,2025-12-08 14:14:56.348269+00,hard,Cloud Security
+52,2025-12-08 14:14:56.348269+00,hard,Cloud Architecture
+53,2025-12-08 14:14:56.348269+00,hard,Cloud Strategy & Governance
+54,2025-12-08 14:14:56.348269+00,hard,Cloud Computing Foundations
+55,2025-12-08 14:14:56.348269+00,hard,Virtualization
+56,2025-12-08 14:14:56.348269+00,hard,Network Fundamentals
+57,2025-12-08 14:14:56.348269+00,hard,Project Management
+58,2025-12-08 14:14:56.348269+00,hard,Agile Foundations
+59,2025-12-08 14:14:56.348269+00,hard,Agile Practitioner
+60,2025-12-08 14:14:56.348269+00,hard,Scrum Basics
+61,2025-12-08 14:14:56.348269+00,hard,PMO Tools
+62,2025-12-08 14:14:56.348269+00,hard,Risk Management
+63,2025-12-08 14:14:56.348269+00,hard,Stakeholder Management
+64,2025-12-08 14:14:56.348269+00,hard,Event Management
+65,2025-12-08 14:14:56.348269+00,hard,Talent Acquisition
+66,2025-12-08 14:14:56.348269+00,hard,Compensation & Benefits
+67,2025-12-08 14:14:56.348269+00,hard,Employee Wellbeing & Engagement
+68,2025-12-08 14:14:56.348269+00,hard,Training Development
+69,2025-12-08 14:14:56.348269+00,hard,Organizational Processes
+70,2025-12-08 14:14:56.348269+00,hard,Job Profiling
+71,2025-12-08 14:14:56.348269+00,hard,Supply Chain Management
+72,2025-12-08 14:14:56.348269+00,hard,Procurement & Inventory
+73,2025-12-08 14:14:56.348269+00,hard,Budgeting & Financial Control
+74,2025-12-08 14:14:56.348269+00,hard,Business Operations
+75,2025-12-08 14:14:56.348269+00,hard,KPI Analysis
+76,2025-12-08 14:14:56.348269+00,hard,Customer Service Operations
+77,2025-12-08 14:14:56.348269+00,hard,Copywriting
+78,2025-12-08 14:14:56.348269+00,hard,Technical Writing
+79,2025-12-08 14:14:56.348269+00,hard,Digital Content Production
+80,2025-12-08 14:14:56.348269+00,hard,UX Writing Basics
