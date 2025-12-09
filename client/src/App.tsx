@@ -22,6 +22,7 @@ import { Notifications } from "./components/Sidebar/Notifications";
 import { JobsPage } from "./components/JobsPage";
 import { Dashboard } from "./components/Dashboard";
 import { MatchAndDevelopment } from "./components/MatchAndDevelopment";
+import { SkillsQuestionnaire } from "./components/SkillsQuestionnaire";
 
 const ProfilePage = () => (
   <>
@@ -106,6 +107,8 @@ export default function App() {
             path="/my-positions"
             element={<MatchAndDevelopment onNavigate={handleNavigate} />}
           />
+          <Route path="/questionnaire" element={<SkillsQuestionnaire />} />
+          <Route path="/questionnaire-test" element={<SkillsQuestionnaire testMode />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

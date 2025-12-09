@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Camera, Pen, CalendarDays, Layers, User, MapPin, Brain, Code, GraduationCap, CheckCircle2, ExternalLink } from 'lucide-react';
 import { Badge } from '../ui/badge';
 
@@ -7,6 +8,8 @@ interface PersonalProfileSummaryProps {
 }
 
 export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ onNavigate }) => {
+  const navigate = useNavigate();
+
   return (
     <div 
       onClick={() => console.log('Navigate to full profile')}
@@ -79,7 +82,10 @@ export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ 
                   <div className="mt-4">
                       <div className="w-fit flex items-center gap-3 bg-primary/5 p-2 rounded-xl border border-primary/10">
                         <span className="text-sm font-bold text-primary px-2">גלה את החוזקות שלך</span>
-                        <button className="flex items-center justify-center gap-2 text-xs font-bold text-white bg-primary hover:bg-primary-dark py-1.5 px-4 rounded-lg shadow-sm transition-all">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); navigate("/questionnaire"); }}
+                          className="flex items-center justify-center gap-2 text-xs font-bold text-white bg-primary hover:bg-primary-dark py-1.5 px-4 rounded-lg shadow-sm transition-all cursor-pointer"
+                        >
                           מלא את השאלון
                         </button>
                       </div>
