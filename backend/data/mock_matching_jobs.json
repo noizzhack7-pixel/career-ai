@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1",
+    "title": "ראש צוות פיתוח",
+    "category": "טכנולוגיה",
+    "category_icon": "fa-laptop-code",
+    "category_color": "primary",
+    "match_percentage": 92,
+    "match_level": "גבוהה",
+    "division": "חטיבת טכנולוגיות",
+    "location": "תל אביב",
+    "work_model": "היברידי",
+    "description": "הובלת צוות פיתוח Backend בטכנולוגיות Java ו-Spring, ניהול ארכיטקטורה ופיתוח מערכות מורכבות.",
+    "requirements": [
+      { "skill": "Java & Spring", "status": "מתאים" },
+      { "skill": "מנהיגות", "status": "חוזקה" },
+      { "skill": "ניהול פרויקטים", "status": "פער קטן" }
+    ]
+  },
+  {
+    "id": "2",
+    "title": "מנהל/ת תקציבים",
+    "category": "כספים",
+    "category_icon": "fa-chart-line",
+    "category_color": "accent",
+    "match_percentage": 81,
+    "match_level": "טובה",
+    "division": "חטיבת הכספים",
+    "location": "ירושלים",
+    "work_model": "היברידי",
+    "description": "ניהול תקציבי פרויקטים, ניתוח פיננסי ובקרה תקציבית לפרויקטים אסטרטגיים בארגון.",
+    "requirements": [
+      { "skill": "חשיבה אנליטית", "status": "חוזקה" },
+      { "skill": "Excel מתקדם", "status": "פער קטן" },
+      { "skill": "הכרת SAP", "status": "חסר" }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "שותף/ה עסקי HR",
+    "category": "משאבי אנוש",
+    "category_icon": "fa-users",
+    "category_color": "secondary",
+    "match_percentage": 73,
+    "match_level": "בינונית",
+    "division": "חטיבת משאבי אנוש",
+    "location": "חיפה",
+    "work_model": "משרד מלא",
+    "description": "ליווי מנהלים בתהליכי פיתוח ארגוני, גיוס ושימור עובדים, וניהול תהליכי שינוי ארגוני.",
+    "requirements": [
+      { "skill": "תקשורת בין-אישית", "status": "חוזקה" },
+      { "skill": "ניהול שינוי ארגוני", "status": "פער" },
+      { "skill": "תואר בפסיכולוגיה", "status": "חסר" }
+    ]
+  }
+]
+
+

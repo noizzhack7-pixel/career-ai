@@ -1,0 +1,266 @@
+{
+  "id": "user-1",
+  "name": "תמר כהן",
+  "title": "מפתחת תוכנה בכירה",
+  "avatar": "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg",
+  "cover_image": "https://storage.googleapis.com/uxpilot-auth.appspot.com/39be326735-650cf9197c9ab8504004.png",
+  "is_active": true,
+  "organization": {
+    "division": "חטיבת טכנולוגיות",
+    "department": "מחלקת פיתוח Backend",
+    "team": "צוות ליבה"
+  },
+  "details": {
+    "seniority": "5 שנים ו-3 חודשים",
+    "grade": "Senior Developer",
+    "manager": "דני לוי",
+    "location": "מטה כללי, בניין אלון",
+    "email": "tamar.cohen@company.co.il",
+    "phone": "03-1234567"
+  },
+  "metrics": {
+    "kudos": 34,
+    "data_quality": 85,
+    "matching_jobs_count": 12
+  },
+  "education": {
+    "degree": "תואר ראשון במדעי המחשב",
+    "institution": "אוניברסיטת תל אביב"
+  },
+  "specialization": {
+    "main": "Java, Spring Boot",
+    "area": "ארכיטקטורת מערכות"
+  },
+  "soft_skills": [
+    "מנהיגות",
+    "קליטה מהירה",
+    "למידה עצמית",
+    "חשיבה אנליטית",
+    "פתרון בעיות"
+  ],
+  "hard_skills": [
+    "Java",
+    "Spring Boot",
+    "Microservices",
+    "REST API",
+    "SQL"
+  ],
+  "bio": "מפתחת תוכנה בכירה עם למעלה מ-5 שנות ניסיון בפיתוח מערכות Backend מורכבות. מתמחה בטכנולוגיות Java ו-Spring Boot, עם דגש על ארכיטקטורת Microservices ו-REST API. בעלת ניסיון מוכח בהובלת פרויקטים טכנולוגיים ובעבודת צוות. מחפשת הזדמנויות להתפתח לתפקידי הובלה טכנית וניהול.",
+  "professional_interests": [
+    "Cloud Architecture",
+    "DevOps",
+    "ניהול צוותים",
+    "ארכיטקטורת מערכות",
+    "Machine Learning"
+  ],
+  "soft_skills_detailed": [
+    { "name": "מנהיגות", "level": 4 },
+    { "name": "קליטה מהירה", "level": 5 },
+    { "name": "למידה עצמית", "level": 5 },
+    { "name": "חשיבה אנליטית", "level": 4 },
+    { "name": "פתרון בעיות", "level": 5 }
+  ],
+  "hard_skills_detailed": [
+    { "name": "Java & Spring Boot", "level": 5 },
+    { "name": "Microservices Architecture", "level": 4 },
+    { "name": "REST API Design", "level": 5 },
+    { "name": "SQL & Database Design", "level": 4 },
+    { "name": "Docker & Kubernetes", "level": 3 },
+    { "name": "Cloud Infrastructure (AWS)", "level": 2 }
+  ],
+  "education_items": [
+    {
+      "id": "edu-1",
+      "title": "תואר ראשון במדעי המחשב (B.Sc.)",
+      "institution": "אוניברסיטת תל אביב",
+      "year_start": "2015",
+      "year_end": "2018",
+      "type": "degree",
+      "description": "התמחות בפיתוח תוכנה וארכיטקטורת מערכות. פרויקט גמר בנושא Microservices."
+    },
+    {
+      "id": "edu-2",
+      "title": "Oracle Certified Professional - Java SE",
+      "institution": "Oracle",
+      "year_start": "2019",
+      "type": "certification",
+      "description": "הסמכה מקצועית בפיתוח Java ברמה מתקדמת."
+    },
+    {
+      "id": "edu-3",
+      "title": "Spring Professional Certification",
+      "institution": "Pivotal (VMware)",
+      "year_start": "2020",
+      "type": "certification",
+      "description": "הסמכה מקצועית ב-Spring Framework ו-Spring Boot."
+    },
+    {
+      "id": "edu-4",
+      "title": "Certified Scrum Master (CSM)",
+      "institution": "Scrum Alliance",
+      "year_start": "2024",
+      "type": "certification",
+      "description": "הסמכה בניהול פרויקטים לפי מתודולוגיית Agile/Scrum."
+    }
+  ],
+  "experience": [
+    {
+      "id": "exp-1",
+      "title": "מפתחת תוכנה בכירה",
+      "department": "מחלקת פיתוח Backend",
+      "division": "חטיבת טכנולוגיות",
+      "start_date": "2021",
+      "end_date": null,
+      "is_current": true,
+      "description": "פיתוח והובלת מערכות Backend מבוססות Java ו-Spring Boot. אחראית על תכנון ארכיטקטורה, פיתוח Microservices ושיפור ביצועים.",
+      "achievements": [
+        "הובלת פיתוח מערכת ניהול לקוחות חדשה המשרתת 100,000+ משתמשים",
+        "שיפור ביצועי מערכת ב-40% באמצעות אופטימיזציות ושימוש ב-Caching",
+        "מנטורינג של 3 מפתחים זוטרים והובלת Code Reviews"
+      ]
+    },
+    {
+      "id": "exp-2",
+      "title": "מפתחת תוכנה",
+      "department": "מחלקת פיתוח Backend",
+      "division": "חטיבת טכנולוגיות",
+      "start_date": "2019",
+      "end_date": "2021",
+      "is_current": false,
+      "description": "פיתוח מערכות Backend בטכנולוגיות Java ו-Spring. עבודה על מגוון פרויקטים ארגוניים.",
+      "achievements": [
+        "פיתוח ותחזוקה של 5 Microservices קריטיים",
+        "שיפור כיסוי בדיקות אוטומטיות ל-85%",
+        "השתתפות בתכנון ארכיטקטורה של מערכות חדשות"
+      ]
+    },
+    {
+      "id": "exp-3",
+      "title": "מפתחת תוכנה זוטרה",
+      "department": "מחלקת פיתוח Backend",
+      "division": "חטיבת טכנולוגיות",
+      "start_date": "2018",
+      "end_date": "2019",
+      "is_current": false,
+      "description": "תפקיד ראשון לאחר התואר. למידה מואצת של טכנולוגיות ומתודולוגיות פיתוח.",
+      "achievements": [
+        "פיתוח פיצ'רים חדשים במערכות קיימות",
+        "תיקון באגים ושיפור קוד Legacy",
+        "השתתפות בפגישות Scrum וסקירות קוד"
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "author_name": "דני לוי",
+      "author_title": "מנהל מחלקת פיתוח Backend",
+      "author_avatar": "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg",
+      "relationship": "manager",
+      "date": "15.11.2024",
+      "rating": 5,
+      "content": "תמר היא מפתחת מצטיינת עם יכולות טכניות גבוהות מאוד. היא הובילה בהצלחה מספר פרויקטים קריטיים והוכיחה יכולת מנהיגות טבעית. תמר תמיד מוכנה לעזור לחברי הצוות ומשתפת ידע בנדיבות. אני ממליץ עליה בחום לתפקידי הובלה טכנית.",
+      "skills_mentioned": ["מנהיגות", "מומחיות טכנית", "עבודת צוות"]
+    },
+    {
+      "id": "rec-2",
+      "author_name": "יוסי כהן",
+      "author_title": "ארכיטקט תוכנה",
+      "author_avatar": "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
+      "relationship": "colleague",
+      "date": "03.10.2024",
+      "rating": 5,
+      "content": "עבדתי עם תמר על מספר פרויקטים מורכבים. היא מפתחת מעולה עם הבנה עמוקה של ארכיטקטורת מערכות. תמר תמיד מחפשת את הפתרון הטוב ביותר ולא רק את הפתרון המהיר. מומלצת בחום!",
+      "skills_mentioned": ["חשיבה אנליטית", "פתרון בעיות", "ארכיטקטורה"]
+    },
+    {
+      "id": "rec-3",
+      "author_name": "מיכל לוי",
+      "author_title": "מפתחת תוכנה",
+      "author_avatar": "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg",
+      "relationship": "mentee",
+      "date": "20.09.2024",
+      "rating": 5,
+      "content": "תמר הייתה המנטורית שלי כשהתחלתי בצוות. היא סבלנית, מסבירה מצוין ותמיד זמינה לעזור. למדתי ממנה המון על best practices ועל איך לכתוב קוד נקי ואיכותי. אני אסירת תודה על ההכוונה שלה!",
+      "skills_mentioned": ["מנטורינג", "סבלנות", "שיתוף ידע"]
+    }
+  ],
+  "wishlist": [
+    {
+      "id": "wish-1",
+      "type": "text",
+      "created_at": "לפני 5 ימים",
+      "has_alert": false,
+      "content": "אני מעוניינת להתפתח לכיוון הובלה טכנית של צוותים, עם דגש על ארכיטקטורת Cloud ומערכות מבוזרות. מחפשת הזדמנות להוביל פרויקטים משמעותיים עם השפעה ארגונית."
+    },
+    {
+      "id": "wish-2",
+      "type": "role",
+      "created_at": "לפני שבועיים",
+      "has_alert": true,
+      "role_title": "ראש צוות פיתוח Backend",
+      "role_department": "חטיבת טכנולוגיות • מחלקת פיתוח",
+      "role_status": "closed"
+    },
+    {
+      "id": "wish-3",
+      "type": "keywords",
+      "created_at": "לפני חודש",
+      "has_alert": true,
+      "keywords": ["ניהול", "הובלה טכנית", "ארכיטקטורה", "Cloud"]
+    }
+  ],
+  "career_preferences": {
+    "career_path": "management",
+    "role_types": ["הובלה טכנית", "ארכיטקטורה"],
+    "interests": ["טכנולוגיה"],
+    "locations": ["תל אביב"]
+  },
+  "languages": [
+    { "name": "עברית", "level": "native" },
+    { "name": "אנגלית", "level": "fluent" },
+    { "name": "ספרדית", "level": "basic" }
+  ],
+  "target_role": {
+    "title": "ראש צוות פיתוח",
+    "division": "חטיבת טכנולוגיות",
+    "match_percentage": 92,
+    "required_skills_met": 3,
+    "required_skills_total": 4,
+    "gaps_count": 2,
+    "estimated_months": 3
+  },
+  "notifications": [
+    {
+      "id": "notif-1",
+      "type": "job_match",
+      "title": "משרה חדשה מתאימה!",
+      "message": "נפתחה משרה \"ראש צוות\" עם 92% התאמה",
+      "timestamp": "לפני שעתיים"
+    },
+    {
+      "id": "notif-2",
+      "type": "idp_update",
+      "title": "עדכון תוכנית פיתוח",
+      "message": "השלמת 2 משימות נוספות",
+      "timestamp": "אתמול"
+    },
+    {
+      "id": "notif-3",
+      "type": "recommendation",
+      "title": "המלצה חדשה",
+      "message": "דני לוי הוסיף המלצה לפרופיל שלך",
+      "timestamp": "לפני 3 ימים"
+    }
+  ],
+  "idp": {
+    "progress": {
+      "overall": 68,
+      "gaps_remaining": 2,
+      "gaps_total": 5,
+      "tasks_completed": 7,
+      "tasks_total": 11,
+      "estimated_months": 3
+    }
+  }
+}
