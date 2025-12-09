@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MatchScore } from './MatchScore';
 import {
   Search,
@@ -232,6 +232,17 @@ export const JobsPage = () => {
     return `${value} (${count})`;
   };
 
+  // Close dropdowns on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsCategoryDropdownOpen(false);
+      setIsSortDropdownOpen(false);
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    return () => window.removeEventListener('scroll', handleScroll, true);
+  }, []);
+
   const toggleLike = (jobId: number) => {
     setLikedJobs(prev => {
       const newSet = new Set(prev);
@@ -345,7 +356,10 @@ export const JobsPage = () => {
             <span className="font-semibold">מיין לפי:</span>
             <div className="relative">
               <button
-                onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                onClick={() => {
+                  setIsSortDropdownOpen(!isSortDropdownOpen);
+                  setIsCategoryDropdownOpen(false);
+                }}
                 className="flex items-center gap-1 font-bold text-primary cursor-pointer hover:text-primary-dark transition-colors"
               >
                 <span style={{ width: '9rem' }}>{selectedSort}</span>
@@ -393,7 +407,10 @@ export const JobsPage = () => {
             <div className="col-span-2">
               <div className="relative">
                 <button
-                  onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                  onClick={() => {
+                    setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+                    setIsSortDropdownOpen(false);
+                  }}
                   className="w-full bg-neutral-extralight border-2 border-neutral-light rounded-card py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors flex items-center justify-between gap-2"
                 >
                   <span className="font-medium text-neutral-dark truncate">{getCategoryLabel(selectedCategory)}</span>

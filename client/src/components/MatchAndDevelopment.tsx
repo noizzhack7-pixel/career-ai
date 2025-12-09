@@ -32,6 +32,24 @@ import {
 
 export const MatchAndDevelopment = ({ onNavigate, employeeData }: { onNavigate?: (view: "dashboard" | "home" | "jobs" | "match") => void, employeeData?: any }) => {
   const [expandedJobId, setExpandedJobId] = React.useState<number | null>(null);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = React.useState(false);
+  const [selectedCategory, setSelectedCategory] = React.useState('כל הקטגוריות');
+  const [selectedSort, setSelectedSort] = React.useState('מיין לפי התאמה');
+
+  const categoryOptions = ['כל הקטגוריות', 'טכנולוגיה', 'כספים', 'משאבי אנוש', 'לוגיסטיקה'];
+  const sortOptions = ['מיין לפי התאמה', 'מיין לפי תאריך פרסום', 'מיין לפי דרגה'];
+
+  // Close dropdowns on scroll
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsCategoryDropdownOpen(false);
+      setIsSortDropdownOpen(false);
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    return () => window.removeEventListener('scroll', handleScroll, true);
+  }, []);
 
   const toggleDevelopmentPlan = (jobId: number) => {
     setExpandedJobId(prev => prev === jobId ? null : jobId);
@@ -99,18 +117,73 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData }: { onNavigate?:
                 <Heart className="w-6 h-6" />
                 משרות שאהבתי              </h2>
               <div className="flex items-center gap-3">
-                <select className="border-2 border-neutral-light rounded-card py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                  <option>כל הקטגוריות</option>
-                  <option>טכנולוגיה</option>
-                  <option>כספים</option>
-                  <option>משאבי אנוש</option>
-                  <option>לוגיסטיקה</option>
-                </select>
-                <select className="border-2 border-neutral-light rounded-card py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                  <option>מיין לפי התאמה</option>
-                  <option>מיין לפי תאריך פרסום</option>
-                  <option>מיין לפי דרגה</option>
-                </select>
+                {/* Category Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+                      setIsSortDropdownOpen(false);
+                    }}
+                    className="flex items-center justify-between gap-2 border-2 border-neutral-light rounded-card py-2 px-4 text-sm bg-white hover:border-primary/30 transition-colors cursor-pointer min-w-[140px]"
+                  >
+                    <span className="font-medium text-neutral-dark">{selectedCategory}</span>
+                    <ChevronDown className={`w-4 h-4 text-neutral-medium transition-transform duration-200 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isCategoryDropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsCategoryDropdownOpen(false)}
+                      />
+                      <div className="absolute top-full right-0 mt-1 bg-white rounded-card shadow-lg border border-neutral-light z-50 overflow-hidden min-w-[160px]">
+                        {categoryOptions.map(option => (
+                          <button
+                            key={option}
+                            onClick={() => { setSelectedCategory(option); setIsCategoryDropdownOpen(false); }}
+                            className={`w-full text-right px-4 py-2.5 text-sm transition-colors cursor-pointer ${selectedCategory === option ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-dark hover:bg-neutral-extralight'}`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Sort Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsSortDropdownOpen(!isSortDropdownOpen);
+                      setIsCategoryDropdownOpen(false);
+                    }}
+                    className="flex items-center justify-between gap-2 border-2 border-neutral-light rounded-card py-2 px-4 text-sm bg-white hover:border-primary/30 transition-colors cursor-pointer min-w-[180px]"
+                  >
+                    <span className="font-medium text-neutral-dark">{selectedSort}</span>
+                    <ChevronDown className={`w-4 h-4 text-neutral-medium transition-transform duration-200 ${isSortDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isSortDropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsSortDropdownOpen(false)}
+                      />
+                      <div className="absolute top-full right-0 mt-1 bg-white rounded-card shadow-lg border border-neutral-light z-50 overflow-hidden min-w-[180px]">
+                        {sortOptions.map(option => (
+                          <button
+                            key={option}
+                            onClick={() => { setSelectedSort(option); setIsSortDropdownOpen(false); }}
+                            className={`w-full text-right px-4 py-2.5 text-sm transition-colors cursor-pointer ${selectedSort === option ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-dark hover:bg-neutral-extralight'}`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
