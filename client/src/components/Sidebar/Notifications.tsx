@@ -8,7 +8,7 @@ export const Notifications = () => {
         <Bell className="w-5 h-5" />
         התראות אחרונות
       </h3>
-      
+
       <div className="space-y-3">
         <div className="p-3 bg-primary-light/20 rounded-card border-r-4 border-primary">
           <p className="text-sm font-semibold text-neutral-dark mb-1">משרה חדשה מתאימה!</p>
@@ -20,11 +20,11 @@ export const Notifications = () => {
           <p className="text-xs text-neutral-medium">השלמת 2 משימות נוספות</p>
           <p className="text-xs text-neutral-medium mt-1">אתמול</p>
         </div>
-        <div className="p-3 bg-secondary/10 rounded-card border-r-4 border-secondary">
+        {/* <div className="p-3 bg-secondary/10 rounded-card border-r-4 border-secondary">
           <p className="text-sm font-semibold text-neutral-dark mb-1">המלצה חדשה</p>
           <p className="text-xs text-neutral-medium">דני לוי הוסיף המלצה לפרופיל שלך</p>
           <p className="text-xs text-neutral-medium mt-1">לפני 3 ימים</p>
-        </div>
+        </div> */}
       </div>
 
       <button className="w-full mt-3 text-primary hover:underline text-sm font-semibold flex items-center justify-center gap-1">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rocket, Search, Bell } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 
 interface EmployeeData {
   name?: string;
@@ -24,13 +24,14 @@ export const Navbar = ({ onNavigate, currentView = 'dashboard', employeeData }: 
     <nav id="top-navigation" className="bg-white border-b border-neutral-light sticky top-0 z-50 shadow-sm">
       <div className="max-w-[1600px] mx-auto px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent-dark rounded-lg flex items-center justify-center">
-                <Rocket className="text-white w-5 h-5" />
-              </div>
-              <span className="text-xl font-bold text-primary">GO-PRO</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <img
+              style={{ marginRight: '-1.5rem' }}
+              src="/logo.png"
+              alt="GO-PRO Logo"
+              className="w-30 h-16 rounded-lg object-contain cursor-pointer"
+              onClick={() => onNavigate?.('dashboard')}
+            />
 
             <div className="flex items-center gap-1">
               <a
