@@ -186,7 +186,6 @@ class EmployeeProfile(BaseModel):
 # Position assignment payloads
 class PositionEntry(BaseModel):
     position_id: str
-    position_name: str
 
 
 class EmployeePositionsUpdate(BaseModel):
@@ -369,13 +368,83 @@ async def get_employee(employee_number: int):
         )
 
         employee = emp_resp.data or {}
+
         # Ensure positions is always returned as a list (JSONB array of position_id/name pairs)
         if "positions" in employee and employee["positions"] is None:
             employee["positions"] = []
         elif "positions" not in employee:
             employee["positions"] = []
+
         if struct_resp.data:
-            employee["structured_employees"] = struct_resp.data
+            struct_data = struct_resp.data
+            if isinstance(struct_data, dict):
+                struct_data.pop("embedding", None)
+            employee["structured_employees"] = struct_data
+
+        # Helper to strip heavy fields
+        def clean_position(pos: dict | None) -> dict | None:
+            if not isinstance(pos, dict):
+                return None
+            pos.pop("embedding", None)
+            return pos
+
+        def fetch_position(position_id: int | str | None) -> dict | None:
+            if position_id is None:
+                return None
+            try:
+                resp = (
+                    client.table("positions")
+                    .select("*")
+                    .eq("position_id", position_id)
+                    .single()
+                    .execute()
+                )
+                return clean_position(resp.data)
+            except Exception as exc:
+                print(f"[employees] positions lookup failed for {position_id}: {exc}")
+                return None
+
+        # Resolve current_position name
+        current_position_id = employee.get("current_position")
+        current_position_record = fetch_position(current_position_id)
+        if current_position_record and "position_name" in current_position_record:
+            employee["current_position_name"] = current_position_record.get("position_name")
+
+        # Resolve star_position full record
+        star_position_id = employee.get("star_position")
+        star_position_record = fetch_position(star_position_id)
+        if star_position_record:
+            employee["star_position"] = star_position_record
+
+        # Resolve liked_positions array of full records
+        liked_raw = employee.get("liked_positions")
+        liked_ids: list = []
+        if isinstance(liked_raw, list):
+            # Accept array of ids or array of objects { position_id, position_name?, ... }
+            for item in liked_raw:
+                if isinstance(item, dict) and "position_id" in item:
+                    liked_ids.append(item.get("position_id"))
+                else:
+                    liked_ids.append(item)
+        elif isinstance(liked_raw, str):
+            try:
+                parsed = json.loads(liked_raw)
+                if isinstance(parsed, list):
+                    for item in parsed:
+                        if isinstance(item, dict) and "position_id" in item:
+                            liked_ids.append(item.get("position_id"))
+                        else:
+                            liked_ids.append(item)
+            except Exception:
+                liked_ids = []
+
+        liked_records = []
+        for pid in liked_ids:
+            pos = fetch_position(pid)
+            if pos:
+                liked_records.append(pos)
+        employee["liked_positions"] = liked_records
+
         return employee
     except HTTPException:
         raise
@@ -399,14 +468,14 @@ async def update_employee(employee_number: int, employee: Employee):
 @router.post("/{employee_number}/positions", response_model=dict)
 async def update_employee_positions(employee_number: int, payload: EmployeePositionsUpdate):
     """
-    Update the employee's positions JSONB array with position_id and position_name entries.
+    Update the employee's positions JSONB array with position_id entries only.
     """
     client = supabase
     if not client:
         raise HTTPException(status_code=500, detail="Supabase client is not initialized.")
 
     try:
-        update_payload = {"positions": [pos.model_dump() for pos in payload.positions]}
+        update_payload = {"liked_positions": [pos.position_id for pos in payload.positions]}
         resp = (
             client.table("employees")
             .update(update_payload)
