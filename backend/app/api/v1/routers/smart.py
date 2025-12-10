@@ -140,22 +140,48 @@ def get_skill_gaps_by_candidate_and_profiles(
 
     return responses
 
+import math
+from typing import List
 
-def _normalize_minmax(scores: List[float]) -> List[float]:
+def _normalize(
+    scores: List[float],
+    midpoint: float = 1.2,   # raw score that should map to ~50
+    steepness: float = 10.0   # how “sharp” the transition is
+) -> List[float]:
     """
-    Normalize any list of real values to [0,1] while preserving order.
-    If all scores are equal, return 0.5 for all (neutral value).
+    Map raw scores to [0,100] using a logistic curve, without depending
+    on min/max of the current batch.
+
+    - `midpoint`  = the raw score that maps to 50.
+    - `steepness` = how quickly scores move from low to high.
     """
     if not scores:
         return scores
 
-    min_s = min(scores)
-    max_s = max(scores)
+    normalized: List[float] = []
+    for s in scores:
+        # classic logistic: 1 / (1 + e^(-k(x - x0)))
+        prob = 1.0 / (1.0 + math.exp(-steepness * (s - midpoint)))
+        normalized.append(prob * 100.0)
 
-    if max_s == min_s:  # avoid division by zero; all equal
-        return [0.5] * len(scores)
-
-    return [((s - min_s) / (max_s - min_s)) * 100 for s in scores]
+    return normalized
+#
+# def _normalize_minmax(scores: List[float]) -> List[float]:
+#     """
+#     Normalize any list of real values to [0,1] while preserving order.
+#     If all scores are equal, return 0.5 for all (neutral value).
+#     """
+#     if not scores:
+#         return scores
+#     print(scores)
+#
+#     min_s = min(scores)
+#     max_s = max(scores)
+#
+#     if max_s == min_s:  # avoid division by zero; all equal
+#         return [0.5] * len(scores)
+#
+#     return [((s - min_s) / (max_s - min_s)) * 100 for s in scores]
 
 
 def _get_candidate(candidate_id: int):
@@ -337,7 +363,7 @@ def get_top_candidates_for_position(
 
     # ---- normalize scores to [0,1] while preserving order ----
     scores = [row["score"] for row in rows]
-    norm_scores = _normalize_minmax(scores)
+    norm_scores = _normalize(scores)
 
     results: List[MatchResult] = []
     for row, norm_score in zip(rows, norm_scores):
@@ -379,7 +405,7 @@ def get_similar_candidates(
 
     # ---- normalize scores to [0,1] while preserving order ----
     scores = [row["score"] for row in rows]
-    norm_scores = _normalize_minmax(scores)
+    norm_scores = _normalize(scores)
 
     results: List[MatchResult] = []
     for row, norm_score in zip(rows, norm_scores):
@@ -405,6 +431,7 @@ def get_top_positions_for_candidate(
     candidate_id: int = Query(...),
     limit: int = Query(10, ge=1, le=100),
 ):
+    print(candidate_id)
     # validate candidate exists
     _ = _get_candidate(candidate_id)
 
@@ -422,12 +449,12 @@ def get_top_positions_for_candidate(
 
     # ---- normalize scores to [0,1] while preserving order ----
     scores = [row["score"] for row in rows]
-    norm_scores = _normalize_minmax(scores)
+    norm_scores = _normalize(scores)
 
     results: List[MatchResult] = []
-
+    print(norm_scores)
     gaps = get_skill_gaps_by_candidate_and_profiles(candidate_id=candidate_id, profiles=rows)
-
+    print(gaps)
     for row, norm_score in zip(rows, norm_scores):
         # row: profile_id, position_id, profile_name, position_name, score
         profile = _get_profile(row["profile_id"])
@@ -470,7 +497,7 @@ def get_similar_positions(
 
     # ---- normalize scores to [0,1] while preserving order ----
     scores = [row["score"] for row in rows]
-    norm_scores = _normalize_minmax(scores)
+    norm_scores = _normalize(scores)
 
     results: List[MatchResult] = []
     for row, norm_score in zip(rows, norm_scores):
