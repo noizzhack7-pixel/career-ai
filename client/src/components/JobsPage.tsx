@@ -491,6 +491,29 @@ export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allP
     }
   };
 
+  // Show loading state while data is being fetched
+  if (jobsData.length === 0) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="flex flex-col items-center gap-4">
+          <div style={{ width: '10rem', height: '10rem' }} className="rounded-full flex items-center justify-center overflow-hidden">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover p-3"
+            >
+              <source src="/loading.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <p className="text-base font-semibold text-neutral-medium">טוען משרות...</p>
+          <p className="text-sm text-neutral-500">מאתרים את ההזדמנויות המתאימות עבורך</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ marginLeft: '-2rem', marginRight: '-2rem' }} className="min-h-[calc(100vh-80px)] flex flex-col -m-10 px-8 py-3 max-w-[1800px] overflow-y-hidden">
       <style>{`
