@@ -20,9 +20,10 @@ import {
 
 interface ProfileHeroProps {
   employeeData?: any;
+  positionsData?: any;
 }
 
-export const ProfileHero: React.FC<ProfileHeroProps> = ({ employeeData }) => {
+export const ProfileHero: React.FC<ProfileHeroProps> = ({ employeeData, positionsData }) => {
   const employee = employeeData;
 
   return (
@@ -180,7 +181,7 @@ export const ProfileHero: React.FC<ProfileHeroProps> = ({ employeeData }) => {
                 <Briefcase className="text-secondary w-6 h-6" />
               </div>
               <div>
-                <p className="text-3xl font-bold text-secondary">12</p>
+                <p className="text-3xl font-bold text-secondary">{positionsData?.length || 0}</p>
                 <p className="text-xs text-neutral-dark font-medium">משרות מתאימות</p>
               </div>
             </div>

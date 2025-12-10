@@ -9,9 +9,10 @@ import { ListChecks, ArrowLeft, Bot, Send, CalendarPlus, Bell, User } from 'luci
 interface DashboardProps {
   onNavigate?: (view: 'dashboard' | 'home' | 'jobs' | 'match') => void;
   employeeData?: any;
+  positionsData?: any;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData, positionsData }) => {
   const [scanTrigger, setScanTrigger] = React.useState(0);
   const [selectedJob, setSelectedJob] = React.useState<{ id: number; title: string; matchPercent: number } | null>(null);
 
@@ -31,6 +32,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData }
           scanTrigger={scanTrigger}
           onJobSelect={setSelectedJob}
           selectedJobId={selectedJob?.id}
+          positionsData={positionsData}
         />
         <DevelopmentPlanSummary selectedJob={selectedJob} />
         <LikedJobsSummary onNavigate={onNavigate} />

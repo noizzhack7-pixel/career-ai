@@ -24,9 +24,9 @@ import { Dashboard } from "./components/Dashboard";
 import { MatchAndDevelopment } from "./components/MatchAndDevelopment";
 import { SkillsQuestionnaire } from "./components/SkillsQuestionnaire";
 
-const ProfilePage = ({ employeeData }: { employeeData?: any }) => (
+const ProfilePage = ({ employeeData, positionsData }: { employeeData?: any, positionsData?: any }) => (
   <>
-    <ProfileHero employeeData={employeeData} />
+    <ProfileHero employeeData={employeeData} positionsData={positionsData} />
 
     <div className="grid grid-cols-12 gap-8">
       <div className="col-span-8 space-y-8">
@@ -88,6 +88,7 @@ export default function App() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState<any>(null);
+  const [positionsData, setPositionsData] = useState<any[]>([]);
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
@@ -95,20 +96,31 @@ export default function App() {
     if (hasFetchedRef.current) return;
     hasFetchedRef.current = true;
 
-    const fetchEmployeeMe = async () => {
+    const fetchAppData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/v1/employees/me");
-        const data = await response.json();
-        console.log("employees/me response:", data);
-        setEmployeeData(data);
+        // Fetch both employee data and positions in parallel
+        const [employeeResponse, positionsResponse] = await Promise.all([
+          fetch("http://localhost:8000/api/v1/employees/me"),
+          fetch("http://localhost:8000/api/v1/positions/matching")
+        ]);
+
+        const employeeJson = await employeeResponse.json();
+        console.log("employees/me response:", employeeJson);
+        setEmployeeData(employeeJson);
+
+        if (positionsResponse.ok) {
+          const positionsJson = await positionsResponse.json();
+          console.log("positions/matching response:", positionsJson);
+          setPositionsData(positionsJson);
+        }
       } catch (error) {
-        console.error("Error fetching employees/me:", error);
+        console.error("Error fetching app data:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchEmployeeMe();
+    fetchAppData();
   }, []);
 
   const handleNavigate = (view: "dashboard" | "home" | "jobs" | "match") => {
@@ -155,16 +167,16 @@ export default function App() {
         <Routes>
           <Route
             path="/"
-            element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} />}
+            element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}
           />
-          <Route path="/positions" element={<JobsPage />} />
+          <Route path="/positions" element={<JobsPage positionsData={positionsData} />} />
           <Route
             path="/my-positions"
-            element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} />}
+            element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}
           />
           <Route path="/questionnaire" element={<SkillsQuestionnaire />} />
           <Route path="/questionnaire-test" element={<SkillsQuestionnaire testMode />} />
-          <Route path="/profile" element={<ProfilePage employeeData={employeeData} />} />
+          <Route path="/profile" element={<ProfilePage employeeData={employeeData} positionsData={positionsData} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

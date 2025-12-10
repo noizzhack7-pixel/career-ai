@@ -229,7 +229,11 @@ const allJobsData: Job[] = [
   }
 ];
 
-export const JobsPage = () => {
+interface JobsPageProps {
+  positionsData?: any[];
+}
+
+export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
   const [currentView, setCurrentView] = useState<'all' | 'open' | 'matched'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showOnlyIsrael, setShowOnlyIsrael] = useState<boolean>(false);
@@ -245,56 +249,44 @@ export const JobsPage = () => {
 
   const sortOptions = ['התאמה הגבוהה ביותר', 'החדשות ביותר'];
 
-  // Fetch jobs from API
+  // Transform positionsData from props when it changes
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch('http://localhost:8000/api/v1/positions/matching');
-        if (!response.ok) {
-          throw new Error('Failed to fetch positions');
-        }
-        const data = await response.json();
+    if (positionsData && positionsData.length > 0) {
+      // Transform API data to match Job interface
+      const transformedJobs: Job[] = positionsData.map((job: any, index: number) => ({
+        id: job.id || index + 1,
+        title: job.title || job.position_name || 'תפקיד',
+        department: job.department || job.division || 'מחלקה',
+        location: job.location || 'ישראל',
+        matchPercent: job.match_percentage,
+        matchLevel: job.matchLevel || (job.matchPercent >= 85 ? 'התאמה גבוהה' : 'התאמה בינונית'),
+        matchColor: job.matchColor || 'primary',
+        category: job.category || 'כללי',
+        categoryColor: job.category_color ? 'bg-' + job.category_color + '-100 text-' + job.category_color + '-800' : 'bg-blue-100 text-blue-800',
+        postedTime: job.postedTime || job.posted_time || 'פורסם לאחרונה',
+        description: job.description || '',
+        responsibilities: job.responsibilities || [],
+        requirements: job.requirements || [],
+        isOpen: job.isOpen !== undefined ? job.isOpen : true,
+        match_summary: job.match_summary || '',
+        hard_skills_match: job.hard_skills_match || [],
+        soft_skills_match: job.soft_skills_match || [],
+        experience_match: job.experience_match || []
+      }));
 
-        // Transform API data to match Job interface if needed
-        const transformedJobs: Job[] = data.map((job: any, index: number) => ({
-          id: job.id || index + 1,
-          title: job.title || job.position_name || 'תפקיד',
-          department: job.department || job.division || 'מחלקה',
-          location: job.location || 'ישראל',
-          matchPercent: job.matchPercent || job.match_percent || Math.floor(Math.random() * 30) + 70,
-          matchLevel: job.matchLevel || (job.matchPercent >= 85 ? 'התאמה גבוהה' : 'התאמה בינונית'),
-          matchColor: job.matchColor || 'primary',
-          category: job.category || 'כללי',
-          categoryColor: job.category_color ? 'bg-' + job.category_color + '-100 text-' + job.category_color + '-800' : 'bg-blue-100 text-blue-800',
-          postedTime: job.postedTime || job.posted_time || 'פורסם לאחרונה',
-          description: job.description || '',
-          responsibilities: job.responsibilities || [],
-          requirements: job.requirements || [],
-          isOpen: job.isOpen !== undefined ? job.isOpen : true,
-          match_summary: job.match_summary || '',
-          hard_skills_match: job.hard_skills_match || [],
-          soft_skills_match: job.soft_skills_match || [],
-          experience_match: job.experience_match || []
-        }));
+      setJobsData(transformedJobs);
 
-        setJobsData(transformedJobs);
-
-        if (transformedJobs.length > 0) {
-          const sortedJobs = transformedJobs.sort((a, b) => b.matchPercent - a.matchPercent);
-          setSelectedJobId(sortedJobs[0].id);
-        }
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-        // Keep using the fallback static data
-        setJobsData(allJobsData);
-      } finally {
-        setIsLoading(false);
+      if (transformedJobs.length > 0) {
+        const sortedJobs = transformedJobs.sort((a, b) => b.matchPercent - a.matchPercent);
+        setSelectedJobId(sortedJobs[0].id);
       }
-    };
-
-    fetchJobs();
-  }, []);
+      setIsLoading(false);
+    } else {
+      // Use fallback static data if no positions data
+      setJobsData(allJobsData);
+      setIsLoading(false);
+    }
+  }, [positionsData]);
 
   // Get all unique categories
   const allCategories = Array.from(new Set(allJobsData.map(job => job.category))).sort();
@@ -668,7 +660,7 @@ export const JobsPage = () => {
                 </div>
 
                 {/* Scrollable Content */}
-                <div style={{ maxHeight: "calc(100vh - 400px)", marginLeft: "0.5rem", marginBottom: "0.5rem", marginTop: "0.5rem" }} className="p-6 flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+                <div style={{ maxHeight: "calc(100vh - 400px)", paddingTop: "0rem", marginLeft: "0.5rem", marginBottom: "0.5rem", marginTop: "0.5rem" }} className="p-6  flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
                   {/* Personal Match Analysis */}
                   <div className="mb-8 bg-transparent p-0">
                     <div className="space-y-6">
@@ -753,7 +745,7 @@ export const JobsPage = () => {
                         </div>
 
                         {/* Experience Match */}
-                        <div className="mb-3">
+                        <div className="mb-6">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-bold text-neutral-dark">ניסיון והשכלה</p>
                             <p className="text-sm font-bold text-status-success">
@@ -786,7 +778,7 @@ export const JobsPage = () => {
                         </div>
 
                         {/* Summary */}
-                        <div className="bg-white/60 p-3 rounded-card border border-primary/20 mt-2">
+                        <div className="bg-white/60 p-3 rounded-card border border-primary/20 mt-5">
                           <p className="text-xs text-neutral-dark leading-relaxed flex items-start gap-1">
                             <Lightbulb className="text-primary w-3 h-3 mt-0.5 flex-shrink-0" />
                             <span>
@@ -831,17 +823,15 @@ export const JobsPage = () => {
                     <div className="space-y-3">
                       {selectedJob.requirements.map((req, idx) => (
                         <div key={idx} className="flex items-center gap-3 p-2 border-b border-neutral-light/50 last:border-0">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
-                          <span className="text-neutral-dark">{req.skill}</span>
+                          {/* <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div> */}
                           {req.status === 'יש' ? (
-                            <Tooltip content={req.note || 'דרישה מתקיימת'}>
-                              <CheckCircle className="w-4 h-4 text-status-success flex-shrink-0" />
-                            </Tooltip>
+                            <CheckCircle className="w-4 h-4 text-status-success flex-shrink-0" />
                           ) : (
-                            <Tooltip content={req.status || 'דרישה חסרה'}>
-                              <XCircle style={{ color: 'darkred' }} className="w-4 h-4 text-status-error flex-shrink-0" />
-                            </Tooltip>
+                            <div className="w-4 h-4 rounded-full border-2 border-neutral-medium flex-shrink-0"></div>
+                            // {/* <XCircle style={{ color: 'darkred' }} className="w-4 h-4 text-status-error flex-shrink-0" /> */}
                           )}
+                          <span className="text-neutral-dark">{req.skill}</span>
+
                           {req.status === 'חסר' && (
                             <span className="text-sm text-neutral-medium ml-2">({req.note})</span>
                           )}

@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 
 
-export const MatchAndDevelopment = ({ onNavigate, employeeData }: { onNavigate?: (view: "dashboard" | "home" | "jobs" | "match") => void, employeeData?: any }) => {
+export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }: { onNavigate?: (view: "dashboard" | "home" | "jobs" | "match") => void, employeeData?: any, positionsData?: any }) => {
   const [expandedJobId, setExpandedJobId] = React.useState<number | null>(null);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = React.useState(false);
@@ -95,7 +95,7 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData }: { onNavigate?:
                   <div className="flex items-center gap-2">
                     <Briefcase className="text-accent-dark w-4 h-4" />
                     <span className="text-neutral-medium">משרות מתאימות:</span>
-                    <span className="font-semibold text-status-success">12</span>
+                    <span className="font-semibold text-status-success">{positionsData?.length || 0}</span>
                   </div>
                 </div>
               </div>
