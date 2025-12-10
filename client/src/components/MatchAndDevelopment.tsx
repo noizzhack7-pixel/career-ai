@@ -48,6 +48,11 @@ export const MatchAndDevelopment = ({
   const [selectedCategory, setSelectedCategory] = React.useState('כל הקטגוריות');
   const [selectedSort, setSelectedSort] = React.useState('מיין לפי התאמה');
   const [targetRoleId, setTargetRoleId] = React.useState<number | null>(null);
+  const [loadingRecommendations, setLoadingRecommendations] = React.useState<number | null>(null);
+  const [recommendations, setRecommendations] = React.useState<Record<number, any>>({});
+  const [salaryWarningIdx] = React.useState(() =>
+    Math.floor(Math.random() * (employeeData?.liked_positions?.length || 1))
+  );
   const employeeNumber = employeeData?.employee_number ?? employeeData?.id ?? 1001;
 
   const normalizeId = (value: any, fallback: number = 0): number => {
@@ -69,8 +74,33 @@ export const MatchAndDevelopment = ({
     return () => window.removeEventListener('scroll', handleScroll, true);
   }, []);
 
-  const toggleDevelopmentPlan = (jobId: number) => {
-    setExpandedJobId(prev => prev === jobId ? null : jobId);
+  const toggleDevelopmentPlan = async (jobId: number, profileId: number) => {
+    // If already expanded, just collapse
+    if (expandedJobId === jobId) {
+      setExpandedJobId(null);
+      return;
+    }
+
+    // Expand and fetch recommendations if not already loaded
+    setExpandedJobId(jobId);
+
+    if (!recommendations[jobId]) {
+      setLoadingRecommendations(jobId);
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/v1/smart/learning_recommendations?employee_number=${employeeNumber}&profile_id=${profileId}`,
+          { method: 'POST' }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setRecommendations(prev => ({ ...prev, [jobId]: data }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch learning recommendations', error);
+      } finally {
+        setLoadingRecommendations(null);
+      }
+    }
   };
 
   const updateStarPosition = async (position: any | null) => {
@@ -288,35 +318,33 @@ export const MatchAndDevelopment = ({
                     <div className="mb-4">
                       <p className={`text-sm font-semibold mb-3 ${targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}`}>דרישות מרכזיות:</p>
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
-                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בניהול צוותים</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
-                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>מומחיות Java & Spring Boot</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
-                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בארכיטקטורת מערכות</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${targetRoleId === posId ? 'border-white/50' : 'border-neutral-300'}`} />
-                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בניהול תקציבים</span>
-                        </div>
+                        {[...(position?.hard_skills_match || []), ...(position?.soft_skills_match || [])]
+                          .sort((a: any, b: any) => a.gap - b.gap)
+                          .map((skill: any, skillIdx: number) => (
+                            <div key={`skill-${skillIdx}`} className="flex items-center gap-2 text-sm">
+                              {skill.gap <= 0 ? (
+                                <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
+                              ) : (
+                                <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${targetRoleId === posId ? 'border-white/50' : 'border-neutral-300'}`} />
+                              )}
+                              <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>{skill.skill}</span>
+                            </div>
+                          ))}
                       </div>
                     </div>
 
-                    <div style={{ backgroundColor: '#fef9c370', borderRightColor: '#eab208cf' }} className="p-3 rounded-card mb-4 border-r-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2">
-                            <Info style={{ color: '#eab208' }} className="text-accent-dark w-4 h-4" />
-                            <span className={targetRoleId === posId ? 'text-white font-semibold' : 'text-neutral-dark font-semibold'}> יש לשים לב, המשרה עלולה לגרוע משכרך</span>
+                    {idx === salaryWarningIdx && (
+                      <div style={{ backgroundColor: '#fef9c370', borderRightColor: '#eab208cf' }} className="p-3 rounded-card mb-4 border-r-4">
+                        <div className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                              <Info style={{ color: '#eab208' }} className="text-accent-dark w-4 h-4" />
+                              <span className={targetRoleId === posId ? 'text-white font-semibold' : 'text-neutral-dark font-semibold'}> יש לשים לב, המשרה עלולה לגרוע משכרך</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className={`flex items-center justify-between pt-4 border-t ${targetRoleId === posId ? 'border-white/20' : 'border-neutral-light'}`}>
                       <div className="flex items-center gap-4">
@@ -344,12 +372,12 @@ export const MatchAndDevelopment = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleDevelopmentPlan(posId);
+                            toggleDevelopmentPlan(posId, position.profile_id || position.id);
                           }}
                           className="bg-primary text-white px-5 py-2 rounded-card text-sm font-semibold hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary flex items-center gap-2"
                         >
                           <Route className="w-4 h-4" />
-                          הצג תוכנית פיתוח
+                          {expandedJobId === posId ? 'הסתר תוכנית' : 'הצג תוכנית פיתוח'}
                         </button>
                       </div>
                     </div>
@@ -364,6 +392,82 @@ export const MatchAndDevelopment = ({
                             <Route className="w-5 h-5" />
                             תוכנית פיתוח אישית
                           </h3>
+
+                          {loadingRecommendations === posId ? (
+                            <div className="flex flex-col items-center justify-center py-8 gap-4">
+                              <div className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden">
+                                <video
+                                  autoPlay
+                                  loop
+                                  muted
+                                  playsInline
+                                  className="w-full h-full object-cover"
+                                >
+                                  <source src="/loading.mp4" type="video/mp4" />
+                                </video>
+                              </div>
+                              <p className="text-sm text-neutral-medium">טוען המלצות...</p>
+                              <p className="text-xs text-neutral-400">מחשב את מסלול הפיתוח המותאם עבורך</p>
+                            </div>
+                          ) : recommendations[posId] ? (
+                            <div className="space-y-6">
+                              {/* Plan text */}
+                              {recommendations[posId].plan && (
+                                <div className="bg-white p-4 rounded-lg border border-primary/20 shadow-sm">
+                                  <h4 className="font-bold text-primary mb-3 flex items-center gap-2">
+                                    <Target className="w-4 h-4" />
+                                    תוכנית הפיתוח שלך
+                                  </h4>
+                                  <div className="space-y-3">
+                                    {recommendations[posId].plan
+                                      .split(/(?=\d+\.\s)/)
+                                      .filter((item: string) => item.trim())
+                                      .map((item: string, idx: number) => (
+                                        <div style={{ alignItems: 'center' }} key={idx} className="flex items-start gap-3">
+                                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs flex-shrink-0 mt-0.5">
+                                            {idx + 1}
+                                          </div>
+                                          <p className="text-sm text-neutral-dark leading-relaxed flex-1">
+                                            {item.replace(/^\d+\.\s*/, '').trim()}
+                                          </p>
+                                        </div>
+                                      ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Courses */}
+                              {recommendations[posId].courses && recommendations[posId].courses.length > 0 && (
+                                <div>
+                                  <h4 className="font-bold text-neutral-dark mb-3 flex items-center gap-2">
+                                    <GraduationCap className="w-4 h-4 text-primary" />
+                                    קורסים מומלצים
+                                  </h4>
+                                  <div className="space-y-3">
+                                    {recommendations[posId].courses.map((course: any, idx: number) => (
+                                      <div key={idx} className="bg-white p-4 rounded-lg border border-neutral-light shadow-sm">
+                                        <div className="flex items-start gap-3">
+                                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
+                                            {idx + 1}
+                                          </div>
+                                          <div className="flex-1">
+                                            <h5 className="font-bold text-neutral-dark mb-1">{course.name}</h5>
+                                            <p className="text-sm text-neutral-medium">{course.description}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {!recommendations[posId].plan && (!recommendations[posId].courses || recommendations[posId].courses.length === 0) && (
+                                <p className="text-neutral-medium text-center py-4">לא נמצאו המלצות</p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-neutral-medium text-center py-4">אירעה שגיאה בטעינת ההמלצות</p>
+                          )}
                         </div>
                       </div>
                     )}
