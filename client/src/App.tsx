@@ -119,7 +119,8 @@ export default function App() {
 
         // Then fetch additional positions data (after loading is done)
         const candidateId = employeeJson?.id || 1001;
-        const positionsResponse = await fetch("http://localhost:8000/api/v1/positions/matching");
+        // const positionsResponse = await fetch("http://localhost:8000/api/v1/positions/matching");
+        const positionsResponse = await fetch(`http://localhost:8000/api/v1/smart/positions/top?candidate_id=${candidateId}&limit=3`);
 
         if (positionsResponse.ok) {
           const positionsJson = await positionsResponse.json();
@@ -181,7 +182,7 @@ export default function App() {
             path="/"
             element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} allPositions={allPositions} />}
           />
-          <Route path="/positions" element={<JobsPage positionsData={positionsData} />} />
+          <Route path="/positions" element={<JobsPage positionsData={positionsData} allPositions={allPositions} />} />
           <Route
             path="/my-positions"
             element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}

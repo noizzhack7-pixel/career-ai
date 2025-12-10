@@ -47,11 +47,19 @@ interface Job {
     name?: string;
     matched: boolean;
     gap: any
+    skill?: string,
+    candidate_level?: number,
+    required_level?: number,
+    status?: string
   }[];
   soft_skills_match?: {
     name?: string;
     matched: boolean;
     gap: any
+    skill?: string,
+    candidate_level?: number,
+    required_level?: number,
+    status?: string
   }[];
   experience_match?: {
     name?: string;
@@ -231,9 +239,10 @@ const allJobsData: Job[] = [
 
 interface JobsPageProps {
   positionsData?: any[];
+  allPositions?: any[];
 }
 
-export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
+export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProps) => {
   const [currentView, setCurrentView] = useState<'all' | 'open' | 'matched'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showOnlyIsrael, setShowOnlyIsrael] = useState<boolean>(false);
@@ -255,21 +264,21 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
       // Transform API data to match Job interface
       const transformedJobs: Job[] = positionsData.map((job: any, index: number) => ({
         id: job.id || index + 1,
-        title: job.title || job.position_name || 'תפקיד',
-        department: job.department || job.division || 'מחלקה',
+        title: job.title || job.profile_name || job.extra.profile_name || 'תפקיד',
+        department: job.department || job.division || 'מחלקת טכנולוגיה',
         location: job.location || 'ישראל',
-        matchPercent: job.match_percentage,
+        matchPercent: Math.floor(job.score),
         matchLevel: job.matchLevel || (job.matchPercent >= 85 ? 'התאמה גבוהה' : 'התאמה בינונית'),
         matchColor: job.matchColor || 'primary',
         category: job.category || 'כללי',
         categoryColor: job.category_color ? 'bg-' + job.category_color + '-100 text-' + job.category_color + '-800' : 'bg-blue-100 text-blue-800',
         postedTime: job.postedTime || job.posted_time || 'פורסם לאחרונה',
-        description: job.description || '',
+        description: allPositions.find((p: any) => p.position_id === job.position_id)?.description || '',
         responsibilities: job.responsibilities || [],
         requirements: job.requirements || [],
         isOpen: job.isOpen !== undefined ? job.isOpen : true,
         match_summary: job.match_summary || '',
-        hard_skills_match: job.hard_skills_match || [],
+        hard_skills_match: job.hard_skills_match || job.extra.hard_skills || [],
         soft_skills_match: job.soft_skills_match || [],
         experience_match: job.experience_match || []
       }));
@@ -695,17 +704,17 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                               <span
                                 key={index}
                                 style={{
-                                  backgroundColor: !skill.matched ? "#dc26261a" : "",
-                                  color: !skill.matched ? "#dc2626" : ""
+                                  backgroundColor: skill.gap > 0 ? "#dc26261a" : "",
+                                  color: skill.gap > 0 ? "#dc2626" : ""
                                 }}
-                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.matched
+                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.gap <= 0
                                   ? "bg-status-success/10 text-status-success"
                                   : ""
                                   }`}
                               >
-                                <Tooltip content={skill.gap}>
-                                  {skill.name}
-                                </Tooltip>
+                                {/* <Tooltip content={skill.gap}> */}
+                                {skill.skill}
+                                {/* </Tooltip> */}
                               </span>
                             ))}
                           </div>

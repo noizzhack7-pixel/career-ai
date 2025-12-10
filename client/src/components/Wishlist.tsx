@@ -19,9 +19,9 @@ export const Wishlist = () => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-primary flex items-center gap-3">
           <Heart className="w-6 h-6" />
-          רשימת המשאלות שלי
+          רשימת הרצונות שלי
         </h2>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="bg-primary text-white px-5 py-2.5 rounded-card font-semibold hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 flex items-center gap-2"
         >
@@ -150,27 +150,27 @@ export const Wishlist = () => {
                 </button>
               </div>
             </div>
-            
+
             <div className="p-6">
               <div className="mb-6">
                 <label className="text-sm font-semibold text-neutral-dark mb-3 block">בחרי סוג משאלה</label>
                 <div className="grid grid-cols-3 gap-3">
-                  <button 
-                    onClick={() => setWishType('text')} 
+                  <button
+                    onClick={() => setWishType('text')}
                     className={`p-4 border-2 rounded-card hover:bg-primary/5 transition-all text-center ${wishType === 'text' ? 'border-primary bg-primary/5' : 'border-neutral-light hover:border-primary'}`}
                   >
                     <MessageCircle className={`w-8 h-8 mx-auto mb-2 ${wishType === 'text' ? 'text-primary' : 'text-neutral-medium'}`} />
                     <p className="font-semibold text-sm text-neutral-dark">טקסט חופשי</p>
                   </button>
-                  <button 
-                    onClick={() => setWishType('role')} 
+                  <button
+                    onClick={() => setWishType('role')}
                     className={`p-4 border-2 rounded-card hover:bg-accent/5 transition-all text-center ${wishType === 'role' ? 'border-accent bg-accent/5' : 'border-neutral-light hover:border-accent'}`}
                   >
                     <Briefcase className={`w-8 h-8 mx-auto mb-2 ${wishType === 'role' ? 'text-accent-dark' : 'text-neutral-medium'}`} />
                     <p className="font-semibold text-sm text-neutral-dark">תפקיד ספציפי</p>
                   </button>
-                  <button 
-                    onClick={() => setWishType('keywords')} 
+                  <button
+                    onClick={() => setWishType('keywords')}
                     className={`p-4 border-2 rounded-card hover:bg-secondary/5 transition-all text-center ${wishType === 'keywords' ? 'border-secondary bg-secondary/5' : 'border-neutral-light hover:border-secondary'}`}
                   >
                     <Tags className={`w-8 h-8 mx-auto mb-2 ${wishType === 'keywords' ? 'text-secondary' : 'text-neutral-medium'}`} />
@@ -210,13 +210,13 @@ export const Wishlist = () => {
                 <div>
                   <label className="text-sm font-semibold text-neutral-dark mb-2 block">הוסיפי מילות מפתח</label>
                   <div className="flex gap-2 mb-3">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={newKeyword}
                       onChange={(e) => setNewKeyword(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
-                      placeholder="הקלידי מילת מפתח..." 
-                      className="flex-1 border-2 border-neutral-light rounded-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" 
+                      placeholder="הקלידי מילת מפתח..."
+                      className="flex-1 border-2 border-neutral-light rounded-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                     />
                     <button onClick={addKeyword} className="bg-primary text-white px-5 py-3 rounded-card font-semibold hover:bg-primary-dark transition-colors">
                       <Plus className="w-4 h-4" />
@@ -226,8 +226,8 @@ export const Wishlist = () => {
                     {keywords.map((keyword, index) => (
                       <span key={index} className="bg-primary/20 text-primary px-3 py-1.5 rounded-pill text-sm font-semibold border border-primary/30 flex items-center gap-2">
                         {keyword}
-                        <X 
-                          className="w-3 h-3 cursor-pointer hover:text-primary-dark" 
+                        <X
+                          className="w-3 h-3 cursor-pointer hover:text-primary-dark"
                           onClick={() => setKeywords(keywords.filter((_, i) => i !== index))}
                         />
                       </span>

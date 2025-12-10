@@ -453,7 +453,7 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }:
                               <h5 className="font-bold text-neutral-dark text-sm">הירשם לקורס ניהול תקציבים</h5>
                               <p className="text-xs text-neutral-medium">נפתח בקרוב • מכללת הניהול</p>
                             </div>
-                            <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
+                            <button className="text-primary text-xs font-bold hover:underline">הגדר כיעד לפיתוח</button>
                           </div>
                           <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
                             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">02</div>
@@ -461,7 +461,7 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }:
                               <h5 className="font-bold text-neutral-dark text-sm">תיאום שיחת מנטורינג</h5>
                               <p className="text-xs text-neutral-medium">עם סמנכ"ל כספים</p>
                             </div>
-                            <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
+                            <button className="text-primary text-xs font-bold hover:underline">הגדר כיעד לפיתוח</button>
                           </div>
                         </div>
                       </div>
