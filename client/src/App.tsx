@@ -41,7 +41,11 @@ const ProfilePage = ({ employeeData, positionsData }: { employeeData?: any, posi
       <div className="col-span-4 space-y-6">
         <CareerPreferences />
         <Languages employeeData={employeeData} />
-        <TargetRole employeeData={employeeData} />
+        {employeeData?.star_position && (
+          <>
+            <TargetRole employeeData={employeeData} />
+          </>
+        )}
         <QuickActions />
         <Notifications />
       </div>

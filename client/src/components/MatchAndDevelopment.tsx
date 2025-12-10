@@ -231,7 +231,9 @@ export const MatchAndDevelopment = ({
             )}
 
             {Array.isArray(employeeData?.liked_positions) && employeeData.liked_positions.map((position: any, idx: number) => {
+              console.log(position)
               const title = position.position_name || position.title || position.name || `משרה ${idx + 1}`;
+              const subtitle = position.profile_name || position.subtitle || `משרה ${idx + 1}`;
               const category = position.category || 'טכנולוגיה';
               const description = position.profile_description || position.description || '';
               const location = position.location || position.work_model || 'ישראל';
@@ -247,131 +249,131 @@ export const MatchAndDevelopment = ({
                   id={`job-card-${posId}`}
                   className={targetRoleId === posId ? 'destPosition bg-gradient-to-br from-primary to-accent-dark text-white rounded-card shadow-panel border-2 border-accent-light' : 'rounded-card shadow-card hover:shadow-panel transition-shadow border-2 cursor-pointer bg-white border-transparent hover:border-primary/30'}
                 >
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
                           <h3 className={`text-2xl font-bold ${targetRoleId === posId ? 'text-white' : 'text-primary'}`}>{title}</h3>
                           <span className="bg-category-tech/20 text-category-tech px-3 py-1 rounded-pill text-xs font-bold">{category}</span>
 
-                      <button className="text-rose-500 hover:text-rose-600 transition-colors" title="הסר מהמועדפים">
-                        <Heart className="w-6 h-6 fill-current" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
+                          <button className="text-rose-500 hover:text-rose-600 transition-colors" title="הסר מהמועדפים">
+                            <Heart className="w-6 h-6 fill-current" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
                               const nextStarId = targetRoleId === posId ? null : posId;
                               const starPayload = targetRoleId === posId ? null : (position?.raw_profile || position);
                               setTargetRoleId(nextStarId);
                               updateStarPosition(starPayload);
-                        }}
+                            }}
                             className={`cursor-pointer flex items-center gap-1.5 px-3 py-1 rounded-pill text-xs font-bold transition-colors ${targetRoleId === posId ? 'bg-white/20 text-white border border-white/30' : 'bg-primary text-white  hover:bg-purple-200'}`}
-                      >
-                        <Target className="w-3.5 h-3.5" />
+                          >
+                            <Target className="w-3.5 h-3.5" />
                             {targetRoleId === posId ? 'תפקיד יעד' : 'סמן כתפקיד יעד'}
-                      </button>
-                    </div>
-                        <p className={`mb-3 ${targetRoleId === posId ? 'text-white/80' : 'text-neutral-medium'}`}>חטיבת טכנולוגיות | מחלקת פיתוח Backend</p>
+                          </button>
+                        </div>
+                        <p className={`mb-3 ${targetRoleId === posId ? 'text-white/80' : 'text-neutral-medium'}`}>{subtitle}</p>
                         <div className={`text-sm leading-relaxed ${targetRoleId === posId ? 'text-white/90' : 'text-neutral-dark'}`}>
                           <p>{description}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className={`flex flex-col items-center gap-2 `}>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className={`flex flex-col items-center gap-2 `}>
                           <MatchScore score={matchScore} compact={true} showScore={true} isWhite={targetRoleId === posId} />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                      <p className={`text-sm font-semibold mb-3 ${targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}`}>דרישות מרכזיות:</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
-                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בניהול צוותים</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
-                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>מומחיות Java & Spring Boot</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
-                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בארכיטקטורת מערכות</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                          <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${targetRoleId === posId ? 'border-white/50' : 'border-neutral-300'}`} />
-                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בניהול תקציבים</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ backgroundColor: '#fef9c370', borderRightColor: '#eab208cf' }} className="p-3 rounded-card mb-4 border-r-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <Info style={{ color: '#eab208' }} className="text-accent-dark w-4 h-4" />
-                            <span className={targetRoleId === posId ? 'text-white font-semibold' : 'text-neutral-dark font-semibold'}> יש לשים לב, המשרה עלולה לגרוע משכרך</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+
+                    <div className="mb-4">
+                      <p className={`text-sm font-semibold mb-3 ${targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}`}>דרישות מרכזיות:</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="flex items-center gap-2 text-sm">
+                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
+                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בניהול צוותים</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
+                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>מומחיות Java & Spring Boot</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <CheckCircle className={`w-4 h-4 ${targetRoleId === posId ? 'text-green-300' : 'text-status-success'}`} />
+                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בארכיטקטורת מערכות</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${targetRoleId === posId ? 'border-white/50' : 'border-neutral-300'}`} />
+                          <span className={targetRoleId === posId ? 'text-white' : 'text-neutral-dark'}>ניסיון בניהול תקציבים</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ backgroundColor: '#fef9c370', borderRightColor: '#eab208cf' }} className="p-3 rounded-card mb-4 border-r-4">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <Info style={{ color: '#eab208' }} className="text-accent-dark w-4 h-4" />
+                            <span className={targetRoleId === posId ? 'text-white font-semibold' : 'text-neutral-dark font-semibold'}> יש לשים לב, המשרה עלולה לגרוע משכרך</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                     <div className={`flex items-center justify-between pt-4 border-t ${targetRoleId === posId ? 'border-white/20' : 'border-neutral-light'}`}>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 text-sm">
                           <MapPin className={`w-4 h-4 ${targetRoleId === posId ? 'text-white/70' : 'text-primary'}`} />
                           <span className={targetRoleId === posId ? 'text-white/80' : 'text-neutral-medium'}>{location}</span>
-                    </div>
+                        </div>
                         <div className={`w-px h-4 ${targetRoleId === posId ? 'bg-white/30' : 'bg-neutral-medium'}`}></div>
-                    <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-2 text-sm">
                           <Clock className={`w-4 h-4 ${targetRoleId === posId ? 'text-white/70' : 'text-primary'}`} />
                           <span className={targetRoleId === posId ? 'text-white/80' : 'text-neutral-medium'}>פורסם לאחרונה</span>
-                    </div>
+                        </div>
                         <div className={`w-px h-4 ${targetRoleId === posId ? 'bg-white/30' : 'bg-neutral-medium'}`}></div>
-                    <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-2 text-sm">
                           <Layers className={`w-4 h-4 ${targetRoleId === posId ? 'text-white/70' : 'text-primary'}`} />
                           <span className={targetRoleId === posId ? 'text-white/80' : 'text-neutral-medium'}>דרגה: Senior Manager</span>
-                    </div>
+                        </div>
                         <div className={`w-px h-4 ${targetRoleId === posId ? 'bg-white/30' : 'bg-neutral-medium'}`}></div>
-                    <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-2 text-sm">
                           <Heart className={`w-4 h-4 ${targetRoleId === posId ? 'text-white/70' : 'text-primary'}`} />
                           <span className={targetRoleId === posId ? 'text-white/80' : 'text-neutral-medium'}>24 אנשים אהבו את המשרה</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
                             toggleDevelopmentPlan(posId);
-                      }}
-                      className="bg-primary text-white px-5 py-2 rounded-card text-sm font-semibold hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary flex items-center gap-2"
-                    >
-                      <Route className="w-4 h-4" />
-                      הצג תוכנית פיתוח
-                    </button>
-                  </div>
-                </div>
+                          }}
+                          className="bg-primary text-white px-5 py-2 rounded-card text-sm font-semibold hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary flex items-center gap-2"
+                        >
+                          <Route className="w-4 h-4" />
+                          הצג תוכנית פיתוח
+                        </button>
+                      </div>
+                    </div>
 
                     {expandedJobId === posId && (
                       <div
                         className="mt-6 border-t border-neutral-light pt-6 animate-in slide-in-from-top-4 duration-300 cursor-default"
                         onClick={(e) => e.stopPropagation()}
                       >
-                    <div className="bg-neutral-50/50 rounded-xl p-6 border border-neutral-light/50">
-                      <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                        <Route className="w-5 h-5" />
-                        תוכנית פיתוח אישית
-                      </h3>
-                    </div>
-                  </div>
-                )}
+                        <div className="bg-neutral-50/50 rounded-xl p-6 border border-neutral-light/50">
+                          <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                            <Route className="w-5 h-5" />
+                            תוכנית פיתוח אישית
+                          </h3>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
             })}
 
 
-           
+
           </section>
         </div>
 
