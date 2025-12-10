@@ -41,7 +41,7 @@ const ProfilePage = ({ employeeData, positionsData }: { employeeData?: any, posi
       <div className="col-span-4 space-y-6">
         <CareerPreferences />
         <Languages employeeData={employeeData} />
-        <TargetRole />
+        <TargetRole employeeData={employeeData} />
         <QuickActions />
         <Notifications />
       </div>
@@ -136,6 +136,20 @@ export default function App() {
     fetchAppData();
   }, []);
 
+  const handleLikedChange = (profiles: any[]) => {
+    setEmployeeData((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, liked_positions: profiles };
+    });
+  };
+
+  const handleStarChange = (star: any | null) => {
+    setEmployeeData((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, star_position: star };
+    });
+  };
+
   const handleNavigate = (view: "dashboard" | "home" | "jobs" | "match") => {
     switch (view) {
       case "dashboard":
@@ -182,10 +196,11 @@ export default function App() {
             path="/"
             element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} allPositions={allPositions} />}
           />
-          <Route path="/positions" element={<JobsPage positionsData={positionsData} allPositions={allPositions} />} />
+          {/* <Route path="/positions" element={<JobsPage positionsData={positionsData} allPositions={allPositions} />} /> */}
+          <Route path="/positions" element={<JobsPage positionsData={positionsData} employeeData={employeeData} onLikedChange={handleLikedChange} allPositions={allPositions} />} />
           <Route
             path="/my-positions"
-            element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}
+            element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} onStarChange={handleStarChange} />}
           />
           <Route path="/questionnaire" element={<SkillsQuestionnaire />} />
           <Route path="/questionnaire-test" element={<SkillsQuestionnaire testMode />} />

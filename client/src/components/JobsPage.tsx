@@ -241,16 +241,19 @@ interface Job {
 
 interface JobsPageProps {
   positionsData?: any[];
+  employeeData?: any;
+  onLikedChange?: (profiles: any[]) => void;
   allPositions?: any[];
 }
 
-export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProps) => {
+export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allPositions }: JobsPageProps) => {
   const [currentView, setCurrentView] = useState<'all' | 'open' | 'matched'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showOnlyIsrael, setShowOnlyIsrael] = useState<boolean>(false);
   const [showBestMatch, setShowBestMatch] = useState<boolean>(false);
   const [selectedJobId, setSelectedJobId] = useState<number>(1);
-  const [likedJobs, setLikedJobs] = useState<Set<number>>(new Set([1])); // Track liked jobs
+  const [likedJobs, setLikedJobs] = useState<Set<number>>(new Set()); // Track liked jobs by position/profile id
+  const [likedProfiles, setLikedProfiles] = useState<any[]>([]); // Track liked profile objects for saving
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState<boolean>(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState<boolean>(false);
@@ -261,13 +264,31 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
 
   const sortOptions = ['התאמה הגבוהה ביותר', 'החדשות ביותר'];
 
+  const normalizeId = (value: any, fallback: number) => {
+    const num = Number(value);
+    if (Number.isFinite(num)) return num;
+    return fallback;
+  };
+
+  // Sync liked jobs from server data
+  useEffect(() => {
+    const likedFromServer = Array.isArray(employeeData?.liked_positions)
+      ? employeeData.liked_positions
+      : [];
+    setLikedProfiles(likedFromServer);
+    const ids = likedFromServer
+      .map((p: any, idx: number) => normalizeId(p?.position_id ?? p?.id ?? p?.profile_id, idx))
+      .filter((id: any) => Number.isFinite(id));
+    setLikedJobs(new Set(ids));
+  }, [employeeData?.liked_positions]);
+
   // Transform positionsData from props when it changes
   useEffect(() => {
     if (positionsData && positionsData.length > 0) {
       // Transform API data to match Job interface
       const transformedJobs: Job[] = positionsData.map((job: any, index: number) => ({
         id: job.profile_id || index + 1,
-        title: allPositions.find((p: any) => p.position_id === job.position_id)?.position_name || job.profile_name || 'תפקיד',
+        title: job.profile_name || 'תפקיד',
         subtitle: job.profile_name || 'תפקיד',
         department: 'מחלקת טכנולוגיה',
         location: 'ישראל',
@@ -277,7 +298,7 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
         category: job.category || 'כללי',
         categoryColor: job.category_colour ? 'bg-' + job.category_colour + '-100 text-' + job.category_colour + '-800' : 'bg-blue-100 text-blue-800',
         postedTime: 'פורסם לאחרונה',
-        description: allPositions.find((p: any) => p.position_id === job.position_id)?.description || '',
+        description: (allPositions || []).find((p: any) => p.position_id === job.position_id)?.description || '',
         profile_description: job.profile_description || '',
         responsibilities: job.responsibilities || [],
         requirements: job.requirements || [],
@@ -287,6 +308,35 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
         soft_skills_match: job?.gaps?.soft_skill_gaps || [],
         experience_match: []
       }));
+      // const transformedJobs: Job[] = positionsData.map((job: any, index: number) => {
+      //   const title = job.title || job.position_name || job.profile_name || 'תפקיד';
+      //   const rawScore = job.match_percentage ?? job.score ?? job.match ?? job.matchPercent ?? 0;
+      //   let matchPercent = Number(rawScore);
+      //   if (!Number.isFinite(matchPercent)) matchPercent = 0;
+      //   // server returns percentages; keep as-is
+      //   const id = normalizeId(job.id ?? job.position_id ?? job.profile_id, index + 1);
+      //   return {
+      //     id,
+      //     title,
+      //     department: job.department || job.division || 'מחלקה',
+      //     location: job.location || job.work_model || 'ישראל',
+      //     matchPercent,
+      //     matchLevel: job.matchLevel || (matchPercent >= 85 ? 'התאמה גבוהה' : matchPercent >= 60 ? 'התאמה בינונית' : 'התאמה נמוכה'),
+      //     matchColor: job.matchColor || 'primary',
+      //     category: job.category || 'כללי',
+      //     categoryColor: job.category_color ? 'bg-' + job.category_color + '-100 text-' + job.category_color + '-800' : 'bg-blue-100 text-blue-800',
+      //     postedTime: job.postedTime || job.posted_time || 'פורסם לאחרונה',
+      //     description: job.profile_description || job.description || '',
+      //     responsibilities: job.responsibilities || [],
+      //     requirements: job.requirements || job.gaps || [],
+      //     isOpen: job.isOpen !== undefined ? job.isOpen : true,
+      //     match_summary: job.match_summary || '',
+      //     hard_skills_match: job.hard_skills_match || [],
+      //     soft_skills_match: job.soft_skills_match || [],
+      //     experience_match: job.experience_match || [],
+      //     raw_profile: job
+      //   };
+      // });
 
       setJobsData(transformedJobs);
 
@@ -321,14 +371,46 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
     return () => window.removeEventListener('scroll', handleScroll, true);
   }, []);
 
-  const toggleLike = (jobId: number) => {
+  const employeeNumber = employeeData?.employee_number ?? employeeData?.id ?? 1001;
+
+  const updateServerLikes = async (profiles: any[]) => {
+    try {
+      const payload = {
+        liked_positions: profiles,
+      };
+      await fetch(`http://localhost:8000/api/v1/employees/${employeeNumber}/positions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      console.error("Failed to update liked positions", error);
+    }
+  };
+
+  const toggleLike = (job: any) => {
+    const jobId = normalizeId(job?.id ?? job?.position_id ?? job?.profile_id, -1);
+    if (!Number.isFinite(jobId) || jobId === -1) {
+      console.error("Cannot like job without valid id", job);
+      return;
+    }
     setLikedJobs(prev => {
       const newSet = new Set(prev);
+      let newProfiles = [...likedProfiles];
       if (newSet.has(jobId)) {
         newSet.delete(jobId);
+        newProfiles = newProfiles.filter((p) => {
+          const pid = Number(p?.id ?? p?.position_id);
+          return pid !== jobId;
+        });
       } else {
         newSet.add(jobId);
+        const profileObj = job.raw_profile || job;
+        newProfiles = [...newProfiles, profileObj];
       }
+      setLikedProfiles(newProfiles);
+      updateServerLikes(newProfiles);
+      onLikedChange?.(newProfiles);
       return newSet;
     });
   };
@@ -668,7 +750,7 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
                     <div className="flex items-center gap-3">
                       <button
                         className={`${isLiked ? 'bg-rose-50 text-rose-600' : 'bg-gray-50 text-gray-500'} font-bold py-3 px-6 rounded-card hover:bg-rose-100 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 flex items-center gap-2`}
-                        onClick={() => toggleLike(selectedJobId)}
+                        onClick={() => toggleLike(selectedJob)}
                       >
                         <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-600 text-rose-600' : 'fill-none text-gray-500'}`} />
                         {isLiked ? 'אהבתי' : 'סמן אהבתי'} ({likedJobs.size}/12)
