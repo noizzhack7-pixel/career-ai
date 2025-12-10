@@ -5,6 +5,7 @@ import { DevelopmentPlanSummary } from './dashboard/DevelopmentPlanSummary';
 import { LikedJobsSummary } from './dashboard/LikedJobsSummary';
 import { MatchingCTA } from './dashboard/MatchingCTA';
 import { ListChecks, ArrowLeft, Bot, Send, CalendarPlus, Bell, User } from 'lucide-react';
+import { TargetRole } from './Sidebar/TargetRole';
 
 interface DashboardProps {
   onNavigate?: (view: 'dashboard' | 'home' | 'jobs' | 'match') => void;
@@ -71,8 +72,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData, 
 
       {/* Right Sidebar */}
       <div className="col-span-3 space-y-6 sticky top-24">
-        {/* Matching Questionnaire Card */}
-
 
         {/* AI Guidance Card */}
         <div id="ai-guidance" className="bg-white p-6 rounded-card shadow-sm border border-neutral-light/60">
