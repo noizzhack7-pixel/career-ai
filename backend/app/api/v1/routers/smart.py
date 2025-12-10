@@ -27,6 +27,7 @@ SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 router = APIRouter(prefix="/smart", tags=["smart"])
+colours = ["red", "blue", "green", "yellow", "orange"]
 
 
 # -------------------------------------------------------------------
@@ -304,6 +305,18 @@ def _analyze_skill_gaps(
         )
     return gaps
 
+def _category_colour_for_position(
+    position_id: int,
+) -> Optional[Literal["red", "blue", "green", "yellow", "orange"]]:
+    """
+    Deterministically map a position_id to one of the allowed category colours
+    using the global `colours` list.
+    """
+    if not colours:
+        return None
+    idx = position_id % len(colours)
+    return colours[idx]
+
 
 def _get_profiles_for_position(position_id: int) -> List[Dict[str, Any]]:
     """
@@ -351,11 +364,14 @@ def get_top_candidates_for_position(
     position_id: int = Query(...),
     limit: int = Query(10, ge=1, le=100),
 ):
-    # validate position exists (for name / 404)
+    # 1) Validate position exists (for name / 404)
     position = _get_position(position_id)
 
-    # RPC now returns: candidate_id, first_name, last_name,
-    # profile_id, profile_name, position_name, score
+    # 2) Fetch category once for this position
+    category = get_position_category(supabase, position_id) or ""
+    category_colour = _category_colour_for_position(position_id) if category else None
+
+    # 3) Call RPC: match_candidates_for_position
     rpc = supabase.rpc(
         "match_candidates_for_position",
         {"p_position_id": position_id, "p_limit": limit},
@@ -363,30 +379,55 @@ def get_top_candidates_for_position(
 
     rows = rpc.data or []
 
-    # ---- normalize scores to [0,1] while preserving order ----
-    scores = [row["score"] for row in rows]
+    if not rows:
+        return []
+
+    # 4) Basic schema validation for safety
+    required_fields = ["candidate_id", "profile_id", "score"]
+    for idx, row in enumerate(rows):
+        for field in required_fields:
+            if field not in row:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"RPC 'match_candidates_for_position' missing field '{field}' in row {idx}",
+                )
+
+    # 5) Normalize scores with logistic mapping (absolute, not batch-based)
+    scores = [float(row["score"]) for row in rows]
     norm_scores = _normalize(scores)
 
+    # 6) Cache profiles to avoid repeated DB calls
+    profile_cache: Dict[int, Dict[str, Any]] = {}
+
     results: List[MatchResult] = []
+
     for row, norm_score in zip(rows, norm_scores):
-        # fetch full profile to get description & skills
-        profile = _get_profile(row["profile_id"])
+        profile_id = int(row["profile_id"])
+
+        if profile_id not in profile_cache:
+            profile_cache[profile_id] = _get_profile(profile_id)
+
+        profile = profile_cache[profile_id]
 
         results.append(
             MatchResult(
-                candidate_id=row["candidate_id"],
+                candidate_id=int(row["candidate_id"]),
                 position_id=position_id,
-                profile_id=row["profile_id"],
-                category="",  # no category here in this endpoint
-                category_colour=None,
+                profile_id=profile_id,
+                category=category,
+                category_colour=category_colour,
                 score=norm_score,
-                profile_name=profile.get("profile_name"),
-                profile_description=profile.get("description"),
-                position_name=position.get("position_name"),
+                profile_name=str(profile.get("profile_name") or ""),
+                profile_description=str(profile.get("description") or ""),
+                position_name=str(position.get("position_name") or ""),
+                gaps=None,
+                experience_match=None,
             )
         )
 
     return results
+
+
 
 
 # 2️⃣ Similar candidates (employee → employees)
@@ -433,52 +474,89 @@ def get_top_positions_for_candidate(
     candidate_id: int = Query(...),
     limit: int = Query(10, ge=1, le=100),
 ):
-    print(candidate_id)
-    # validate candidate exists
+    # 1) Validate candidate exists (404 if missing)
     _ = _get_candidate(candidate_id)
 
-    colours = ["red", "blue", "green", "yellow", "orange"]
+    # 2) Call RPC: match_positions_for_candidate
     rpc = supabase.rpc(
         "match_positions_for_candidate",
         {"p_candidate_id": candidate_id, "p_limit": limit},
     ).execute()
 
     rows = rpc.data or []
-    for profile in rows:
-        category = get_position_category(supabase, profile["position_id"]) or None
-        if category:
-            profile["category"] = category
+    if not rows:
+        return []
 
-    # ---- normalize scores to [0,1] while preserving order ----
-    scores = [row["score"] for row in rows]
+    # 3) Basic schema validation for safety
+    required_fields = ["profile_id", "position_id", "score"]
+    for idx, row in enumerate(rows):
+        for field in required_fields:
+            if field not in row:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"RPC 'match_positions_for_candidate' missing field '{field}' in row {idx}",
+                )
+
+    # 4) Precompute categories per position (avoid repeated DB calls)
+    unique_position_ids = {int(row["position_id"]) for row in rows}
+    category_map: Dict[int, str] = {}
+    for pos_id in unique_position_ids:
+        category_map[pos_id] = get_position_category(supabase, pos_id) or ""
+
+    # 5) Normalize scores using logistic mapping (batch-independent)
+    scores = [float(row["score"]) for row in rows]
     norm_scores = _normalize(scores)
 
+    # 6) Compute skill gaps once for all profiles in this result
+    gaps = get_skill_gaps_by_candidate_and_profiles(
+        candidate_id=candidate_id,
+        profiles=rows,
+    )
+
+    # 7) Cache profiles to avoid repeated DB calls
+    profile_cache: Dict[int, Dict[str, Any]] = {}
+
     results: List[MatchResult] = []
-    print(norm_scores)
-    gaps = get_skill_gaps_by_candidate_and_profiles(candidate_id=candidate_id, profiles=rows)
-    print(gaps)
+
     for row, norm_score in zip(rows, norm_scores):
-        # row: profile_id, position_id, profile_name, position_name, score
-        profile = _get_profile(row["profile_id"])
-        category = get_position_category(supabase, profile["position_id"]) or ""
+        profile_id = int(row["profile_id"])
+        position_id = int(row["position_id"])
+
+        # cache profile
+        if profile_id not in profile_cache:
+            profile_cache[profile_id] = _get_profile(profile_id)
+        profile = profile_cache[profile_id]
+
+        # category + colour for this position
+        category = category_map.get(position_id, "")
+        # if you *don't* have _category_colour_for_position, replace with:
+        # category_colour = colours[position_id % len(colours)] if category else None
+        category_colour = (
+            _category_colour_for_position(position_id) if category else None
+        )
+
+        # prefer names from RPC, fallback to profile if missing
+        profile_name = row.get("profile_name") or profile.get("profile_name") or ""
+        position_name = row.get("position_name") or ""
 
         results.append(
             MatchResult(
                 candidate_id=candidate_id,
-                position_id=row["position_id"],
-                profile_id=row["profile_id"],
+                position_id=position_id,
+                profile_id=profile_id,
                 category=category,
-                category_colour=colours[row["position_id"] % 5],
-                profile_name=row.get("profile_name"),
-                profile_description=profile.get("description"),
-                position_name=row.get("position_name"),
+                category_colour=category_colour,
+                profile_name=str(profile_name),
+                profile_description=str(profile.get("description") or ""),
+                position_name=str(position_name),
                 score=norm_score,
-                gaps=gaps.get(row["profile_id"]),
-                experience_match=gaps.get(row["profile_id"]),
+                gaps=gaps.get(profile_id),
+                experience_match=gaps.get(profile_id),
             )
         )
 
     return results
+
 
 
 # 4️⃣ Similar positions (profile ↔ profile)
