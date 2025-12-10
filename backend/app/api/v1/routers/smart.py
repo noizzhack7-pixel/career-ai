@@ -407,6 +407,7 @@ def get_top_positions_for_candidate(
     candidate_id: int = Query(...),
     limit: int = Query(10, ge=1, le=100),
 ):
+    print(candidate_id)
     # validate candidate exists
     _ = _get_candidate(candidate_id)
 
@@ -427,9 +428,9 @@ def get_top_positions_for_candidate(
     norm_scores = _normalize_minmax(scores)
 
     results: List[MatchResult] = []
-
+    print(norm_scores)
     gaps = get_skill_gaps_by_candidate_and_profiles(candidate_id=candidate_id, profiles=rows)
-
+    print(gaps)
     for row, norm_score in zip(rows, norm_scores):
         # row: profile_id, position_id, profile_name, position_name, score
         profile = _get_profile(row["profile_id"])
