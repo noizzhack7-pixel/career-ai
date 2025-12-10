@@ -509,11 +509,11 @@ export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allP
       {/* Header and Filter Bar */}
       <div className="flex-shrink-0 mb-6">
         <div className="flex items-center justify-between mb-4 px-2">
-          <h2 id="jobs-count" className="text-xl font-bold text-primary">
+          <h2 id="jobs-count" className="text-xl font-bold text-primary" style={{ marginTop: '-1.5rem' }}>
             {jobsData.length} משרות בארגון
             {/* {currentView === 'open' ? `מציג ${filteredJobs.length} משרות פתוחות` : '156 משרות בארגון'} */}
           </h2>
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm" style={{ marginTop: '-1.5rem' }}>
             <span className="font-semibold">מיין לפי:</span>
             <div className="relative">
               <button
