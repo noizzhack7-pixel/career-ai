@@ -704,7 +704,7 @@ def get_learning_recommendations(employee_number: int, profile_id: int):
     if not openai_key:
         raise HTTPException(status_code=500, detail="OPENAI_API_KEY is not configured")
 
-    model_name = os.environ.get("OPENAI_MODEL", "gpt-4o")
+    model_name = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
     llm = ChatOpenAI(model=model_name, temperature=0.2)
     structured_llm = llm.with_structured_output(LearningRecommendationModel)
 
@@ -759,7 +759,7 @@ def get_learning_recommendations(employee_number: int, profile_id: int):
             "\n" + courses_block,
             "\nInstructions:",
             "- Create a short plan (3-5 bullets) prioritizing the most impactful upskilling steps.",
-            "You must explain which gaps the courses help to reduce in order to meet the profiles requirements.",
+            "You must explain which gaps the courses help to reduce in order to meet the profiles requirements. Here, reference them by name - never include their IDS!!!",
             "- Select 1-3 course IDs that directly help close the most important gaps.",
             "- Prefer beginner/intermediate where gaps are large; advanced for strengths only when useful.",
             "respond ONLY in Hebrew!",
