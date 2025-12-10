@@ -20,9 +20,7 @@ export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ 
    const navigate = useNavigate();
 
    // Get employee data with fallbacks
-   const employeeName = employeeData?.name;
-   const employeeTitle = employeeData?.current_job;
-   const employeeAvatar = employeeData?.photo_url || DEFAULT_AVATAR;
+   const employee = employeeData;
 
    return (
       <div
@@ -49,8 +47,8 @@ export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ 
             {/* Profile Avatar - Positioned for compact layout */}
             <div className="absolute top-12 right-6">
                <img
-                  src={employeeAvatar}
-                  alt={`תמונת פרופיל של ${employeeName}`}
+                  src={employee?.photo_url}
+                  alt={`תמונת פרופיל של ${employee?.name}`}
                   className="w-32 h-32 rounded-full border-[6px] border-white shadow-panel object-cover"
                />
             </div>
@@ -59,31 +57,31 @@ export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ 
          <div className="pt-16 pb-6 px-6">
             <div className="flex justify-between items-start mb-6">
                <div>
-                  <h1 className="text-2xl font-bold text-primary mb-0.5 group-hover:text-primary-dark transition-colors">{employeeName}</h1>
-                  <p className="text-base font-bold text-neutral-dark mb-3">{employeeTitle}</p>
+                  <h1 className="text-2xl font-bold text-primary mb-0.5 group-hover:text-primary-dark transition-colors">{employee?.name}</h1>
+                  <p className="text-base font-bold text-neutral-dark mb-3">{employee?.current_job}</p>
 
                   <div className="space-y-1.5">
                      <div className="flex items-center gap-2 text-sm">
                         <MapPin className="text-primary w-4 h-4" />
                         <span className="font-semibold text-primary">מטה כללי, בניין אלון</span>
                         <span className="text-neutral-dark/80">|</span>
-                        <span className="font-semibold text-primary">employeeData?.department</span>
-                        <span className="text-neutral-dark/80">|</span>
-                        <span className="text-neutral-dark/90">מחלקת פיתוח Backend</span>
+                        <span className="font-semibold text-primary">{employee?.department}</span>
+                        {/* <span className="text-neutral-dark/80">|</span>
+                        <span className="text-neutral-dark/90">{employee?.division}</span> */}
                      </div>
 
                      <div className="flex items-center gap-4 text-sm">
                         <div className="flex items-center gap-1.5">
                            <CalendarDays className="text-primary w-4 h-4" />
                            <span className="text-neutral-dark/80">ותק:</span>
-                           <span className="font-semibold text-neutral-dark">5 שנים</span>
+                           <span className="font-semibold text-neutral-dark">{employee?.office_seniority + ' שנים'}</span>
                         </div>
-                        <div className="w-px h-3 bg-neutral-light"></div>
+                        {/* <div className="w-px h-3 bg-neutral-light"></div>
                         <div className="flex items-center gap-1.5">
                            <Layers className="text-primary w-4 h-4" />
                            <span className="text-neutral-dark/80">דרגה:</span>
                            <span className="font-semibold text-neutral-dark">Senior Developer</span>
-                        </div>
+                        </div> */}
                         <div className="w-px h-3 bg-neutral-light"></div>
                         <div className="flex items-center gap-1.5">
                            <User className="text-primary w-4 h-4" />
@@ -148,9 +146,23 @@ export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ 
                      </div>
 
                      <div className="flex flex-wrap gap-2 mb-3">
-                        <Badge className="bg-white text-primary hover:bg-white/90 shadow-sm border-primary/20 pointer-events-none px-2 py-0.5 text-xs">למידה עצמית</Badge>
+                        {employee?.structured_employees?.soft_skills
+                           ?.sort((a: { level: number; }, b: { level: number; }) => b.level - a.level)
+                           .slice(0, 5)
+                           .map((skill: { skill: any; }) => (
+                              <Badge key={skill.skill} className="bg-white text-primary hover:bg-white/90 shadow-sm border-primary/20 pointer-events-none px-2 py-0.5 text-xs">
+                                 {skill.skill}
+                              </Badge>
+                           ))}
+                        {employee && employee.structured_employees?.soft_skills && employee.structured_employees?.soft_skills.length > 5 && (
+                           <Badge className="bg-white/50 text-primary/70 border-dashed border-primary/30 shadow-none hover:bg-white px-2 py-0.5 text-xs">
+                              +{employee.structured_employees?.soft_skills.length - 5} נוספים
+                           </Badge>
+                        )}
+
+                        {/* <Badge className="bg-white text-primary hover:bg-white/90 shadow-sm border-primary/20 pointer-events-none px-2 py-0.5 text-xs">למידה עצמית</Badge>
                         <Badge className="bg-white text-primary hover:bg-white/90 shadow-sm border-primary/20 pointer-events-none px-2 py-0.5 text-xs">חשיבה אנליטית</Badge>
-                        <Badge className="bg-white/50 text-primary/70 border-dashed border-primary/30 shadow-none hover:bg-white px-2 py-0.5 text-xs">+2 נוספים</Badge>
+                        <Badge className="bg-white/50 text-primary/70 border-dashed border-primary/30 shadow-none hover:bg-white px-2 py-0.5 text-xs">+2 נוספים</Badge> */}
                      </div>
                   </div>
 
@@ -163,13 +175,27 @@ export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ 
                         <h3 className="font-bold text-sm">כישורים מקצועים</h3>
                      </div>
                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary" className="bg-white text-neutral-dark shadow-sm border border-neutral-200 px-2 py-0.5 text-xs">Spring Boot</Badge>
+                        {employee?.structured_employees?.hard_skills
+                           ?.sort((a: { level: number; }, b: { level: number; }) => b.level - a.level)
+                           .slice(0, 5)
+                           .map((skill: { skill: any; }) => (
+                              <Badge key={skill.skill} className="bg-white text-primary hover:bg-white/90 shadow-sm border-primary/20 pointer-events-none px-2 py-0.5 text-xs">
+                                 {skill.skill}
+                              </Badge>
+                           ))}
+                        {employee && employee.structured_employees?.hard_skills && employee.structured_employees?.hard_skills.length > 5 && (
+                           <Badge className="bg-white/50 text-primary/70 border-dashed border-primary/30 shadow-none hover:bg-white px-2 py-0.5 text-xs">
+                              +{employee.structured_employees?.hard_skills.length - 5} נוספים
+                           </Badge>
+                        )}
+                        {/* <Badge variant="secondary" className="bg-white text-neutral-dark shadow-sm border border-neutral-200 px-2 py-0.5 text-xs">Spring Boot</Badge>
                         <Badge variant="secondary" className="bg-white text-neutral-dark shadow-sm border border-neutral-200 px-2 py-0.5 text-xs">REST API</Badge>
-                        <Badge variant="outline" className="bg-transparent border-neutral-300 text-neutral-500 px-2 py-0.5 text-xs">+3 נוספים</Badge>
+                        <Badge variant="outline" className="bg-transparent border-neutral-300 text-neutral-500 px-2 py-0.5 text-xs">+3 נוספים</Badge> */}
                      </div>
                   </div>
 
                   {/* Column 3: Education (Emerald/Success Theme) */}
+
                   <div className="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 relative group/card hover:border-emerald-200 transition-all">
                      <div className="flex items-center gap-2 mb-3 text-emerald-700">
                         <div className="p-1.5 bg-white rounded-lg shadow-sm">
@@ -180,7 +206,7 @@ export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ 
                      <div className="bg-white/60 p-2.5 rounded-xl border border-emerald-100/50 flex items-start gap-2.5 backdrop-blur-sm">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
                         <div>
-                           <p className="font-bold text-sm text-neutral-dark leading-tight">תואר ראשון במדעי המחשב</p>
+                           <p className="font-bold text-sm text-neutral-dark leading-tight">{employee.first_degree && employee.first_degree != 'אין' ? employee.first_degree : 'תואר ראשון במדעי המחשב'}</p>
                            <p className="text-[11px] text-neutral-500 mt-0.5">אוניברסיטת תל אביב</p>
                            <span className="inline-block mt-1.5 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-medium">הצטיינות דיקן</span>
                         </div>

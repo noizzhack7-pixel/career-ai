@@ -4,28 +4,30 @@
 
 :root {
   --font-size: 16px;
-  --background: #F9FAFB; /* neutral-extralight */
-  --foreground: #1F2937; /* neutral-dark */
+  --background: #F9FAFB;
+  /* neutral-extralight */
+  --foreground: #1F2937;
+  /* neutral-dark */
   --card: #ffffff;
   --card-foreground: #1F2937;
   --popover: #ffffff;
   --popover-foreground: #1F2937;
-  
+
   /* Project specific colors */
   --primary: #541388;
   --primary-light: #EAD8FD;
   --primary-dark: #650F54;
-  
+
   --secondary: #FB8F67;
-  
+
   --accent: #9DD9D2;
   --accent-dark: #650F54;
-  
+
   --neutral-dark: #1F2937;
   --neutral-medium: #6B7280;
   --neutral-light: #E5E7EB;
   --neutral-extralight: #F9FAFB;
-  
+
   --status-success: #16A34A;
   --status-warning: #FACC15;
   --status-danger: #DC2626;
@@ -35,13 +37,15 @@
   --muted-foreground: #717182;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
-  --border: #E5E7EB; /* neutral-light */
+  --border: #E5E7EB;
+  /* neutral-light */
   --input: transparent;
   --input-background: #f3f3f5;
   --switch-background: #cbced4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #541388; /* primary */
+  --ring: #541388;
+  /* primary */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -68,7 +72,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: #EAD8FD; /* light version for dark mode? */
+  --primary: #EAD8FD;
+  /* light version for dark mode? */
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -138,31 +143,32 @@
 
   /* Custom additions */
   --font-heebo: 'Heebo', sans-serif;
-  
+
   --color-primary-light: var(--primary-light);
   --color-primary-dark: var(--primary-dark);
-  
+
   --color-accent-dark: var(--accent-dark);
-  
+
   --color-neutral-dark: var(--neutral-dark);
   --color-neutral-medium: var(--neutral-medium);
   --color-neutral-light: var(--neutral-light);
   --color-neutral-extralight: var(--neutral-extralight);
-  
+
   --color-status-success: var(--status-success);
   --color-status-warning: var(--status-warning);
   --color-status-danger: var(--status-danger);
+  --color-status-error: var(--status-danger);
   --color-status-info: var(--status-info);
-  
+
   --color-category-tech: #7C3AED;
   --color-category-finance: #EC4899;
   --color-category-hr: #14B8A6;
   --color-category-logistics: #FACC15;
   --color-category-operations: #FB8F67;
-  
+
   --radius-card: 16px;
   --radius-pill: 999px;
-  
+
   --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.05);
   --shadow-panel: 0 10px 15px -3px rgb(0 0 0 / 0.05);
 }
@@ -176,5 +182,107 @@
     @apply bg-background text-foreground font-heebo;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Status color utilities */
+@layer utilities {
+  .text-status-success {
+    color: var(--status-success);
+  }
+
+  .text-status-warning {
+    color: var(--status-warning);
+  }
+
+  .text-status-error {
+    color: var(--status-danger);
+  }
+
+  .text-status-danger {
+    color: var(--status-danger);
+  }
+
+  .text-status-info {
+    color: var(--status-info);
+  }
+
+  .bg-status-success {
+    background-color: var(--status-success);
+  }
+
+  .bg-status-success\/10 {
+    background-color: rgb(22 163 74 / 0.1);
+  }
+
+  .bg-status-warning {
+    background-color: var(--status-warning);
+  }
+
+  .bg-status-warning\/10 {
+    background-color: rgb(250 204 21 / 0.1);
+  }
+
+  .bg-status-error {
+    background-color: #dc26261a;
+
+  }
+
+  .bg-status-error\/10 {
+    background-color: rgb(220 38 38 / 0.1);
+  }
+
+  .bg-status-danger {
+    background-color: var(--status-danger);
+  }
+
+  .bg-status-danger\/10 {
+    background-color: rgb(220 38 38 / 0.1);
+  }
+
+  .bg-status-info {
+    background-color: var(--status-info);
+  }
+
+  .bg-status-info\/10 {
+    background-color: rgb(37 99 235 / 0.1);
+  }
+
+  .destPosition {
+    color: white;
+  }
+
+  .destPosition * {
+    color: inherit;
+  }
+
+  .destPosition h3,
+  .destPosition h4,
+  .destPosition p,
+  .destPosition span,
+  .destPosition div,
+  .destPosition button,
+  .destPosition svg,
+  .destPosition span {
+    color: white;
+  }
+
+  .destPosition .text-neutral-dark,
+  .destPosition .text-neutral-medium,
+  .destPosition .text-primary,
+  .destPosition .text-neutral-dark span,
+  .destPosition .text-sm {
+    color: white !important;
+  }
+
+  .destPosition .bg-category-tech\/20,
+  .destPosition .bg-purple-100,
+  .destPosition .bg-purple-600 {
+    color: inherit;
+  }
+
+  .bg-gradient-to-br {
+    --tw-gradient-position: to bottom right in oklab !important;
+    background-image: linear-gradient(var(--tw-gradient-stops)) !important;
   }
 }

@@ -7,7 +7,7 @@ export const Recommendations = () => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-primary flex items-center gap-3">
           <MessageSquare className="w-6 h-6" />
-          המלצות וחוות דעת
+          המלצות
         </h2>
         <button className="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
           <Settings className="w-3 h-3" />
@@ -61,7 +61,7 @@ export const Recommendations = () => {
               </div>
               <div className="flex items-center gap-1 mb-3">
                 {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="text-status-warning w-4 h-4 fill-current" />
+                  <Star key={i} className="text-status-warning w-4 h-4 fill-current" />
                 ))}
               </div>
               <p className="text-neutral-dark leading-relaxed">עבדתי עם תמר על מספר פרויקטים מורכבים. היא מפתחת מעולה עם הבנה עמוקה של ארכיטקטורת מערכות. תמר תמיד מחפשת את הפתרון הטוב ביותר ולא רק את הפתרון המהיר. מומלצת בחום!</p>
@@ -90,7 +90,7 @@ export const Recommendations = () => {
               </div>
               <div className="flex items-center gap-1 mb-3">
                 {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="text-status-warning w-4 h-4 fill-current" />
+                  <Star key={i} className="text-status-warning w-4 h-4 fill-current" />
                 ))}
               </div>
               <p className="text-neutral-dark leading-relaxed">תמר הייתה המנטורית שלי כשהתחלתי בצוות. היא סבלנית, מסבירה מצוין ותמיד זמינה לעזור. למדתי ממנה המון על best practices ועל איך לכתוב קוד נקי ואיכותי. אני אסירת תודה על ההכוונה שלה!</p>
@@ -104,7 +104,7 @@ export const Recommendations = () => {
         </div>
       </div>
 
-      <div className="mt-6 p-4 bg-primary-light/20 rounded-card border border-primary/20">
+      {/* <div className="mt-6 p-4 bg-primary-light/20 rounded-card border border-primary/20">
         <div className="flex items-center gap-3">
           <Shield className="text-primary w-6 h-6" />
           <div className="flex-1">
@@ -115,7 +115,7 @@ export const Recommendations = () => {
             נהל הגדרות
           </button>
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };
