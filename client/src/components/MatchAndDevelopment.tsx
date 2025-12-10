@@ -1,36 +1,57 @@
 import React from 'react';
 import { MatchScore } from './MatchScore';
-import { 
-  Filter, 
-  ListChecks, 
-  Calendar, 
-  Trophy, 
+import {
+  Filter,
+  ListChecks,
+  Calendar,
+  Trophy,
   Briefcase,
-  Heart, 
-  ArrowLeft, 
-  TrendingUp, 
-  CheckCheck, 
-  BarChart2, 
-  Target, 
-  Lightbulb, 
-  CheckCircle, 
-  AlertCircle, 
-  Users, 
-  CalendarX2, 
-  MapPin, 
-  Clock, 
-  Layers, 
-  Info, 
-  Route, 
-  ChevronDown, 
-  SlidersHorizontal, 
-  BarChart, 
-  GraduationCap, 
-  Star 
+  Heart,
+  ArrowLeft,
+  TrendingUp,
+  CheckCheck,
+  BarChart2,
+  Target,
+  Lightbulb,
+  CheckCircle,
+  AlertCircle,
+  Users,
+  CalendarX2,
+  MapPin,
+  Clock,
+  Layers,
+  Info,
+  Route,
+  ChevronDown,
+  SlidersHorizontal,
+  BarChart,
+  GraduationCap,
+  Star,
+  Check
 } from 'lucide-react';
 
-export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashboard" | "home" | "jobs" | "match") => void }) => {
+
+export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }: { onNavigate?: (view: "dashboard" | "home" | "jobs" | "match") => void, employeeData?: any, positionsData?: any }) => {
   const [expandedJobId, setExpandedJobId] = React.useState<number | null>(null);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = React.useState(false);
+  const [selectedCategory, setSelectedCategory] = React.useState('כל הקטגוריות');
+  const [selectedSort, setSelectedSort] = React.useState('מיין לפי התאמה');
+  const [targetRoleId, setTargetRoleId] = React.useState<number | null>(null);
+
+  const categoryOptions = ['כל הקטגוריות', 'טכנולוגיה', 'כספים', 'משאבי אנוש', 'לוגיסטיקה'];
+  const sortOptions = ['מיין לפי התאמה', 'מיין לפי תאריך פרסום', 'מיין לפי דרגה'];
+
+  // Close dropdowns on scroll
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsCategoryDropdownOpen(false);
+      setIsSortDropdownOpen(false);
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    return () => window.removeEventListener('scroll', handleScroll, true);
+  }, []);
 
   const toggleDevelopmentPlan = (jobId: number) => {
     setExpandedJobId(prev => prev === jobId ? null : jobId);
@@ -42,9 +63,9 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-primary mb-2">התאמה ומסלול פיתוח</h1>
-            <p className="text-neutral-medium text-lg">גלי את התפקידים המתאימים לך ביותר ובני תוכנית פיתוח אישית</p>
+            <p className="text-neutral-medium text-lg">גלה.י את התפקידים המתאימים לך ביותר ובנה.י תוכנית פיתוח אישית</p>
           </div>
-          
+
         </div>
       </section>
 
@@ -53,18 +74,18 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
           <section id="profile-summary-bar" className="bg-white p-5 rounded-card shadow-card">
             <div className="flex items-center gap-6">
               <img
-                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg"
-                alt="תמר כהן"
+                src={employeeData?.photo_url}
+                alt={employeeData?.name}
                 className="w-20 h-20 rounded-full border-4 border-primary/30"
               />
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-primary mb-1">תמר כהן</h2>
-                <p className="text-neutral-dark font-semibold mb-2">מפתחת תוכנה בכירה | חטיבת טכנולוגיות</p>
+                <h2 className="text-2xl font-bold text-primary mb-1">{employeeData?.name}</h2>
+                <p className="text-neutral-dark font-semibold mb-2">{employeeData?.current_job} | {employeeData?.department}</p>
                 <div className="flex items-center gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="text-accent-dark w-4 h-4" />
                     <span className="text-neutral-medium">ותק:</span>
-                    <span className="font-semibold text-neutral-dark">5 שנים</span>
+                    <span className="font-semibold text-neutral-dark">{employeeData?.office_seniority} שנים</span>
                   </div>
                   <div className="w-px h-4 bg-neutral-medium"></div>
                   <div className="flex items-center gap-2">
@@ -76,11 +97,11 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                   <div className="flex items-center gap-2">
                     <Briefcase className="text-accent-dark w-4 h-4" />
                     <span className="text-neutral-medium">משרות מתאימות:</span>
-                    <span className="font-semibold text-status-success">12</span>
+                    <span className="font-semibold text-status-success">{positionsData?.length || 0}</span>
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => onNavigate?.("home")}
                 className="text-primary hover:underline text-sm font-semibold flex items-center gap-2"
               >
@@ -90,46 +111,214 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
             </div>
           </section>
 
-          
+
 
           <section id="job-matches-list" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-primary flex items-center gap-3">
                 <Heart className="w-6 h-6" />
-משרות שאהבתי              </h2>
+                משרות שאהבתי              </h2>
               <div className="flex items-center gap-3">
-                <select className="border-2 border-neutral-light rounded-card py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                  <option>כל הקטגוריות</option>
-                  <option>טכנולוגיה</option>
-                  <option>כספים</option>
-                  <option>משאבי אנוש</option>
-                  <option>לוגיסטיקה</option>
-                </select>
-                <select className="border-2 border-neutral-light rounded-card py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                  <option>מיין לפי התאמה</option>
-                  <option>מיין לפי תאריך פרסום</option>
-                  <option>מיין לפי דרגה</option>
-                </select>
+                {/* Category Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+                      setIsSortDropdownOpen(false);
+                    }}
+                    className="flex items-center justify-between gap-2 border-2 border-neutral-light rounded-card py-2 px-4 text-sm bg-white hover:border-primary/30 transition-colors cursor-pointer min-w-[140px]"
+                  >
+                    <span className="font-medium text-neutral-dark">{selectedCategory}</span>
+                    <ChevronDown className={`w-4 h-4 text-neutral-medium transition-transform duration-200 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isCategoryDropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsCategoryDropdownOpen(false)}
+                      />
+                      <div className="absolute top-full right-0 mt-1 bg-white rounded-card shadow-lg border border-neutral-light z-50 overflow-hidden min-w-[160px]">
+                        {categoryOptions.map(option => (
+                          <button
+                            key={option}
+                            onClick={() => { setSelectedCategory(option); setIsCategoryDropdownOpen(false); }}
+                            className={`w-full text-right px-4 py-2.5 text-sm transition-colors cursor-pointer ${selectedCategory === option ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-dark hover:bg-neutral-extralight'}`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Sort Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsSortDropdownOpen(!isSortDropdownOpen);
+                      setIsCategoryDropdownOpen(false);
+                    }}
+                    className="flex items-center justify-between gap-2 border-2 border-neutral-light rounded-card py-2 px-4 text-sm bg-white hover:border-primary/30 transition-colors cursor-pointer min-w-[180px]"
+                  >
+                    <span className="font-medium text-neutral-dark">{selectedSort}</span>
+                    <ChevronDown className={`w-4 h-4 text-neutral-medium transition-transform duration-200 ${isSortDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isSortDropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsSortDropdownOpen(false)}
+                      />
+                      <div className="absolute top-full right-0 mt-1 bg-white rounded-card shadow-lg border border-neutral-light z-50 overflow-hidden min-w-[180px]">
+                        {sortOptions.map(option => (
+                          <button
+                            key={option}
+                            onClick={() => { setSelectedSort(option); setIsSortDropdownOpen(false); }}
+                            className={`w-full text-right px-4 py-2.5 text-sm transition-colors cursor-pointer ${selectedSort === option ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-dark hover:bg-neutral-extralight'}`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
+            {employeeData?.liked_positions?.map((position: any) => (
+              <div
+                key={position.id}
+                id={`job-card-${position.id}`}
+                className={
+                  targetRoleId === position.id
+                    ? 'destPosition bg-gradient-to-br from-primary to-accent-dark text-white rounded-card shadow-panel border-2 border-accent-light'
+                    : 'rounded-card shadow-card hover:shadow-panel transition-shadow border-2 cursor-pointer bg-white border-transparent hover:border-primary/30'
+                }
+              >
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className={`text-2xl font-bold ${targetRoleId === position.id ? 'text-white' : 'text-primary'}`}>
+                          {position.title}
+                        </h3>
+                        <span className="bg-category-tech/20 text-category-tech px-3 py-1 rounded-pill text-xs font-bold">
+                          {position.category}
+                        </span>
+                        <button className="text-rose-500 hover:text-rose-600 transition-colors" title="הסר מהמועדפים">
+                          <Heart className="w-6 h-6 fill-current" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTargetRoleId(targetRoleId === position.id ? null : position.id);
+                          }}
+                          className={`cursor-pointer flex items-center gap-1.5 px-3 py-1 rounded-pill text-xs font-bold transition-colors ${targetRoleId === position.id ? 'bg-white/20 text-white border border-white/30' : 'bg-primary text-white'
+                            }`}
+                        >
+                          {targetRoleId === position.id ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              תפקיד יעד
+                            </>
+                          ) : (
+                            <>
+                              <Target className="w-3 h-3" />
+                              הגדר כיעד
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <p className={`text-sm mb-4 ${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-dark'}`}>
+                        {position.description}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <MapPin className={`w-4 h-4 ${targetRoleId === position.id ? 'text-white/80' : 'text-accent-dark'}`} />
+                          <span className={`${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-medium'}`}>מיקום:</span>
+                          <span className={`font-semibold ${targetRoleId === position.id ? 'text-white' : 'text-neutral-dark'}`}>
+                            {position.location}
+                          </span>
+                        </div>
+                        <div className="w-px h-4 bg-neutral-medium"></div>
+                        <div className="flex items-center gap-2">
+                          <Briefcase className={`w-4 h-4 ${targetRoleId === position.id ? 'text-white/80' : 'text-accent-dark'}`} />
+                          <span className={`${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-medium'}`}>משרה:</span>
+                          <span className={`font-semibold ${targetRoleId === position.id ? 'text-white' : 'text-neutral-dark'}`}>
+                            {position.employment_type}
+                          </span>
+                        </div>
+                        <div className="w-px h-4 bg-neutral-medium"></div>
+                        <div className="flex items-center gap-2">
+                          <BarChart className={`w-4 h-4 ${targetRoleId === position.id ? 'text-white/80' : 'text-accent-dark'}`} />
+                          <span className={`${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-medium'}`}>רמה:</span>
+                          <span className={`font-semibold ${targetRoleId === position.id ? 'text-white' : 'text-neutral-dark'}`}>
+                            {position.level}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <img
+                      src={position.company_logo}
+                      alt={position.company_name}
+                      className="w-16 h-16 rounded-full border-2 border-neutral-light"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm ${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-medium'}`}>
+                        פורסם:
+                      </span>
+                      <span className={`text-sm font-semibold ${targetRoleId === position.id ? 'text-white' : 'text-neutral-dark'}`}>
+                        {position.posted_date}
+                      </span>
+                    </div>
+                    {/* <button
+                      onClick={() => onNavigate?.("job-details", position.id)}
+                      className={`flex items-center gap-1.5 text-sm font-semibold ${targetRoleId === position.id ? 'text-white hover:underline' : 'text-primary hover:underline'
+                        }`}
+                    >
+                      לפרטי המשרה
+                      <ArrowLeft className="w-3 h-3" />
+                    </button> */}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+
             {/* Job Card 1 */}
-            <div id="job-card-1" className="bg-white rounded-card shadow-card hover:shadow-panel transition-shadow border-2 border-transparent hover:border-primary/30 cursor-pointer">
+            <div id="job-card-1" className={targetRoleId === 1 ? 'destPosition bg-gradient-to-br from-primary to-accent-dark text-white rounded-card shadow-panel border-2 border-accent-light' : 'rounded-card shadow-card hover:shadow-panel transition-shadow border-2 cursor-pointer bg-white border-transparent hover:border-primary/30'}>
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-2xl font-bold text-primary">ראש צוות פיתוח Backend</h3>
+                      <h3 className={`text-2xl font-bold ${targetRoleId === 1 ? 'text-white' : 'text-primary'}`}>ראש צוות פיתוח Backend</h3>
+                      <span className="bg-category-tech/20 text-category-tech px-3 py-1 rounded-pill text-xs font-bold">טכנולוגיה</span>
+
                       <button className="text-rose-500 hover:text-rose-600 transition-colors" title="הסר מהמועדפים">
                         <Heart className="w-6 h-6 fill-current" />
                       </button>
-                      <span className="bg-category-tech/20 text-category-tech px-3 py-1 rounded-pill text-xs font-bold">טכנולוגיה</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setTargetRoleId(targetRoleId === 1 ? null : 1);
+                        }}
+                        className={`cursor-pointer flex items-center gap-1.5 px-3 py-1 rounded-pill text-xs font-bold transition-colors ${targetRoleId === 1 ? 'bg-white/20 text-white border border-white/30' : 'bg-primary text-white  hover:bg-purple-200'}`}
+                      >
+                        <Target className="w-3.5 h-3.5" />
+                        {targetRoleId === 1 ? 'תפקיד יעד' : 'סמן כתפקיד יעד'}
+                      </button>
                     </div>
-                    <p className="text-neutral-medium mb-3">חטיבת טכנולוגיות | מחלקת פיתוח Backend</p>
-                    <div className="text-neutral-dark text-sm leading-relaxed">
+                    <p className={`mb-3 ${targetRoleId === 1 ? 'text-white/80' : 'text-neutral-medium'}`}>חטיבת טכנולוגיות | מחלקת פיתוח Backend</p>
+                    <div className={`text-sm leading-relaxed ${targetRoleId === 1 ? 'text-white/90' : 'text-neutral-dark'}`}>
                       <p>הובלת צוות פיתוח של 6-8 מפתחים, תכנון ארכיטקטורה, ניהול פרויקטים טכנולוגיים מורכבים ופיתוח מערכות Backend בקנה מידה גדול.</p>
                       <details className="group mt-2">
-                        <summary className="list-none text-primary cursor-pointer hover:underline flex items-center gap-1 font-semibold text-sm">
+                        <summary className={`list-none cursor-pointer hover:underline flex items-center gap-1 font-semibold text-sm ${targetRoleId === 1 ? 'text-white' : 'text-primary'}`}>
                           תציג עוד פרטים
                           <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
                         </summary>
@@ -146,57 +335,63 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                   </div>
                 </div>
                 <div className="mb-4">
-                  <p className="text-sm font-semibold text-neutral-dark mb-3">דרישות מרכזיות:</p>
+                  <p className={`text-sm font-semibold mb-3 ${targetRoleId === 1 ? 'text-white' : 'text-neutral-dark'}`}>דרישות מרכזיות:</p>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="text-status-success w-4 h-4" />
-                      <span className="text-neutral-dark">ניסיון בניהול צוותים</span>
+                      <CheckCircle className={`w-4 h-4 ${targetRoleId === 1 ? 'text-green-300' : 'text-status-success'}`} />
+                      <span className={targetRoleId === 1 ? 'text-white' : 'text-neutral-dark'}>ניסיון בניהול צוותים</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="text-status-success w-4 h-4" />
-                      <span className="text-neutral-dark">מומחיות Java & Spring Boot</span>
+                      <CheckCircle className={`w-4 h-4 ${targetRoleId === 1 ? 'text-green-300' : 'text-status-success'}`} />
+                      <span className={targetRoleId === 1 ? 'text-white' : 'text-neutral-dark'}>מומחיות Java & Spring Boot</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="text-status-success w-4 h-4" />
-                      <span className="text-neutral-dark">ניסיון בארכיטקטורת מערכות</span>
+                      <CheckCircle className={`w-4 h-4 ${targetRoleId === 1 ? 'text-green-300' : 'text-status-success'}`} />
+                      <span className={targetRoleId === 1 ? 'text-white' : 'text-neutral-dark'}>ניסיון בארכיטקטורת מערכות</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <div className="w-4 h-4 rounded-full border-2 border-neutral-300 flex-shrink-0" />
-                      <span className="text-neutral-dark">ניסיון בניהול תקציבים</span>
+                      <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${targetRoleId === 1 ? 'border-white/50' : 'border-neutral-300'}`} />
+                      <span className={targetRoleId === 1 ? 'text-white' : 'text-neutral-dark'}>ניסיון בניהול תקציבים</span>
                     </div>
                   </div>
                 </div>
-                <div className="bg-primary-light/20 p-3 rounded-card mb-4 border-r-4 border-primary">
+                <div style={{ backgroundColor: '#fef9c370', borderRightColor: '#eab208cf' }} className="p-3 rounded-card mb-4 border-r-4">
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
-                        <Heart className="text-rose-500 w-4 h-4 fill-current" />
-                        <span className="text-neutral-dark font-semibold"> 24 אנשים אהבו את המשרה</span>
-                        
+                        <Info style={{ color: '#eab208' }} className="text-accent-dark w-4 h-4" />
+                        <span className={targetRoleId === 1 ? 'text-white font-semibold' : 'text-neutral-dark font-semibold'}> יש לשים לב, המשרה עלולה לגרוע משכרך</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between pt-4 border-t border-neutral-light">
+
+                <div className={`flex items-center justify-between pt-4 border-t ${targetRoleId === 1 ? 'border-white/20' : 'border-neutral-light'}`}>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="text-primary w-4 h-4" />
-                      <span className="text-neutral-medium">תל אביב, ישראל</span>
+                      <MapPin className={`w-4 h-4 ${targetRoleId === 1 ? 'text-white/70' : 'text-primary'}`} />
+                      <span className={targetRoleId === 1 ? 'text-white/80' : 'text-neutral-medium'}>תל אביב, ישראל</span>
                     </div>
-                    <div className="w-px h-4 bg-neutral-medium"></div>
+                    <div className={`w-px h-4 ${targetRoleId === 1 ? 'bg-white/30' : 'bg-neutral-medium'}`}></div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Clock className="text-primary w-4 h-4" />
-                      <span className="text-neutral-medium">פורסם לפני 3 ימים</span>
+                      <Clock className={`w-4 h-4 ${targetRoleId === 1 ? 'text-white/70' : 'text-primary'}`} />
+                      <span className={targetRoleId === 1 ? 'text-white/80' : 'text-neutral-medium'}>פורסם לפני 3 ימים</span>
                     </div>
-                    <div className="w-px h-4 bg-neutral-medium"></div>
+                    <div className={`w-px h-4 ${targetRoleId === 1 ? 'bg-white/30' : 'bg-neutral-medium'}`}></div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Layers className="text-primary w-4 h-4" />
-                      <span className="text-neutral-medium">דרגה: Senior Manager</span>
+                      <Layers className={`w-4 h-4 ${targetRoleId === 1 ? 'text-white/70' : 'text-primary'}`} />
+                      <span className={targetRoleId === 1 ? 'text-white/80' : 'text-neutral-medium'}>דרגה: Senior Manager</span>
                     </div>
+                    <div className={`w-px h-4 ${targetRoleId === 1 ? 'bg-white/30' : 'bg-neutral-medium'}`}></div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Heart className={`w-4 h-4 ${targetRoleId === 1 ? 'text-white/70' : 'text-primary'}`} />
+                      <span className={targetRoleId === 1 ? 'text-white/80' : 'text-neutral-medium'}>24 אנשים אהבו את המשרה</span>
+                    </div>
+
                   </div>
                   <div className="flex items-center gap-2">
-                    
-                    <button 
+
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleDevelopmentPlan(1);
@@ -209,69 +404,69 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                   </div>
                 </div>
                 {expandedJobId === 1 && (
-                    <div className="mt-6 border-t border-neutral-light pt-6 animate-in slide-in-from-top-4 duration-300 cursor-default" onClick={(e) => e.stopPropagation()}>
-                        <div className="bg-neutral-50/50 rounded-xl p-6 border border-neutral-light/50">
-                            <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <Route className="w-5 h-5" />
-                                תוכנית פיתוח אישית
-                            </h3>
-                            
-                            <div className="bg-white p-5 rounded-xl border border-neutral-light shadow-sm mb-6">
-                                <h4 className="font-bold text-neutral-dark mb-4 flex items-center gap-2">
-                                    <ListChecks className="w-5 h-5 text-primary" />
-                                    דרישות התפקיד
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">ניסיון בניהול צוותים</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">מומחיות Java & Spring Boot</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">ניסיון בארכיטקטורת מערכות</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">ניסיון בניהול תקציבים</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
-                                        <CheckCircle className="w-4 h-4 text-neutral-400" />
-                                        <span className="text-sm font-medium text-neutral-dark">קורס ניהול פרויקטים מתקדם</span>
-                                    </div>
-                                </div>
-                            </div>
+                  <div className="mt-6 border-t border-neutral-light pt-6 animate-in slide-in-from-top-4 duration-300 cursor-default" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-neutral-50/50 rounded-xl p-6 border border-neutral-light/50">
+                      <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                        <Route className="w-5 h-5" />
+                        תוכנית פיתוח אישית
+                      </h3>
 
-                            {/* Next Steps */}
-                            <div className="bg-white p-5 rounded-xl border-l-4 border-primary shadow-sm">
-                                <h4 className="font-bold text-primary mb-4 flex items-center gap-2">
-                                    <Target className="w-5 h-5" />
-                                    הצעד הבא שלי
-                                </h4>
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
-                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">01</div>
-                                        <div className="flex-1">
-                                            <h5 className="font-bold text-neutral-dark text-sm">הירשם לקורס ניהול תקציבים</h5>
-                                            <p className="text-xs text-neutral-medium">נפתח בקרוב • מכללת הניהול</p>
-                                        </div>
-                                        <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
-                                    </div>
-                                    <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
-                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">02</div>
-                                        <div className="flex-1">
-                                            <h5 className="font-bold text-neutral-dark text-sm">תיאום שיחת מנטורינג</h5>
-                                            <p className="text-xs text-neutral-medium">עם סמנכ"ל כספים</p>
-                                        </div>
-                                        <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
-                                    </div>
-                                </div>
-                            </div>
+                      <div className="bg-white p-5 rounded-xl border border-neutral-light shadow-sm mb-6">
+                        <h4 className="font-bold text-neutral-dark mb-4 flex items-center gap-2">
+                          <ListChecks className="w-5 h-5 text-primary" />
+                          דרישות התפקיד
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">ניסיון בניהול צוותים</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">מומחיות Java & Spring Boot</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">ניסיון בארכיטקטורת מערכות</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">ניסיון בניהול תקציבים</span>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg border border-neutral-light/50">
+                            <CheckCircle className="w-4 h-4 text-neutral-400" />
+                            <span className="text-sm font-medium text-neutral-dark">קורס ניהול פרויקטים מתקדם</span>
+                          </div>
                         </div>
+                      </div>
+
+                      {/* Next Steps */}
+                      <div className="bg-white p-5 rounded-xl border-l-4 border-primary shadow-sm">
+                        <h4 className="font-bold text-primary mb-4 flex items-center gap-2">
+                          <Target className="w-5 h-5" />
+                          הצעד הבא שלי
+                        </h4>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">01</div>
+                            <div className="flex-1">
+                              <h5 className="font-bold text-neutral-dark text-sm">הירשם לקורס ניהול תקציבים</h5>
+                              <p className="text-xs text-neutral-medium">נפתח בקרוב • מכללת הניהול</p>
+                            </div>
+                            <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
+                          </div>
+                          <div className="flex items-center gap-4 p-3 bg-neutral-light/20 rounded-lg hover:bg-neutral-light/40 transition-colors cursor-pointer group">
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">02</div>
+                            <div className="flex-1">
+                              <h5 className="font-bold text-neutral-dark text-sm">תיאום שיחת מנטורינג</h5>
+                              <p className="text-xs text-neutral-medium">עם סמנכ"ל כספים</p>
+                            </div>
+                            <button className="text-primary text-xs font-bold hover:underline">ביצוע</button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -372,7 +567,7 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
                     <p className="text-neutral-medium mb-3">חטיבת מוצר | צוות Core Platform</p>
                     <div className="text-neutral-dark text-sm leading-relaxed">
                       <p>
-                      הובלה טכנית של פיתוח מוצר ליבה, עבודה צמודה עם Product Managers, קבלת החלטות ��כנולוגיות ומנטורינג של מפתחים.
+                        הובלה טכנית של פיתוח מוצר ליבה, עבודה צמודה עם Product Managers, קבלת החלטות ��כנולוגיות ומנטורינג של מפתחים.
                       </p>
                       <details className="group mt-2">
                         <summary className="list-none text-primary cursor-pointer hover:underline flex items-center gap-1 font-semibold text-sm">
@@ -539,7 +734,7 @@ export const MatchAndDevelopment = ({ onNavigate }: { onNavigate?: (view: "dashb
           </section>
         </div>
 
-        
+
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Navigate,
   Route,
@@ -24,15 +24,15 @@ import { Dashboard } from "./components/Dashboard";
 import { MatchAndDevelopment } from "./components/MatchAndDevelopment";
 import { SkillsQuestionnaire } from "./components/SkillsQuestionnaire";
 
-const ProfilePage = () => (
+const ProfilePage = ({ employeeData, positionsData }: { employeeData?: any, positionsData?: any }) => (
   <>
-    <ProfileHero />
+    <ProfileHero employeeData={employeeData} positionsData={positionsData} />
 
     <div className="grid grid-cols-12 gap-8">
       <div className="col-span-8 space-y-8">
-        <About />
-        <Skills />
-        <Education />
+        <About employeeData={employeeData} />
+        <Skills employeeData={employeeData} />
+        <Education employeeData={employeeData} />
         <Experience />
         <Recommendations />
         <Wishlist />
@@ -40,7 +40,7 @@ const ProfilePage = () => (
 
       <div className="col-span-4 space-y-6">
         <CareerPreferences />
-        <Languages />
+        <Languages employeeData={employeeData} />
         <TargetRole />
         <QuickActions />
         <Notifications />
@@ -58,9 +58,79 @@ const getCurrentView = (
   return "dashboard";
 };
 
+// Loading spinner component
+const AppLoader = () => (
+  <div
+    dir="rtl"
+    className="bg-neutral-extralight font-heebo text-neutral-dark min-h-screen flex items-center justify-center"
+  >
+    <div className="flex flex-col items-center gap-4">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-32 h-32 object-contain"
+      >
+        <source src="/loading.mp4" type="video/mp4" />
+      </video>
+      <img
+        src="/logo_text.png"
+        alt="GO-PRO"
+        className="h-8 object-contain"
+      />
+    </div>
+  </div>
+);
+
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
+  const [employeeData, setEmployeeData] = useState<any>(null);
+  const [positionsData, setPositionsData] = useState<any[]>([]);
+  const hasFetchedRef = useRef(false);
+
+  useEffect(() => {
+    // Guard to prevent double fetch in StrictMode
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+
+    const fetchAppData = async () => {
+      try {
+        // First fetch employee data
+        const employeeResponse = await fetch("http://localhost:8000/api/v1/employees/me");
+        const employeeJson = await employeeResponse.json();
+        console.log("employees/me response:", employeeJson);
+        setEmployeeData(employeeJson);
+        setIsLoading(false);
+
+        // Then fetch positions using the employee ID (after loading is done)
+        const candidateId = employeeJson?.id || 1001;
+        const [positionsResponse] = await Promise.all([
+          // const [positionsResponse, topPositionsResponse] = await Promise.all([
+          fetch("http://localhost:8000/api/v1/positions/matching"),
+          // fetch(``)
+        ]);
+
+        if (positionsResponse.ok) {
+          const positionsJson = await positionsResponse.json();
+          // console.log("positions/matching response:", positionsJson);
+          setPositionsData(positionsJson);
+        }
+
+        const positionsDataJson = await fetch(`http://localhost:8000/api/v1/smart/positions/top?candidate_id=${candidateId}&limit=60`);
+        const positionsData = await positionsDataJson.json();
+        console.log("positions/top response:", positionsData);
+
+      } catch (error) {
+        console.error("Error fetching app data:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchAppData();
+  }, []);
 
   const handleNavigate = (view: "dashboard" | "home" | "jobs" | "match") => {
     switch (view) {
@@ -83,6 +153,11 @@ export default function App() {
 
   const currentView = getCurrentView(location.pathname);
 
+  // Show loader while fetching employee data
+  if (isLoading) {
+    return <AppLoader />;
+  }
+
   return (
     <div
       dir="rtl"
@@ -91,25 +166,26 @@ export default function App() {
       <Navbar
         onNavigate={handleNavigate}
         currentView={currentView}
+        employeeData={employeeData}
       />
 
       <main
         id="main-content"
-        className="max-w-[1600px] mx-auto p-10"
+        className="max-w-[1600px] mx-auto p-10 overflow-y-hidden"
       >
         <Routes>
           <Route
             path="/"
-            element={<Dashboard onNavigate={handleNavigate} />}
+            element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}
           />
-          <Route path="/positions" element={<JobsPage />} />
+          <Route path="/positions" element={<JobsPage positionsData={positionsData} />} />
           <Route
             path="/my-positions"
-            element={<MatchAndDevelopment onNavigate={handleNavigate} />}
+            element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}
           />
           <Route path="/questionnaire" element={<SkillsQuestionnaire />} />
           <Route path="/questionnaire-test" element={<SkillsQuestionnaire testMode />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProfilePage employeeData={employeeData} positionsData={positionsData} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
