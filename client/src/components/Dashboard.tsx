@@ -10,9 +10,10 @@ interface DashboardProps {
   onNavigate?: (view: 'dashboard' | 'home' | 'jobs' | 'match') => void;
   employeeData?: any;
   positionsData?: any;
+  allPositions?: any[];
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData, positionsData }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData, positionsData, allPositions }) => {
   const [scanTrigger, setScanTrigger] = React.useState(0);
   const [selectedJob, setSelectedJob] = React.useState<{ id: number; title: string; matchPercent: number } | null>(null);
   const [topPositions, setTopPositions] = React.useState<any[]>([]);
@@ -36,12 +37,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData, 
         console.log("smart/positions/top response:", data);
         // Handle both array response and object with data property
         const positions = Array.isArray(data) ? data : (data.data || data.positions || []);
+        console.log("Setting topPositions to:", positions);
         setTopPositions(positions);
       }
     } catch (error) {
       console.error("Error fetching top positions:", error);
     }
   };
+
+  // Debug: log when topPositions changes
+  React.useEffect(() => {
+    // console.log("topPositions state updated:", topPositions);
+  }, [topPositions]);
 
   return (
     <div className="grid grid-cols-12 gap-8 items-start">
@@ -60,7 +67,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData, 
             />
           </div>
         )}
-        <DevelopmentPlanSummary selectedJob={selectedJob} />
+        <DevelopmentPlanSummary selectedJob={selectedJob} allPositions={allPositions} />
 
 
         {employeeData?.liked_positions && employeeData.liked_positions.length > 0 && (

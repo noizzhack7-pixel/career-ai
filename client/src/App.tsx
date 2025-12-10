@@ -89,6 +89,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState<any>(null);
   const [positionsData, setPositionsData] = useState<any[]>([]);
+  const [allPositions, setAllPositions] = useState<any[]>([]);
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
@@ -98,30 +99,32 @@ export default function App() {
 
     const fetchAppData = async () => {
       try {
-        // First fetch employee data
-        const employeeResponse = await fetch("http://localhost:8000/api/v1/employees/me");
+        // Fetch employee data and positions in parallel
+        const [employeeResponse, allPositionsResponse] = await Promise.all([
+          fetch("http://localhost:8000/api/v1/employees/me"),
+          fetch("http://localhost:8000/api/v1/positions")
+        ]);
+
         const employeeJson = await employeeResponse.json();
         console.log("employees/me response:", employeeJson);
         setEmployeeData(employeeJson);
+
+        if (allPositionsResponse.ok) {
+          const allPositionsJson = await allPositionsResponse.json();
+          console.log("positions response:", allPositionsJson);
+          setAllPositions(allPositionsJson);
+        }
+
         setIsLoading(false);
 
-        // Then fetch positions using the employee ID (after loading is done)
+        // Then fetch additional positions data (after loading is done)
         const candidateId = employeeJson?.id || 1001;
-        const [positionsResponse] = await Promise.all([
-          // const [positionsResponse, topPositionsResponse] = await Promise.all([
-          fetch("http://localhost:8000/api/v1/positions/matching"),
-          // fetch(``)
-        ]);
+        const positionsResponse = await fetch("http://localhost:8000/api/v1/positions/matching");
 
         if (positionsResponse.ok) {
           const positionsJson = await positionsResponse.json();
-          // console.log("positions/matching response:", positionsJson);
           setPositionsData(positionsJson);
         }
-
-        const positionsDataJson = await fetch(`http://localhost:8000/api/v1/smart/positions/top?candidate_id=${candidateId}&limit=60`);
-        const positionsData = await positionsDataJson.json();
-        console.log("positions/top response:", positionsData);
 
       } catch (error) {
         console.error("Error fetching app data:", error);
@@ -176,7 +179,7 @@ export default function App() {
         <Routes>
           <Route
             path="/"
-            element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}
+            element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} allPositions={allPositions} />}
           />
           <Route path="/positions" element={<JobsPage positionsData={positionsData} />} />
           <Route
