@@ -247,4 +247,37 @@
   .bg-status-info\/10 {
     background-color: rgb(37 99 235 / 0.1);
   }
+
+  .destPosition {
+    color: white;
+  }
+
+  .destPosition * {
+    color: inherit;
+  }
+
+  .destPosition h3,
+  .destPosition h4,
+  .destPosition p,
+  .destPosition span,
+  .destPosition div,
+  .destPosition button,
+  .destPosition svg,
+  .destPosition span {
+    color: white;
+  }
+
+  .destPosition .text-neutral-dark,
+  .destPosition .text-neutral-medium,
+  .destPosition .text-primary,
+  .destPosition .text-neutral-dark span,
+  .destPosition .text-sm {
+    color: white !important;
+  }
+
+  .destPosition .bg-category-tech\/20,
+  .destPosition .bg-purple-100,
+  .destPosition .bg-purple-600 {
+    color: inherit;
+  }
 }
