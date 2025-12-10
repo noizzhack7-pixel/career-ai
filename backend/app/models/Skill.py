@@ -2,7 +2,7 @@ import uuid
 from typing import Literal, Union
 
 from pydantic import BaseModel, Field
-from backend.app.models.BaseValues import SkillRange, SoftSkills, HardSkills
+from app.models.BaseValues import SkillRange, SoftSkills, HardSkills
 
 
 class SoftSkill(BaseModel):

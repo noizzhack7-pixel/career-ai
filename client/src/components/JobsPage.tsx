@@ -23,8 +23,10 @@ import {
 } from 'lucide-react';
 
 interface Job {
+  profile_description?: string;
   id: number;
   title: string;
+  subtitle?: string;
   department: string;
   location: string;
   matchPercent: number;
@@ -47,11 +49,19 @@ interface Job {
     name?: string;
     matched: boolean;
     gap: any
+    skill?: string,
+    candidate_level?: number,
+    required_level?: number,
+    status?: string
   }[];
   soft_skills_match?: {
     name?: string;
     matched: boolean;
     gap: any
+    skill?: string,
+    candidate_level?: number,
+    required_level?: number,
+    status?: string
   }[];
   experience_match?: {
     name?: string;
@@ -60,219 +70,273 @@ interface Job {
   }[];
 }
 
-const allJobsData: Job[] = [
-  {
-    id: 1,
-    title: 'ראש צוות פיתוח',
-    department: 'חטיבת טכנולוגיות',
-    location: 'תל אביב | היברידי',
-    matchPercent: 92,
-    matchLevel: 'התאמה גבוהה',
-    matchColor: 'primary',
-    category: 'טכנולוגיה',
-    categoryColor: 'bg-blue-100 text-blue-800',
-    postedTime: 'פורסם לפני יומיים',
-    description: 'אנו מחפשים ראש/ת צוות פיתוח מוכשר/ת ל��צטרף לחטיבת הטכנולוגיות שלנו ולהוביל צוות של מפתחי Backend מבריקים.',
-    responsibilities: [
-      'ניהול מקצועי ואישי של צוות מפתחי Java.',
-      'הובלת תהליכי תכנון, ארכיטקטורה ו-Code Review.',
-      'אחריות על איכות הקוד, ביצועים ו-scalability של המערכות.',
-      'עבודה בסביבת Microservices ו-Cloud (AWS).',
-      'שיתוף פעולה עם צוותים אחרים בארגון להשגת מטרות משותפות.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 5+ שנים בפיתוח Java ו-Spring Boot', status: 'success', note: 'תואם - יש לך 5 שנות ניסיון' },
-      { text: 'ניסיון עם ארכיטקטורת Microservices', status: 'success', note: 'תואם - מיומנות קיימת בפרופיל' },
-      { text: 'מיומנויות מנהיגות והובלת צוות', status: 'success', note: 'תואם - מיומנות רכה "מנהיגות" מופיעה כחוזקה' },
-      { text: 'ניסיון של שנה לפחות בניהול צוות - יתרון', status: 'warning', note: 'פער קטן - ניתן לסגירה באמצעות קורס ניהול והתנסות מעשית' },
-      { text: 'ניסיון עם תשתיות ענן (AWS/GCP/Azure) - יתרון', status: 'warning', note: 'פער - מומלץ קורס הסמכה AWS Solutions Architect' }
-    ],
-    isOpen: true
-  },
-  {
-    id: 2,
-    title: 'מנהל/ת תקציבים',
-    department: 'חטיבת הכספים',
-    location: 'ירושלים | היברידי',
-    matchPercent: 81,
-    matchLevel: 'התאמה טובה',
-    matchColor: 'accent-dark',
-    category: 'כספים',
-    categoryColor: 'bg-green-100 text-green-800',
-    postedTime: 'פורסם לפני 4 ימים',
-    description: 'אנו מחפשים מנהל/ת תקציבים מנוסה להצטרף לחטיבת הכספים ולנהל את תהליכי התקצוב הארגוניים.',
-    responsibilities: [
-      'ניהול תהליכי תקצוב שנתיים ורב- السنوات.',
-      'בקרה ומעקב אחר ביצוע תקציבי.',
-      'הכנת דוחות כספיים והצגתם önüne הנהלה.',
-      'שיתוף פעולה עם מנהלי יחידות לתכנון תקציבי.'
-    ],
-    requirements: [
-      { text: 'תואר ראשון בכלכלה/חשבונאות', status: 'success', note: 'תואם - תואר רלוונטי' },
-      { text: 'ניסיון של 3+ שנים בניהול תקציבים', status: 'success', note: 'תואם - 4 שנות ניסיון' },
-      { text: 'שליטה מלאה ב-Excel ומערכות ERP', status: 'warning', note: 'פער קטן - מומלץ קורס מתקדם' }
-    ],
-    isOpen: true
-  },
-  {
-    id: 3,
-    title: 'שותף/ה עסקי HR',
-    department: 'חטיבת משאבי אנוש',
-    location: 'חיפה | משרד מלא',
-    matchPercent: 73,
-    matchLevel: 'התאמה בינונית',
-    matchColor: 'secondary',
-    category: 'משאבי אנוש',
-    categoryColor: 'bg-purple-100 text-purple-800',
-    postedTime: 'פורסם לפני שבוע',
-    description: 'אנו מחפשים שותף/ה עסקי HR להצטרף לצוות משאבי האנוש ולתמוך ביחידות העסקיות.',
-    responsibilities: [
-      'ליווי מנהלים בתהליכי גיוס ופיתוח עובדים.',
-      'ניהול תהליכי הערכה וביצועים.',
-      'פיתוח תוכניות שימור והתפתחות.'
-    ],
-    requirements: [
-      { text: 'תואר ראשון בניהול משאבי אנוש', status: 'success', note: 'תואם' },
-      { text: 'ניסיון של 2+ שנים כשותף עסקי', status: 'warning', note: 'פער - שנה וחצי ניסיון' }
-    ],
-    isOpen: false
-  },
-  {
-    id: 4,
-    title: 'מפתח/ת Fullstack',
-    department: 'חטיבת טכנולוגיות',
-    location: 'תל אביב | היברידי',
-    matchPercent: 89,
-    matchLevel: 'התאמה גבוהה',
-    matchColor: 'primary',
-    category: 'טכנולוגיה',
-    categoryColor: 'bg-blue-100 text-blue-800',
-    postedTime: 'פורסם לפני 3 ימים',
-    description: 'אנו מחפשים מפתח/ת Fullstack מוכשר/ת לפיתוח מערכות ליבה.',
-    responsibilities: [
-      'פיתוח Frontend ו-Backend.',
-      'עבודה עם React ו-Node.js.',
-      'שיתוף פעולה עם צוותי מוצר ועיצוב.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 3+ שנים בפיתוח Fullstack', status: 'success', note: 'תואם' },
-      { text: 'שליטה ב-React ו-Node.js', status: 'success', note: 'תואם' }
-    ],
-    isOpen: true
-  },
-  {
-    id: 5,
-    title: 'אנליסט/ית דאטה',
-    department: 'חטיבת הדאטה',
-    location: 'מרוחק',
-    matchPercent: 84,
-    matchLevel: 'התאמה טובה',
-    matchColor: 'accent-dark',
-    category: 'טכנולוגיה',
-    categoryColor: 'bg-blue-100 text-blue-800',
-    postedTime: 'פורסם היום',
-    description: 'אנו מחפשים אנליסט/ית דאטה לניתוח נתונים עסקיים.',
-    responsibilities: [
-      'ניתוח נתונים והפקת תובנות.',
-      'בניית דשבורדים ב-Tableau/Power BI.',
-      'עבודה עם SQL ו-Python.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 2+ שנים בניתוח דאטה', status: 'success', note: 'תואם' },
-      { text: 'שליטה ב-SQL ו-Python', status: 'success', note: 'תואם' }
-    ],
-    isOpen: true
-  },
-  {
-    id: 6,
-    title: 'מנהל/ת פרויקטים',
-    department: 'חטיבת תפעול',
-    location: 'חיפה | היברידי',
-    matchPercent: 68,
-    matchLevel: 'התאמה בינונית',
-    matchColor: 'secondary',
-    category: 'לוגיסטיקה',
-    categoryColor: 'bg-orange-100 text-orange-800',
-    postedTime: 'פורסם לפני שבוע',
-    description: 'אנו מחפשים מנהל/ת פרויקטים לניהול פרויקטים תפעוליים.',
-    responsibilities: [
-      'ניהול פרויקטים מקצה לקצה.',
-      'תיאום בין צוותים.',
-      'ניהול לוחות זמנים ותקציבים.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 3+ שנים בניהול פרויקטים', status: 'warning', note: 'פער - שנתיים ניסיון' }
-    ],
-    isOpen: false
-  },
-  {
-    id: 7,
-    title: 'מנהל/ת מוצר',
-    department: 'חטיבת מוצר',
-    location: 'תל אביב | היברידי',
-    matchPercent: 79,
-    matchLevel: 'התאמה טובה',
-    matchColor: 'accent-dark',
-    category: 'טכנולוגיה',
-    categoryColor: 'bg-blue-100 text-blue-800',
-    postedTime: 'פורסם לפני 5 ימים',
-    description: 'אנו מחפשים מנהל/ת מוצר להובלת אסטרטגיית המוצר.',
-    responsibilities: [
-      'הגדרת חזון ואסטרטגיה.',
-      'עבודה עם צוותי פיתוח ועיצוב.',
-      'ניתוח שוק ומתחרים.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 3+ שנים בניהול מוצר', status: 'success', note: 'תואם' }
-    ],
-    isOpen: true
-  }
-];
+// const allJobsData: Job[] = [
+//   {
+//     id: 1,
+//     title: 'ראש צוות פיתוח',
+//     department: 'חטיבת טכנולוגיות',
+//     location: 'תל אביב | היברידי',
+//     matchPercent: 92,
+//     matchLevel: 'התאמה גבוהה',
+//     matchColor: 'primary',
+//     category: 'טכנולוגיה',
+//     categoryColor: 'bg-blue-100 text-blue-800',
+//     postedTime: 'פורסם לפני יומיים',
+//     description: 'אנו מחפשים ראש/ת צוות פיתוח מוכשר/ת ל��צטרף לחטיבת הטכנולוגיות שלנו ולהוביל צוות של מפתחי Backend מבריקים.',
+//     responsibilities: [
+//       'ניהול מקצועי ואישי של צוות מפתחי Java.',
+//       'הובלת תהליכי תכנון, ארכיטקטורה ו-Code Review.',
+//       'אחריות על איכות הקוד, ביצועים ו-scalability של המערכות.',
+//       'עבודה בסביבת Microservices ו-Cloud (AWS).',
+//       'שיתוף פעולה עם צוותים אחרים בארגון להשגת מטרות משותפות.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 5+ שנים בפיתוח Java ו-Spring Boot', status: 'success', note: 'תואם - יש לך 5 שנות ניסיון' },
+//       { text: 'ניסיון עם ארכיטקטורת Microservices', status: 'success', note: 'תואם - מיומנות קיימת בפרופיל' },
+//       { text: 'מיומנויות מנהיגות והובלת צוות', status: 'success', note: 'תואם - מיומנות רכה "מנהיגות" מופיעה כחוזקה' },
+//       { text: 'ניסיון של שנה לפחות בניהול צוות - יתרון', status: 'warning', note: 'פער קטן - ניתן לסגירה באמצעות קורס ניהול והתנסות מעשית' },
+//       { text: 'ניסיון עם תשתיות ענן (AWS/GCP/Azure) - יתרון', status: 'warning', note: 'פער - מומלץ קורס הסמכה AWS Solutions Architect' }
+//     ],
+//     isOpen: true
+//   },
+//   {
+//     id: 2,
+//     title: 'מנהל/ת תקציבים',
+//     department: 'חטיבת הכספים',
+//     location: 'ירושלים | היברידי',
+//     matchPercent: 81,
+//     matchLevel: 'התאמה טובה',
+//     matchColor: 'accent-dark',
+//     category: 'כספים',
+//     categoryColor: 'bg-green-100 text-green-800',
+//     postedTime: 'פורסם לפני 4 ימים',
+//     description: 'אנו מחפשים מנהל/ת תקציבים מנוסה להצטרף לחטיבת הכספים ולנהל את תהליכי התקצוב הארגוניים.',
+//     responsibilities: [
+//       'ניהול תהליכי תקצוב שנתיים ורב- السنوات.',
+//       'בקרה ומעקב אחר ביצוע תקציבי.',
+//       'הכנת דוחות כספיים והצגתם önüne הנהלה.',
+//       'שיתוף פעולה עם מנהלי יחידות לתכנון תקציבי.'
+//     ],
+//     requirements: [
+//       { text: 'תואר ראשון בכלכלה/חשבונאות', status: 'success', note: 'תואם - תואר רלוונטי' },
+//       { text: 'ניסיון של 3+ שנים בניהול תקציבים', status: 'success', note: 'תואם - 4 שנות ניסיון' },
+//       { text: 'שליטה מלאה ב-Excel ומערכות ERP', status: 'warning', note: 'פער קטן - מומלץ קורס מתקדם' }
+//     ],
+//     isOpen: true
+//   },
+//   {
+//     id: 3,
+//     title: 'שותף/ה עסקי HR',
+//     department: 'חטיבת משאבי אנוש',
+//     location: 'חיפה | משרד מלא',
+//     matchPercent: 73,
+//     matchLevel: 'התאמה בינונית',
+//     matchColor: 'secondary',
+//     category: 'משאבי אנוש',
+//     categoryColor: 'bg-purple-100 text-purple-800',
+//     postedTime: 'פורסם לפני שבוע',
+//     description: 'אנו מחפשים שותף/ה עסקי HR להצטרף לצוות משאבי האנוש ולתמוך ביחידות העסקיות.',
+//     responsibilities: [
+//       'ליווי מנהלים בתהליכי גיוס ופיתוח עובדים.',
+//       'ניהול תהליכי הערכה וביצועים.',
+//       'פיתוח תוכניות שימור והתפתחות.'
+//     ],
+//     requirements: [
+//       { text: 'תואר ראשון בניהול משאבי אנוש', status: 'success', note: 'תואם' },
+//       { text: 'ניסיון של 2+ שנים כשותף עסקי', status: 'warning', note: 'פער - שנה וחצי ניסיון' }
+//     ],
+//     isOpen: false
+//   },
+//   {
+//     id: 4,
+//     title: 'מפתח/ת Fullstack',
+//     department: 'חטיבת טכנולוגיות',
+//     location: 'תל אביב | היברידי',
+//     matchPercent: 89,
+//     matchLevel: 'התאמה גבוהה',
+//     matchColor: 'primary',
+//     category: 'טכנולוגיה',
+//     categoryColor: 'bg-blue-100 text-blue-800',
+//     postedTime: 'פורסם לפני 3 ימים',
+//     description: 'אנו מחפשים מפתח/ת Fullstack מוכשר/ת לפיתוח מערכות ליבה.',
+//     responsibilities: [
+//       'פיתוח Frontend ו-Backend.',
+//       'עבודה עם React ו-Node.js.',
+//       'שיתוף פעולה עם צוותי מוצר ועיצוב.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 3+ שנים בפיתוח Fullstack', status: 'success', note: 'תואם' },
+//       { text: 'שליטה ב-React ו-Node.js', status: 'success', note: 'תואם' }
+//     ],
+//     isOpen: true
+//   },
+//   {
+//     id: 5,
+//     title: 'אנליסט/ית דאטה',
+//     department: 'חטיבת הדאטה',
+//     location: 'מרוחק',
+//     matchPercent: 84,
+//     matchLevel: 'התאמה טובה',
+//     matchColor: 'accent-dark',
+//     category: 'טכנולוגיה',
+//     categoryColor: 'bg-blue-100 text-blue-800',
+//     postedTime: 'פורסם היום',
+//     description: 'אנו מחפשים אנליסט/ית דאטה לניתוח נתונים עסקיים.',
+//     responsibilities: [
+//       'ניתוח נתונים והפקת תובנות.',
+//       'בניית דשבורדים ב-Tableau/Power BI.',
+//       'עבודה עם SQL ו-Python.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 2+ שנים בניתוח דאטה', status: 'success', note: 'תואם' },
+//       { text: 'שליטה ב-SQL ו-Python', status: 'success', note: 'תואם' }
+//     ],
+//     isOpen: true
+//   },
+//   {
+//     id: 6,
+//     title: 'מנהל/ת פרויקטים',
+//     department: 'חטיבת תפעול',
+//     location: 'חיפה | היברידי',
+//     matchPercent: 68,
+//     matchLevel: 'התאמה בינונית',
+//     matchColor: 'secondary',
+//     category: 'לוגיסטיקה',
+//     categoryColor: 'bg-orange-100 text-orange-800',
+//     postedTime: 'פורסם לפני שבוע',
+//     description: 'אנו מחפשים מנהל/ת פרויקטים לניהול פרויקטים תפעוליים.',
+//     responsibilities: [
+//       'ניהול פרויקטים מקצה לקצה.',
+//       'תיאום בין צוותים.',
+//       'ניהול לוחות זמנים ותקציבים.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 3+ שנים בניהול פרויקטים', status: 'warning', note: 'פער - שנתיים ניסיון' }
+//     ],
+//     isOpen: false
+//   },
+//   {
+//     id: 7,
+//     title: 'מנהל/ת מוצר',
+//     department: 'חטיבת מוצר',
+//     location: 'תל אביב | היברידי',
+//     matchPercent: 79,
+//     matchLevel: 'התאמה טובה',
+//     matchColor: 'accent-dark',
+//     category: 'טכנולוגיה',
+//     categoryColor: 'bg-blue-100 text-blue-800',
+//     postedTime: 'פורסם לפני 5 ימים',
+//     description: 'אנו מחפשים מנהל/ת מוצר להובלת אסטרטגיית המוצר.',
+//     responsibilities: [
+//       'הגדרת חזון ואסטרטגיה.',
+//       'עבודה עם צוותי פיתוח ועיצוב.',
+//       'ניתוח שוק ומתחרים.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 3+ שנים בניהול מוצר', status: 'success', note: 'תואם' }
+//     ],
+//     isOpen: true
+//   }
+// ];
 
 interface JobsPageProps {
   positionsData?: any[];
+  employeeData?: any;
+  onLikedChange?: (profiles: any[]) => void;
+  allPositions?: any[];
 }
 
-export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
+export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allPositions }: JobsPageProps) => {
   const [currentView, setCurrentView] = useState<'all' | 'open' | 'matched'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showOnlyIsrael, setShowOnlyIsrael] = useState<boolean>(false);
   const [showBestMatch, setShowBestMatch] = useState<boolean>(false);
   const [selectedJobId, setSelectedJobId] = useState<number>(1);
-  const [likedJobs, setLikedJobs] = useState<Set<number>>(new Set([1])); // Track liked jobs
+  const [likedJobs, setLikedJobs] = useState<Set<number>>(new Set()); // Track liked jobs by position/profile id
+  const [likedProfiles, setLikedProfiles] = useState<any[]>([]); // Track liked profile objects for saving
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState<boolean>(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState<boolean>(false);
   const [selectedSort, setSelectedSort] = useState<string>('התאמה הגבוהה ביותר');
-  const [jobsData, setJobsData] = useState<Job[]>(allJobsData);
+  // const [jobsData, setJobsData] = useState<Job[]>(allJobsData);
+  const [jobsData, setJobsData] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const sortOptions = ['התאמה הגבוהה ביותר', 'החדשות ביותר'];
+
+  const normalizeId = (value: any, fallback: number) => {
+    const num = Number(value);
+    if (Number.isFinite(num)) return num;
+    return fallback;
+  };
+
+  // Sync liked jobs from server data
+  useEffect(() => {
+    const likedFromServer = Array.isArray(employeeData?.liked_positions)
+      ? employeeData.liked_positions
+      : [];
+    setLikedProfiles(likedFromServer);
+    const ids = likedFromServer
+      .map((p: any, idx: number) => normalizeId(p?.position_id ?? p?.id ?? p?.profile_id, idx))
+      .filter((id: any) => Number.isFinite(id));
+    setLikedJobs(new Set(ids));
+  }, [employeeData?.liked_positions]);
 
   // Transform positionsData from props when it changes
   useEffect(() => {
     if (positionsData && positionsData.length > 0) {
       // Transform API data to match Job interface
       const transformedJobs: Job[] = positionsData.map((job: any, index: number) => ({
-        id: job.id || index + 1,
-        title: job.title || job.position_name || 'תפקיד',
-        department: job.department || job.division || 'מחלקה',
-        location: job.location || 'ישראל',
-        matchPercent: job.match_percentage,
-        matchLevel: job.matchLevel || (job.matchPercent >= 85 ? 'התאמה גבוהה' : 'התאמה בינונית'),
-        matchColor: job.matchColor || 'primary',
+        id: job.profile_id || index + 1,
+        title: job.profile_name || 'תפקיד',
+        subtitle: job.profile_name || 'תפקיד',
+        department: 'מחלקת טכנולוגיה',
+        location: 'ישראל',
+        matchPercent: Math.floor(job.score),
+        matchLevel: job.score || (job.score >= 85 ? 'התאמה גבוהה' : 'התאמה בינונית'),
+        matchColor: job.category_colour || 'primary',
         category: job.category || 'כללי',
-        categoryColor: job.category_color ? 'bg-' + job.category_color + '-100 text-' + job.category_color + '-800' : 'bg-blue-100 text-blue-800',
-        postedTime: job.postedTime || job.posted_time || 'פורסם לאחרונה',
-        description: job.description || '',
+        categoryColor: job.category_colour ? 'bg-' + job.category_colour + '-100 text-' + job.category_colour + '-800' : 'bg-blue-100 text-blue-800',
+        postedTime: 'פורסם לאחרונה',
+        description: (allPositions || []).find((p: any) => p.position_id === job.position_id)?.description || '',
+        profile_description: job.profile_description || '',
         responsibilities: job.responsibilities || [],
         requirements: job.requirements || [],
         isOpen: job.isOpen !== undefined ? job.isOpen : true,
         match_summary: job.match_summary || '',
-        hard_skills_match: job.hard_skills_match || [],
-        soft_skills_match: job.soft_skills_match || [],
-        experience_match: job.experience_match || []
+        hard_skills_match: job?.gaps?.hard_skill_gaps || [],
+        soft_skills_match: job?.gaps?.soft_skill_gaps || [],
+        experience_match: []
       }));
+      // const transformedJobs: Job[] = positionsData.map((job: any, index: number) => {
+      //   const title = job.title || job.position_name || job.profile_name || 'תפקיד';
+      //   const rawScore = job.match_percentage ?? job.score ?? job.match ?? job.matchPercent ?? 0;
+      //   let matchPercent = Number(rawScore);
+      //   if (!Number.isFinite(matchPercent)) matchPercent = 0;
+      //   // server returns percentages; keep as-is
+      //   const id = normalizeId(job.id ?? job.position_id ?? job.profile_id, index + 1);
+      //   return {
+      //     id,
+      //     title,
+      //     department: job.department || job.division || 'מחלקה',
+      //     location: job.location || job.work_model || 'ישראל',
+      //     matchPercent,
+      //     matchLevel: job.matchLevel || (matchPercent >= 85 ? 'התאמה גבוהה' : matchPercent >= 60 ? 'התאמה בינונית' : 'התאמה נמוכה'),
+      //     matchColor: job.matchColor || 'primary',
+      //     category: job.category || 'כללי',
+      //     categoryColor: job.category_color ? 'bg-' + job.category_color + '-100 text-' + job.category_color + '-800' : 'bg-blue-100 text-blue-800',
+      //     postedTime: job.postedTime || job.posted_time || 'פורסם לאחרונה',
+      //     description: job.profile_description || job.description || '',
+      //     responsibilities: job.responsibilities || [],
+      //     requirements: job.requirements || job.gaps || [],
+      //     isOpen: job.isOpen !== undefined ? job.isOpen : true,
+      //     match_summary: job.match_summary || '',
+      //     hard_skills_match: job.hard_skills_match || [],
+      //     soft_skills_match: job.soft_skills_match || [],
+      //     experience_match: job.experience_match || [],
+      //     raw_profile: job
+      //   };
+      // });
 
       setJobsData(transformedJobs);
 
@@ -283,13 +347,13 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
       setIsLoading(false);
     } else {
       // Use fallback static data if no positions data
-      setJobsData(allJobsData);
+      setJobsData(jobsData);
       setIsLoading(false);
     }
   }, [positionsData]);
 
   // Get all unique categories
-  const allCategories = Array.from(new Set(allJobsData.map(job => job.category))).sort();
+  // const allCategories = Array.from(new Set(allJobsData.map(job => job.category))).sort();
   const getCategoryLabel = (value: string) => {
     if (value === 'all') return 'כל הקטגוריות';
     const count = jobsData.filter(job => job.category === value).length;
@@ -307,14 +371,46 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
     return () => window.removeEventListener('scroll', handleScroll, true);
   }, []);
 
-  const toggleLike = (jobId: number) => {
+  const employeeNumber = employeeData?.employee_number ?? employeeData?.id ?? 1001;
+
+  const updateServerLikes = async (profiles: any[]) => {
+    try {
+      const payload = {
+        liked_positions: profiles,
+      };
+      await fetch(`http://localhost:8000/api/v1/employees/${employeeNumber}/positions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      console.error("Failed to update liked positions", error);
+    }
+  };
+
+  const toggleLike = (job: any) => {
+    const jobId = normalizeId(job?.id ?? job?.position_id ?? job?.profile_id, -1);
+    if (!Number.isFinite(jobId) || jobId === -1) {
+      console.error("Cannot like job without valid id", job);
+      return;
+    }
     setLikedJobs(prev => {
       const newSet = new Set(prev);
+      let newProfiles = [...likedProfiles];
       if (newSet.has(jobId)) {
         newSet.delete(jobId);
+        newProfiles = newProfiles.filter((p) => {
+          const pid = Number(p?.id ?? p?.position_id);
+          return pid !== jobId;
+        });
       } else {
         newSet.add(jobId);
+        const profileObj = job.raw_profile || job;
+        newProfiles = [...newProfiles, profileObj];
       }
+      setLikedProfiles(newProfiles);
+      updateServerLikes(newProfiles);
+      onLikedChange?.(newProfiles);
       return newSet;
     });
   };
@@ -335,6 +431,7 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
       const query = searchQuery.trim().toLowerCase();
       jobs = jobs.filter(job =>
         job.title.toLowerCase().includes(query) ||
+        job.subtitle?.toLowerCase().includes(query) ||
         job.department.toLowerCase().includes(query) ||
         job.category.toLowerCase().includes(query) ||
         job.location.toLowerCase().includes(query)
@@ -588,11 +685,14 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-grow">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-bold text-primary text-lg">{job.title}</h3>
-                        <span className={`text-xs px-2 py-1 rounded-pill ${job.categoryColor} font-semibold`}>{job.category}</span>
+                      <div className="flex items-center gap-2 mb-2 ">
+                        <h3 className="font-bold text-primary text-md">{job.title}</h3>
                       </div>
-                      <p className="text-sm text-neutral-dark mb-1">
+                      <p className="text-neutral-dark font-bold text-sm mb-2">{job.subtitle}</p>
+
+                      <p className="items-center text-sm text-neutral-dark mb-1 gap-2 flex flex-row align-center">
+                        <span
+                          className={`bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-pill ${job.categoryColor} font-semibold`}>{job.category}</span>
                         {job.department} <span className="text-neutral-300">|</span> {
                           job.category === 'טכנולוגיה' ? 'מחלקת פיתוח' :
                             job.category === 'כספים' ? 'מחלקת חשבות' :
@@ -632,7 +732,7 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-3xl font-bold text-primary">{selectedJob.title}</h1>
+                        <h1 className="text-2xl font-bold text-primary">{selectedJob.title}</h1>
                         <span className={`text-sm px-3 py-1 rounded-pill ${selectedJob.categoryColor} font-semibold`}>{selectedJob.category}</span>
                         {selectedJob.isOpen && (
                           <div className="flex items-center gap-1.5 px-2">
@@ -650,7 +750,7 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                     <div className="flex items-center gap-3">
                       <button
                         className={`${isLiked ? 'bg-rose-50 text-rose-600' : 'bg-gray-50 text-gray-500'} font-bold py-3 px-6 rounded-card hover:bg-rose-100 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 flex items-center gap-2`}
-                        onClick={() => toggleLike(selectedJobId)}
+                        onClick={() => toggleLike(selectedJob)}
                       >
                         <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-600 text-rose-600' : 'fill-none text-gray-500'}`} />
                         {isLiked ? 'אהבתי' : 'סמן אהבתי'} ({likedJobs.size}/12)
@@ -683,10 +783,10 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-bold text-neutral-dark">התאמת מיומנויות תפקיד</p>
                             <p className="text-sm font-bold text-status-success">
-                              {selectedJob.hard_skills_match?.filter((skill) => skill.matched).length === selectedJob.hard_skills_match?.length ? (
+                              {selectedJob.hard_skills_match?.filter((skill) => skill.matched || skill.gap <= 0).length === selectedJob.hard_skills_match?.length ? (
                                 "התאמה מלאה"
                               ) : (
-                                `${selectedJob.hard_skills_match?.filter((skill) => skill.matched).length}/${selectedJob.hard_skills_match?.length} מיומנויות`
+                                `${selectedJob.hard_skills_match?.filter((skill) => skill.matched || skill.gap <= 0).length}/${selectedJob.hard_skills_match?.length} מיומנויות`
                               )}
                             </p>
                           </div>
@@ -695,17 +795,17 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                               <span
                                 key={index}
                                 style={{
-                                  backgroundColor: !skill.matched ? "#dc26261a" : "",
-                                  color: !skill.matched ? "#dc2626" : ""
+                                  backgroundColor: skill.gap > 0 ? "#dc26261a" : "",
+                                  color: skill.gap > 0 ? "#dc2626" : ""
                                 }}
-                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.matched
+                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.gap <= 0
                                   ? "bg-status-success/10 text-status-success"
                                   : ""
                                   }`}
                               >
-                                <Tooltip content={skill.gap}>
-                                  {skill.name}
-                                </Tooltip>
+                                {/* <Tooltip content={skill.gap}> */}
+                                {skill.skill}
+                                {/* </Tooltip> */}
                               </span>
                             ))}
                           </div>
@@ -716,10 +816,10 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-bold text-neutral-dark">מיומנויות בין-אישיות</p>
                             <p className="text-sm font-bold text-status-success">
-                              {selectedJob.soft_skills_match?.filter((skill) => skill.matched).length === selectedJob.soft_skills_match?.length ? (
+                              {selectedJob.soft_skills_match?.filter((skill) => skill.matched || skill.gap <= 0).length === selectedJob.soft_skills_match?.length ? (
                                 "התאמה מלאה"
                               ) : (
-                                `${selectedJob.soft_skills_match?.filter((skill) => skill.matched).length}/${selectedJob.soft_skills_match?.length} מיומנויות`
+                                `${selectedJob.soft_skills_match?.filter((skill) => skill.matched || skill.gap <= 0).length}/${selectedJob.soft_skills_match?.length} מיומנויות`
                               )}
                             </p>
                           </div>
@@ -728,31 +828,31 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                               <span
                                 key={index}
                                 style={{
-                                  backgroundColor: !skill.matched ? "#dcd6261a" : "",
-                                  color: !skill.matched ? "#dcd626" : ""
+                                  backgroundColor: !(skill.matched || skill.gap <= 0) ? "#dcd6261a" : "",
+                                  color: !(skill.matched || skill.gap <= 0) ? "#dcd626" : ""
                                 }}
-                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.matched
+                                className={`text-xs px-3 py-1 rounded-md font-medium ${(skill.matched || skill.gap <= 0)
                                   ? "bg-status-success/10 text-status-success"
                                   : ""
                                   }`}
                               >
-                                <Tooltip content={skill.gap}>
-                                  {skill.name}
-                                </Tooltip>
+                                {/* <Tooltip content={skill.gap}> */}
+                                {skill.skill || skill.name}
+                                {/* </Tooltip> */}
                               </span>
                             ))}
                           </div>
                         </div>
 
                         {/* Experience Match */}
-                        <div className="mb-6">
+                        {/* <div className="mb-6">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-bold text-neutral-dark">ניסיון והשכלה</p>
                             <p className="text-sm font-bold text-status-success">
-                              {selectedJob.experience_match?.filter((skill) => skill.matched).length === selectedJob.experience_match?.length ? (
+                              {selectedJob.experience_match?.filter((skill) => skill.matched || skill.gap <= 0).length === selectedJob.experience_match?.length ? (
                                 "התאמה מלאה"
                               ) : (
-                                `${selectedJob.experience_match?.filter((skill) => skill.matched).length}/${selectedJob.experience_match?.length} התאמות`
+                                `${selectedJob.experience_match?.filter((skill) => skill.matched || skill.gap <= 0).length}/${selectedJob.experience_match?.length} התאמות`
                               )}
                             </p>
                           </div>
@@ -761,24 +861,24 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                               <span
                                 key={index}
                                 style={{
-                                  backgroundColor: !skill.matched ? "#dc26261a" : "",
-                                  color: !skill.matched ? "#dc2626" : ""
+                                  backgroundColor: !(skill.matched || skill.gap <= 0) ? "#dc26261a" : "",
+                                  color: !(skill.matched || skill.gap <= 0) ? "#dc2626" : ""
                                 }}
-                                className={`text-xs px-3 py-1 rounded-md font-medium ${skill.matched
+                                className={`text-xs px-3 py-1 rounded-md font-medium ${(skill.matched || skill.gap <= 0)
                                   ? "bg-status-success/10 text-status-success"
                                   : ""
                                   }`}
                               >
                                 <Tooltip content={skill.gap}>
-                                  {skill.name}
+                                  {skill.skill || skill.name}
                                 </Tooltip>
                               </span>
                             ))}
                           </div>
-                        </div>
+                        </div> */}
 
                         {/* Summary */}
-                        <div className="bg-white/60 p-3 rounded-card border border-primary/20 mt-5">
+                        {/* <div className="bg-white/60 p-3 rounded-card border border-primary/20 mt-5">
                           <p className="text-xs text-neutral-dark leading-relaxed flex items-start gap-1">
                             <Lightbulb className="text-primary w-3 h-3 mt-0.5 flex-shrink-0" />
                             <span>
@@ -786,11 +886,11 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                               {selectedJob.match_summary}
                             </span>
                           </p>
-                        </div>
+                        </div> */}
                       </div>
 
                       {/* Development Plan Area */}
-                      <div className="pt-4 border-t border-primary/10">
+                      {/* <div className="pt-4 border-t border-primary/10">
                         <div className="flex items-center justify-between">
                           <div>
                             <h4 className="font-bold text-primary text-sm mb-1">תוכנית הפיתוח שלי</h4>
@@ -801,16 +901,19 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                             <span>פתח תוכנית</span>
                           </a>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
 
                   {/* Job Description Content */}
                   <div className="job-detail-content">
-                    <h3>אודות התפקיד</h3>
+                    <h3>אודות המשרה</h3>
                     <p>{selectedJob.description}</p>
 
-                    {selectedJob.responsibilities && (
+                    <h3>אודות התפקיד</h3>
+                    <p>{selectedJob?.profile_description}</p>
+
+                    {selectedJob.responsibilities && selectedJob.responsibilities.length > 0 && (
                       <>
                         <h3>תחומי אחריות</h3>
                         <ul>
@@ -819,25 +922,29 @@ export const JobsPage = ({ positionsData = [] }: JobsPageProps) => {
                       </>
                     )}
 
-                    <h3>דרישות התפקיד וניתוח פערים</h3>
-                    <div className="space-y-3">
-                      {selectedJob.requirements.map((req, idx) => (
-                        <div key={idx} className="flex items-center gap-3 p-2 border-b border-neutral-light/50 last:border-0">
-                          {/* <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div> */}
-                          {req.status === 'יש' ? (
-                            <CheckCircle className="w-4 h-4 text-status-success flex-shrink-0" />
-                          ) : (
-                            <div className="w-4 h-4 rounded-full border-2 border-neutral-medium flex-shrink-0"></div>
-                            // {/* <XCircle style={{ color: 'darkred' }} className="w-4 h-4 text-status-error flex-shrink-0" /> */}
-                          )}
-                          <span className="text-neutral-dark">{req.skill}</span>
+                    {selectedJob.requirements && selectedJob.requirements.length > 0 && (
+                      <>
+                        <h3>דרישות התפקיד וניתוח פערים</h3>
+                        <div className="space-y-3">
+                          {selectedJob.requirements.map((req, idx) => (
+                            <div key={idx} className="flex items-center gap-3 p-2 border-b border-neutral-light/50 last:border-0">
+                              {/* <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div> */}
+                              {req.status === 'יש' ? (
+                                <CheckCircle className="w-4 h-4 text-status-success flex-shrink-0" />
+                              ) : (
+                                <div className="w-4 h-4 rounded-full border-2 border-neutral-medium flex-shrink-0"></div>
+                                // {/* <XCircle style={{ color: 'darkred' }} className="w-4 h-4 text-status-error flex-shrink-0" /> */}
+                              )}
+                              <span className="text-neutral-dark">{req.skill}</span>
 
-                          {req.status === 'חסר' && (
-                            <span className="text-sm text-neutral-medium ml-2">({req.note})</span>
-                          )}
+                              {req.status === 'חסר' && (
+                                <span className="text-sm text-neutral-medium ml-2">({req.note})</span>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      </>
+                    )}
 
                     {/* <h3>על הצוות</h3>
                     <p>צוות הליבה אחראי על פיתוח ותחזוקת השירותים המרכזיים של הארגון. אנחנו צוות דינמי, שאוהב אתגרים טכנולוגיים ועובד בשיתוף פעולה הדוק. אנחנו מאמינים בלמידה מתמדת, שיתוף ידע ופיתוח אישי של כל חברי הצוות.</p> */}

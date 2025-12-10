@@ -31,6 +31,8 @@ def get_supabase_client() -> Optional["Client"]:
         else:
             load_dotenv()
 
+
+
     url = os.getenv("SUPABASE_URL")
     key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY")
 

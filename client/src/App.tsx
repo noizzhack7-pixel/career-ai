@@ -41,7 +41,7 @@ const ProfilePage = ({ employeeData, positionsData }: { employeeData?: any, posi
       <div className="col-span-4 space-y-6">
         <CareerPreferences />
         <Languages employeeData={employeeData} />
-        <TargetRole />
+        <TargetRole employeeData={employeeData} />
         <QuickActions />
         <Notifications />
       </div>
@@ -89,6 +89,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState<any>(null);
   const [positionsData, setPositionsData] = useState<any[]>([]);
+  const [allPositions, setAllPositions] = useState<any[]>([]);
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
@@ -98,30 +99,33 @@ export default function App() {
 
     const fetchAppData = async () => {
       try {
-        // First fetch employee data
-        const employeeResponse = await fetch("http://localhost:8000/api/v1/employees/me");
+        // Fetch employee data and positions in parallel
+        const [employeeResponse, allPositionsResponse] = await Promise.all([
+          fetch("http://localhost:8000/api/v1/employees/me"),
+          fetch("http://localhost:8000/api/v1/positions")
+        ]);
+
         const employeeJson = await employeeResponse.json();
         console.log("employees/me response:", employeeJson);
         setEmployeeData(employeeJson);
+
+        if (allPositionsResponse.ok) {
+          const allPositionsJson = await allPositionsResponse.json();
+          console.log("positions response:", allPositionsJson);
+          setAllPositions(allPositionsJson);
+        }
+
         setIsLoading(false);
 
-        // Then fetch positions using the employee ID (after loading is done)
+        // Then fetch additional positions data (after loading is done)
         const candidateId = employeeJson?.id || 1001;
-        const [positionsResponse] = await Promise.all([
-          // const [positionsResponse, topPositionsResponse] = await Promise.all([
-          fetch("http://localhost:8000/api/v1/positions/matching"),
-          // fetch(``)
-        ]);
+        // const positionsResponse = await fetch("http://localhost:8000/api/v1/positions/matching");
+        const positionsResponse = await fetch(`http://localhost:8000/api/v1/smart/positions/top?candidate_id=${candidateId}&limit=20`);
 
         if (positionsResponse.ok) {
           const positionsJson = await positionsResponse.json();
-          // console.log("positions/matching response:", positionsJson);
           setPositionsData(positionsJson);
         }
-
-        const positionsDataJson = await fetch(`http://localhost:8000/api/v1/smart/positions/top?candidate_id=${candidateId}&limit=60`);
-        const positionsData = await positionsDataJson.json();
-        console.log("positions/top response:", positionsData);
 
       } catch (error) {
         console.error("Error fetching app data:", error);
@@ -131,6 +135,20 @@ export default function App() {
 
     fetchAppData();
   }, []);
+
+  const handleLikedChange = (profiles: any[]) => {
+    setEmployeeData((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, liked_positions: profiles };
+    });
+  };
+
+  const handleStarChange = (star: any | null) => {
+    setEmployeeData((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, star_position: star };
+    });
+  };
 
   const handleNavigate = (view: "dashboard" | "home" | "jobs" | "match") => {
     switch (view) {
@@ -176,12 +194,13 @@ export default function App() {
         <Routes>
           <Route
             path="/"
-            element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}
+            element={<Dashboard onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} allPositions={allPositions} />}
           />
-          <Route path="/positions" element={<JobsPage positionsData={positionsData} />} />
+          {/* <Route path="/positions" element={<JobsPage positionsData={positionsData} allPositions={allPositions} />} /> */}
+          <Route path="/positions" element={<JobsPage positionsData={positionsData} employeeData={employeeData} onLikedChange={handleLikedChange} allPositions={allPositions} />} />
           <Route
             path="/my-positions"
-            element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} />}
+            element={<MatchAndDevelopment onNavigate={handleNavigate} employeeData={employeeData} positionsData={positionsData} onStarChange={handleStarChange} />}
           />
           <Route path="/questionnaire" element={<SkillsQuestionnaire />} />
           <Route path="/questionnaire-test" element={<SkillsQuestionnaire testMode />} />
