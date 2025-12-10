@@ -15,7 +15,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData, positionsData, allPositions }) => {
   const [scanTrigger, setScanTrigger] = React.useState(0);
-  const [selectedJob, setSelectedJob] = React.useState<{ id: number; title: string; matchPercent: number } | null>(null);
+  const [selectedJob, setSelectedJob] = React.useState<any | null>(null);
   const [topPositions, setTopPositions] = React.useState<any[]>([]);
   const matchingSummaryRef = React.useRef<HTMLDivElement>(null);
 
@@ -25,7 +25,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate, employeeData, 
 
     // Scroll to the matching summary after a short delay
     setTimeout(() => {
-      matchingSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (matchingSummaryRef.current) {
+        const headerOffset = 200; // Account for fixed header
+        const elementPosition = matchingSummaryRef.current.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      }
     }, 100);
 
     // Call the smart positions endpoint

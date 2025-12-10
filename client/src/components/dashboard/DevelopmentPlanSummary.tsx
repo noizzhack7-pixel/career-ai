@@ -12,6 +12,10 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
   { manager: { name: 'דנה ישראל', photo: 'https://img.icons8.com/doodle/1200/maggie-simpson.jpg' }, masha: { name: 'ישראל ישראלי', photo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWV0dKyQSqQMorN-KlaDEDu_gwuuiPvvgQpA&s' } },
   { manager: { name: 'יוסי דבח', photo: 'https://m.media-amazon.com/images/I/31WtAivqtdL._AC_UY1000_.jpg' }, masha: { name: 'שרון כהן', photo: 'https://e7.pngegg.com/pngimages/724/440/png-clipart-edna-krabappel-bart-simpson-ned-flanders-sideshow-bob-principal-skinner-the-simpsons-face-springfield.png' } }
   ];
+  // Safe index with fallback to 0
+  const safeIndex = (selectedJob.index !== undefined && selectedJob.index >= 0 && selectedJob.index < resp.length)
+    ? selectedJob.index
+    : 0;
   return (
     <section id="idp-connected" className="bg-white rounded-card shadow-card overflow-hidden border-t-4 border-primary mt-8 animate-in slide-in-from-top-4 duration-500 fade-in">
       <div className="p-6 space-y-8">
@@ -24,7 +28,7 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
           <div className="bg-white p-5 rounded-card border border-neutral-light shadow-sm space-y-5">
             <div className="flex justify-between items-start">
               <div className="flex flex-row items-center gap-3">
-                <h4 className="font-bold text-lg text-primary-dark">{selectedJob.profile_name || selectedJob.extra.profile_name}</h4>
+                <h4 className="font-bold text-lg text-primary-dark">{selectedJob.profile_name || selectedJob?.extra?.profile_name || 'משרה'}</h4>
                 <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-pill">
                   התאמה: {Math.floor(selectedJob.score)}%
                 </span>
@@ -32,10 +36,10 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
               </div>
               <div className="flex flex-row items-end gap-3">
 
-                <button className="flex items-center gap-1.5 text-neutral-400 hover:text-pink-500 transition-colors group cursor-pointer">
+                {/* <button className="flex items-center gap-1.5 text-neutral-400 hover:text-pink-500 transition-colors group cursor-pointer">
                   <Heart className="w-5 h-5 group-hover:fill-pink-500" />
                   <span className="text-xs font-medium">124</span>
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -55,24 +59,24 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
             <div className="flex items-center gap-8 pt-4 border-t border-neutral-light/50">
               <div className="flex items-center gap-3">
                 <img
-                  src={resp[selectedJob.index].manager.photo}
+                  src={resp[safeIndex].manager.photo}
                   alt="דני כהן"
                   className="w-9 h-9 rounded-full object-cover border border-neutral-200"
                 />
                 <div>
                   <p className="text-xs text-neutral-medium">מנהל משרה</p>
-                  <p className="text-sm font-bold text-neutral-dark">{resp[selectedJob.index].manager.name}</p>
+                  <p className="text-sm font-bold text-neutral-dark">{resp[safeIndex].manager.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <img
-                  src={resp[selectedJob.index].masha.photo}
+                  src={resp[safeIndex].masha.photo}
                   alt="רונית לוי"
                   className="w-9 h-9 rounded-full object-cover border border-neutral-200"
                 />
                 <div>
                   <p className="text-xs text-neutral-medium">מש"א אחראי</p>
-                  <p className="text-sm font-bold text-neutral-dark">{resp[selectedJob.index].masha.name}</p>
+                  <p className="text-sm font-bold text-neutral-dark">{resp[safeIndex].masha.name}</p>
                 </div>
               </div>
             </div>
@@ -87,7 +91,7 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
           </h3>
           <div className="bg-white p-5 rounded-card border border-neutral-light shadow-sm">
             <ul className="grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-8">
-              {(selectedJob?.gaps || selectedJob?.extra?.hard_skills)?.map((gap: any, index: number) => (
+              {(selectedJob?.gaps?.hard_skill_gaps || selectedJob?.gaps || selectedJob?.extra?.hard_skills || [])?.map((gap: any, index: number) => (
                 <li key={index} className="flex items-center gap-3">
                   {gap.gap <= 0 ? (
                     <CheckCircle className="text-status-success w-4 h-4 flex-shrink-0" />
