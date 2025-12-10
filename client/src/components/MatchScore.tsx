@@ -78,7 +78,7 @@ export const MatchScore = ({
       {/* Text Label */}
       <div className="absolute inset-0 flex flex-col justify-center items-center text-center leading-tight">
         {showScore ? (
-          <span className="text-xs text-neutral-600">{score}%</span>
+          <span className="text-s text-neutral-600">{score}%</span>
         ) : (
           compact ? (
             <span className="text-[10px] text-neutral-dark whitespace-nowrap">{secondLine}</span>

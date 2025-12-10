@@ -137,20 +137,25 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
               {positionsData
                 ?.sort((a: any, b: any) => b.match_percentage - a.match_percentage)
                 .slice(0, 3)
-                .map((position: any) => (
+                .map((position: any, index: number) => (
                   <motion.div
                     key={position.id}
-                    onClick={() => onJobSelect?.(position)}
+                    onClick={() => onJobSelect?.({ index: index, ...position })}
                     variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
                     className={`relative border ${selectedJobId === position.id ? 'border-primary shadow-panel ring-1 ring-primary' : 'border-neutral-light'} rounded-card p-6 hover:border-primary hover:shadow-panel transition-all cursor-pointer bg-white group hover:-translate-y-1 duration-300 flex flex-col h-full`}
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex flex-col gap-1">
                         <h3 className="font-bold text-lg text-primary">{position.title}</h3>
-                        <span className="bg-primary/10 text-primary text-xs px-3 py-1.5 rounded-pill font-bold border border-primary/20 flex items-center gap-1 w-fit">
-                          <Laptop className="w-3 h-3" />
-                          {position.category || 'כללי'}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <span className="bg-primary/10 text-primary text-xs px-3 py-1.5 rounded-pill font-bold border border-primary/20 flex items-center gap-1 w-fit">
+                            <Laptop className="w-3 h-3" />
+                            {position.category || 'כללי'}
+                          </span>
+                          {index === 1 && (
+                            <span className="text-sm font-bold text-status-success">משרה בפרסום</span>
+                          )}
+                        </div>
                       </div>
                       <div className="shrink-0">
                         <MatchScore score={position.match_percentage} compact={true} showScore={true} />

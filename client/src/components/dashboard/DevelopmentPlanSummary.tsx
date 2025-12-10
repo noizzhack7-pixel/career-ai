@@ -7,9 +7,10 @@ interface DevelopmentPlanSummaryProps {
 
 export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ selectedJob }) => {
   if (!selectedJob) return null;
-
-  const matchPercentage = selectedJob?.matchPercent || 92;
-
+  const resp = [{ manager: { name: 'דני כהן', photo: 'https://cdn.dribbble.com/userupload/30451113/file/original-a332396c4b90a7d292b3fa30fd2079ba.png?format=webp&resize=400x300&vertical=centerg' }, masha: { name: 'רונית לוי', photo: 'https://i.pinimg.com/736x/74/70/9f/74709f0aa1e90ffb6de1f43ac19fa87a.jpg' } },
+  { manager: { name: 'דנה ישראל', photo: 'https://img.icons8.com/doodle/1200/maggie-simpson.jpg' }, masha: { name: 'ישראל ישראלי', photo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWV0dKyQSqQMorN-KlaDEDu_gwuuiPvvgQpA&s' } },
+  { manager: { name: 'יוסי דבח', photo: 'https://m.media-amazon.com/images/I/31WtAivqtdL._AC_UY1000_.jpg' }, masha: { name: 'שרון כהן', photo: 'https://e7.pngegg.com/pngimages/724/440/png-clipart-edna-krabappel-bart-simpson-ned-flanders-sideshow-bob-principal-skinner-the-simpsons-face-springfield.png' } }
+  ];
   return (
     <section id="idp-connected" className="bg-white rounded-card shadow-card overflow-hidden border-t-4 border-primary mt-8 animate-in slide-in-from-top-4 duration-500 fade-in">
       <div className="p-6 space-y-8">
@@ -21,15 +22,16 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
           </h3>
           <div className="bg-white p-5 rounded-card border border-neutral-light shadow-sm space-y-5">
             <div className="flex justify-between items-start">
-              <div>
-                <h4 className="font-bold text-lg text-primary-dark">ראש צוות פיתוח</h4>
-                <p className="text-sm text-neutral-medium mt-1">R&D Department · תל אביב (ישראל)</p>
-              </div>
-              <div className="flex flex-col items-end gap-3">
+              <div className="flex flex-row items-center gap-3">
+                <h4 className="font-bold text-lg text-primary-dark">{selectedJob.title}</h4>
                 <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-pill">
-                  התאמה: {matchPercentage}%
+                  התאמה: {selectedJob.match_percentage}%
                 </span>
-                <button className="flex items-center gap-1.5 text-neutral-400 hover:text-pink-500 transition-colors group">
+                {/* <p className="text-sm text-neutral-medium mt-1">R&D Department · תל אביב (ישראל)</p> */}
+              </div>
+              <div className="flex flex-row items-end gap-3">
+
+                <button className="flex items-center gap-1.5 text-neutral-400 hover:text-pink-500 transition-colors group cursor-pointer">
                   <Heart className="w-5 h-5 group-hover:fill-pink-500" />
                   <span className="text-xs font-medium">124</span>
                 </button>
@@ -39,32 +41,33 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
             <div>
               <h5 className="text-xs font-bold text-neutral-medium mb-2">תאור כללי</h5>
               <p className="text-sm text-neutral-dark leading-relaxed">
-                הובלת צוות פיתוח בסטארטאפ צומח. אחריות על ארכיטקטורה (Client & Server), Code Reviews, ומנטורינג.
-                דרישות: 5+ שנות ניסיון, React & Node.js, ניסיון בניהול צוות/הובלה טכנית.
+                {
+                  selectedJob?.description
+                }
               </p>
             </div>
 
             <div className="flex items-center gap-8 pt-4 border-t border-neutral-light/50">
               <div className="flex items-center gap-3">
                 <img
-                  src="https://cdn.dribbble.com/userupload/30451113/file/original-a332396c4b90a7d292b3fa30fd2079ba.png?format=webp&resize=400x300&vertical=centerg"
+                  src={resp[selectedJob.index].manager.photo}
                   alt="דני כהן"
                   className="w-9 h-9 rounded-full object-cover border border-neutral-200"
                 />
                 <div>
                   <p className="text-xs text-neutral-medium">מנהל משרה</p>
-                  <p className="text-sm font-bold text-neutral-dark">דני כהן</p>
+                  <p className="text-sm font-bold text-neutral-dark">{resp[selectedJob.index].manager.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <img
-                  src="https://i.pinimg.com/736x/74/70/9f/74709f0aa1e90ffb6de1f43ac19fa87a.jpg"
+                  src={resp[selectedJob.index].masha.photo}
                   alt="רונית לוי"
                   className="w-9 h-9 rounded-full object-cover border border-neutral-200"
                 />
                 <div>
-                  <p className="text-xs text-neutral-medium">מש"א אחראית</p>
-                  <p className="text-sm font-bold text-neutral-dark">רונית לוי</p>
+                  <p className="text-xs text-neutral-medium">מש"א אחראי</p>
+                  <p className="text-sm font-bold text-neutral-dark">{resp[selectedJob.index].masha.name}</p>
                 </div>
               </div>
             </div>
@@ -78,15 +81,15 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
             כישורים נדרשים
           </h3>
           <div className="bg-white p-5 rounded-card border border-neutral-light shadow-sm">
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-              {selectedJob?.requirements?.map((req: { met: any; text: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }, index: React.Key | null | undefined) => (
+            <ul className="grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-8">
+              {selectedJob?.requirements?.map((req: any, index: number) => (
                 <li key={index} className="flex items-center gap-3">
-                  {req.met ? (
+                  {req.status == 'יש' ? (
                     <CheckCircle className="text-status-success w-4 h-4 flex-shrink-0" />
                   ) : (
                     <div className="w-4 h-4 rounded-full border-2 border-neutral-medium flex-shrink-0"></div>
                   )}
-                  <span className="text-sm font-medium text-neutral-dark">{req.text}</span>
+                  <span className="text-sm font-medium text-neutral-dark">{req.skill}</span>
                 </li>
               ))}
 

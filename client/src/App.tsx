@@ -34,8 +34,8 @@ const ProfilePage = ({ employeeData, positionsData }: { employeeData?: any, posi
         <Skills employeeData={employeeData} />
         <Education employeeData={employeeData} />
         <Experience />
-        {/* <Recommendations /> */}
-        {/* <Wishlist /> */}
+        <Recommendations />
+        <Wishlist />
       </div>
 
       <div className="col-span-4 space-y-6">

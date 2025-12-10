@@ -240,13 +240,12 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }:
                     </div>
                   </div>
                 </div>
-                <div className="bg-primary-light/20 p-3 rounded-card mb-4 border-r-4 border-primary">
+                <div style={{ backgroundColor: '#fef9c370', borderRightColor: '#eab208cf' }} className="p-3 rounded-card mb-4 border-r-4">
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
-                        <Heart className="text-rose-500 w-4 h-4 fill-current" />
-                        <span className="text-neutral-dark font-semibold"> 24 אנשים אהבו את המשרה</span>
-
+                        <Info style={{ color: '#eab208' }} className="text-accent-dark w-4 h-4" />
+                        <span className="text-neutral-dark font-semibold"> יש לשים לב, המשרה עלולה לגרוע משכרך</span>
                       </div>
                     </div>
                   </div>
@@ -267,6 +266,12 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }:
                       <Layers className="text-primary w-4 h-4" />
                       <span className="text-neutral-medium">דרגה: Senior Manager</span>
                     </div>
+                    <div className="w-px h-4 bg-neutral-medium"></div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Heart className="text-primary w-4 h-4" />
+                      <span className="text-neutral-medium">24 אנשים אהבו את המשרה</span>
+                    </div>
+
                   </div>
                   <div className="flex items-center gap-2">
 

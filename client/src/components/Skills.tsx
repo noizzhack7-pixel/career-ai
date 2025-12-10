@@ -36,12 +36,12 @@ export const Skills: React.FC<SkillsProps> = ({ employeeData }) => {
         </button> */}
       </div>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-6">
         <div className="bg-accent/5 p-6 rounded-card border-2 border-accent/20"
           style={{ paddingBottom: "0rem" }}>
           <div className="flex items-center gap-3 mb-5">
             <Brain className="text-accent-dark w-6 h-6" />
-            <h3 className="text-xl font-bold text-accent-dark">מיומנויות בין אישיות</h3>
+            <h3 className="text-xl font-bold text-accent-dark">מיומנויות אישיות</h3>
           </div>
 
           <div>
