@@ -280,4 +280,9 @@
   .destPosition .bg-purple-600 {
     color: inherit;
   }
+
+  .bg-gradient-to-br {
+    --tw-gradient-position: to bottom right in oklab !important;
+    background-image: linear-gradient(var(--tw-gradient-stops)) !important;
+  }
 }

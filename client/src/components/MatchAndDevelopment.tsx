@@ -205,7 +205,7 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }:
                           e.stopPropagation();
                           setTargetRoleId(targetRoleId === 1 ? null : 1);
                         }}
-                        className={`cursor-pointer flex items-center gap-1.5 px-3 py-1 rounded-pill text-xs font-bold transition-colors ${targetRoleId === 1 ? 'bg-white/20 text-white border border-white/30' : 'bg-purple-100 text-category-tech  hover:bg-purple-200'}`}
+                        className={`cursor-pointer flex items-center gap-1.5 px-3 py-1 rounded-pill text-xs font-bold transition-colors ${targetRoleId === 1 ? 'bg-white/20 text-white border border-white/30' : 'bg-primary text-white  hover:bg-purple-200'}`}
                       >
                         <Target className="w-3.5 h-3.5" />
                         {targetRoleId === 1 ? 'תפקיד יעד' : 'סמן כתפקיד יעד'}
@@ -257,7 +257,7 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }:
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         <Info style={{ color: '#eab208' }} className="text-accent-dark w-4 h-4" />
-                        <span className="text-neutral-dark font-semibold"> יש לשים לב, המשרה עלולה לגרוע משכרך</span>
+                        <span className={targetRoleId === 1 ? 'text-white font-semibold' : 'text-neutral-dark font-semibold'}> יש לשים לב, המשרה עלולה לגרוע משכרך</span>
                       </div>
                     </div>
                   </div>
