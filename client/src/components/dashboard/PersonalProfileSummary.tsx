@@ -123,7 +123,7 @@ export const PersonalProfileSummary: React.FC<PersonalProfileSummaryProps> = ({ 
                   <div className="flex flex-col items-start gap-1">
                      <span className="text-sm font-bold text-neutral-dark/80 group-hover/progress:text-neutral-dark transition-colors leading-none">השלמת פרופיל</span>
                      <div className="flex items-center gap-1.5 text-xs text-neutral-400 group-hover/progress:text-primary transition-colors">
-                        <span>חסר: תעודות</span>
+                        <span>חסר: שאלון כישורים</span>
                         <Pen className="w-3.5 h-3.5" />
                      </div>
                   </div>

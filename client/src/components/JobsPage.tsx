@@ -26,6 +26,7 @@ interface Job {
   profile_description?: string;
   id: number;
   title: string;
+  subtitle?: string;
   department: string;
   location: string;
   matchPercent: number;
@@ -69,174 +70,174 @@ interface Job {
   }[];
 }
 
-const allJobsData: Job[] = [
-  {
-    id: 1,
-    title: 'ראש צוות פיתוח',
-    department: 'חטיבת טכנולוגיות',
-    location: 'תל אביב | היברידי',
-    matchPercent: 92,
-    matchLevel: 'התאמה גבוהה',
-    matchColor: 'primary',
-    category: 'טכנולוגיה',
-    categoryColor: 'bg-blue-100 text-blue-800',
-    postedTime: 'פורסם לפני יומיים',
-    description: 'אנו מחפשים ראש/ת צוות פיתוח מוכשר/ת ל��צטרף לחטיבת הטכנולוגיות שלנו ולהוביל צוות של מפתחי Backend מבריקים.',
-    responsibilities: [
-      'ניהול מקצועי ואישי של צוות מפתחי Java.',
-      'הובלת תהליכי תכנון, ארכיטקטורה ו-Code Review.',
-      'אחריות על איכות הקוד, ביצועים ו-scalability של המערכות.',
-      'עבודה בסביבת Microservices ו-Cloud (AWS).',
-      'שיתוף פעולה עם צוותים אחרים בארגון להשגת מטרות משותפות.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 5+ שנים בפיתוח Java ו-Spring Boot', status: 'success', note: 'תואם - יש לך 5 שנות ניסיון' },
-      { text: 'ניסיון עם ארכיטקטורת Microservices', status: 'success', note: 'תואם - מיומנות קיימת בפרופיל' },
-      { text: 'מיומנויות מנהיגות והובלת צוות', status: 'success', note: 'תואם - מיומנות רכה "מנהיגות" מופיעה כחוזקה' },
-      { text: 'ניסיון של שנה לפחות בניהול צוות - יתרון', status: 'warning', note: 'פער קטן - ניתן לסגירה באמצעות קורס ניהול והתנסות מעשית' },
-      { text: 'ניסיון עם תשתיות ענן (AWS/GCP/Azure) - יתרון', status: 'warning', note: 'פער - מומלץ קורס הסמכה AWS Solutions Architect' }
-    ],
-    isOpen: true
-  },
-  {
-    id: 2,
-    title: 'מנהל/ת תקציבים',
-    department: 'חטיבת הכספים',
-    location: 'ירושלים | היברידי',
-    matchPercent: 81,
-    matchLevel: 'התאמה טובה',
-    matchColor: 'accent-dark',
-    category: 'כספים',
-    categoryColor: 'bg-green-100 text-green-800',
-    postedTime: 'פורסם לפני 4 ימים',
-    description: 'אנו מחפשים מנהל/ת תקציבים מנוסה להצטרף לחטיבת הכספים ולנהל את תהליכי התקצוב הארגוניים.',
-    responsibilities: [
-      'ניהול תהליכי תקצוב שנתיים ורב- السنوات.',
-      'בקרה ומעקב אחר ביצוע תקציבי.',
-      'הכנת דוחות כספיים והצגתם önüne הנהלה.',
-      'שיתוף פעולה עם מנהלי יחידות לתכנון תקציבי.'
-    ],
-    requirements: [
-      { text: 'תואר ראשון בכלכלה/חשבונאות', status: 'success', note: 'תואם - תואר רלוונטי' },
-      { text: 'ניסיון של 3+ שנים בניהול תקציבים', status: 'success', note: 'תואם - 4 שנות ניסיון' },
-      { text: 'שליטה מלאה ב-Excel ומערכות ERP', status: 'warning', note: 'פער קטן - מומלץ קורס מתקדם' }
-    ],
-    isOpen: true
-  },
-  {
-    id: 3,
-    title: 'שותף/ה עסקי HR',
-    department: 'חטיבת משאבי אנוש',
-    location: 'חיפה | משרד מלא',
-    matchPercent: 73,
-    matchLevel: 'התאמה בינונית',
-    matchColor: 'secondary',
-    category: 'משאבי אנוש',
-    categoryColor: 'bg-purple-100 text-purple-800',
-    postedTime: 'פורסם לפני שבוע',
-    description: 'אנו מחפשים שותף/ה עסקי HR להצטרף לצוות משאבי האנוש ולתמוך ביחידות העסקיות.',
-    responsibilities: [
-      'ליווי מנהלים בתהליכי גיוס ופיתוח עובדים.',
-      'ניהול תהליכי הערכה וביצועים.',
-      'פיתוח תוכניות שימור והתפתחות.'
-    ],
-    requirements: [
-      { text: 'תואר ראשון בניהול משאבי אנוש', status: 'success', note: 'תואם' },
-      { text: 'ניסיון של 2+ שנים כשותף עסקי', status: 'warning', note: 'פער - שנה וחצי ניסיון' }
-    ],
-    isOpen: false
-  },
-  {
-    id: 4,
-    title: 'מפתח/ת Fullstack',
-    department: 'חטיבת טכנולוגיות',
-    location: 'תל אביב | היברידי',
-    matchPercent: 89,
-    matchLevel: 'התאמה גבוהה',
-    matchColor: 'primary',
-    category: 'טכנולוגיה',
-    categoryColor: 'bg-blue-100 text-blue-800',
-    postedTime: 'פורסם לפני 3 ימים',
-    description: 'אנו מחפשים מפתח/ת Fullstack מוכשר/ת לפיתוח מערכות ליבה.',
-    responsibilities: [
-      'פיתוח Frontend ו-Backend.',
-      'עבודה עם React ו-Node.js.',
-      'שיתוף פעולה עם צוותי מוצר ועיצוב.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 3+ שנים בפיתוח Fullstack', status: 'success', note: 'תואם' },
-      { text: 'שליטה ב-React ו-Node.js', status: 'success', note: 'תואם' }
-    ],
-    isOpen: true
-  },
-  {
-    id: 5,
-    title: 'אנליסט/ית דאטה',
-    department: 'חטיבת הדאטה',
-    location: 'מרוחק',
-    matchPercent: 84,
-    matchLevel: 'התאמה טובה',
-    matchColor: 'accent-dark',
-    category: 'טכנולוגיה',
-    categoryColor: 'bg-blue-100 text-blue-800',
-    postedTime: 'פורסם היום',
-    description: 'אנו מחפשים אנליסט/ית דאטה לניתוח נתונים עסקיים.',
-    responsibilities: [
-      'ניתוח נתונים והפקת תובנות.',
-      'בניית דשבורדים ב-Tableau/Power BI.',
-      'עבודה עם SQL ו-Python.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 2+ שנים בניתוח דאטה', status: 'success', note: 'תואם' },
-      { text: 'שליטה ב-SQL ו-Python', status: 'success', note: 'תואם' }
-    ],
-    isOpen: true
-  },
-  {
-    id: 6,
-    title: 'מנהל/ת פרויקטים',
-    department: 'חטיבת תפעול',
-    location: 'חיפה | היברידי',
-    matchPercent: 68,
-    matchLevel: 'התאמה בינונית',
-    matchColor: 'secondary',
-    category: 'לוגיסטיקה',
-    categoryColor: 'bg-orange-100 text-orange-800',
-    postedTime: 'פורסם לפני שבוע',
-    description: 'אנו מחפשים מנהל/ת פרויקטים לניהול פרויקטים תפעוליים.',
-    responsibilities: [
-      'ניהול פרויקטים מקצה לקצה.',
-      'תיאום בין צוותים.',
-      'ניהול לוחות זמנים ותקציבים.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 3+ שנים בניהול פרויקטים', status: 'warning', note: 'פער - שנתיים ניסיון' }
-    ],
-    isOpen: false
-  },
-  {
-    id: 7,
-    title: 'מנהל/ת מוצר',
-    department: 'חטיבת מוצר',
-    location: 'תל אביב | היברידי',
-    matchPercent: 79,
-    matchLevel: 'התאמה טובה',
-    matchColor: 'accent-dark',
-    category: 'טכנולוגיה',
-    categoryColor: 'bg-blue-100 text-blue-800',
-    postedTime: 'פורסם לפני 5 ימים',
-    description: 'אנו מחפשים מנהל/ת מוצר להובלת אסטרטגיית המוצר.',
-    responsibilities: [
-      'הגדרת חזון ואסטרטגיה.',
-      'עבודה עם צוותי פיתוח ועיצוב.',
-      'ניתוח שוק ומתחרים.'
-    ],
-    requirements: [
-      { text: 'ניסיון של 3+ שנים בניהול מוצר', status: 'success', note: 'תואם' }
-    ],
-    isOpen: true
-  }
-];
+// const allJobsData: Job[] = [
+//   {
+//     id: 1,
+//     title: 'ראש צוות פיתוח',
+//     department: 'חטיבת טכנולוגיות',
+//     location: 'תל אביב | היברידי',
+//     matchPercent: 92,
+//     matchLevel: 'התאמה גבוהה',
+//     matchColor: 'primary',
+//     category: 'טכנולוגיה',
+//     categoryColor: 'bg-blue-100 text-blue-800',
+//     postedTime: 'פורסם לפני יומיים',
+//     description: 'אנו מחפשים ראש/ת צוות פיתוח מוכשר/ת ל��צטרף לחטיבת הטכנולוגיות שלנו ולהוביל צוות של מפתחי Backend מבריקים.',
+//     responsibilities: [
+//       'ניהול מקצועי ואישי של צוות מפתחי Java.',
+//       'הובלת תהליכי תכנון, ארכיטקטורה ו-Code Review.',
+//       'אחריות על איכות הקוד, ביצועים ו-scalability של המערכות.',
+//       'עבודה בסביבת Microservices ו-Cloud (AWS).',
+//       'שיתוף פעולה עם צוותים אחרים בארגון להשגת מטרות משותפות.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 5+ שנים בפיתוח Java ו-Spring Boot', status: 'success', note: 'תואם - יש לך 5 שנות ניסיון' },
+//       { text: 'ניסיון עם ארכיטקטורת Microservices', status: 'success', note: 'תואם - מיומנות קיימת בפרופיל' },
+//       { text: 'מיומנויות מנהיגות והובלת צוות', status: 'success', note: 'תואם - מיומנות רכה "מנהיגות" מופיעה כחוזקה' },
+//       { text: 'ניסיון של שנה לפחות בניהול צוות - יתרון', status: 'warning', note: 'פער קטן - ניתן לסגירה באמצעות קורס ניהול והתנסות מעשית' },
+//       { text: 'ניסיון עם תשתיות ענן (AWS/GCP/Azure) - יתרון', status: 'warning', note: 'פער - מומלץ קורס הסמכה AWS Solutions Architect' }
+//     ],
+//     isOpen: true
+//   },
+//   {
+//     id: 2,
+//     title: 'מנהל/ת תקציבים',
+//     department: 'חטיבת הכספים',
+//     location: 'ירושלים | היברידי',
+//     matchPercent: 81,
+//     matchLevel: 'התאמה טובה',
+//     matchColor: 'accent-dark',
+//     category: 'כספים',
+//     categoryColor: 'bg-green-100 text-green-800',
+//     postedTime: 'פורסם לפני 4 ימים',
+//     description: 'אנו מחפשים מנהל/ת תקציבים מנוסה להצטרף לחטיבת הכספים ולנהל את תהליכי התקצוב הארגוניים.',
+//     responsibilities: [
+//       'ניהול תהליכי תקצוב שנתיים ורב- السنوات.',
+//       'בקרה ומעקב אחר ביצוע תקציבי.',
+//       'הכנת דוחות כספיים והצגתם önüne הנהלה.',
+//       'שיתוף פעולה עם מנהלי יחידות לתכנון תקציבי.'
+//     ],
+//     requirements: [
+//       { text: 'תואר ראשון בכלכלה/חשבונאות', status: 'success', note: 'תואם - תואר רלוונטי' },
+//       { text: 'ניסיון של 3+ שנים בניהול תקציבים', status: 'success', note: 'תואם - 4 שנות ניסיון' },
+//       { text: 'שליטה מלאה ב-Excel ומערכות ERP', status: 'warning', note: 'פער קטן - מומלץ קורס מתקדם' }
+//     ],
+//     isOpen: true
+//   },
+//   {
+//     id: 3,
+//     title: 'שותף/ה עסקי HR',
+//     department: 'חטיבת משאבי אנוש',
+//     location: 'חיפה | משרד מלא',
+//     matchPercent: 73,
+//     matchLevel: 'התאמה בינונית',
+//     matchColor: 'secondary',
+//     category: 'משאבי אנוש',
+//     categoryColor: 'bg-purple-100 text-purple-800',
+//     postedTime: 'פורסם לפני שבוע',
+//     description: 'אנו מחפשים שותף/ה עסקי HR להצטרף לצוות משאבי האנוש ולתמוך ביחידות העסקיות.',
+//     responsibilities: [
+//       'ליווי מנהלים בתהליכי גיוס ופיתוח עובדים.',
+//       'ניהול תהליכי הערכה וביצועים.',
+//       'פיתוח תוכניות שימור והתפתחות.'
+//     ],
+//     requirements: [
+//       { text: 'תואר ראשון בניהול משאבי אנוש', status: 'success', note: 'תואם' },
+//       { text: 'ניסיון של 2+ שנים כשותף עסקי', status: 'warning', note: 'פער - שנה וחצי ניסיון' }
+//     ],
+//     isOpen: false
+//   },
+//   {
+//     id: 4,
+//     title: 'מפתח/ת Fullstack',
+//     department: 'חטיבת טכנולוגיות',
+//     location: 'תל אביב | היברידי',
+//     matchPercent: 89,
+//     matchLevel: 'התאמה גבוהה',
+//     matchColor: 'primary',
+//     category: 'טכנולוגיה',
+//     categoryColor: 'bg-blue-100 text-blue-800',
+//     postedTime: 'פורסם לפני 3 ימים',
+//     description: 'אנו מחפשים מפתח/ת Fullstack מוכשר/ת לפיתוח מערכות ליבה.',
+//     responsibilities: [
+//       'פיתוח Frontend ו-Backend.',
+//       'עבודה עם React ו-Node.js.',
+//       'שיתוף פעולה עם צוותי מוצר ועיצוב.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 3+ שנים בפיתוח Fullstack', status: 'success', note: 'תואם' },
+//       { text: 'שליטה ב-React ו-Node.js', status: 'success', note: 'תואם' }
+//     ],
+//     isOpen: true
+//   },
+//   {
+//     id: 5,
+//     title: 'אנליסט/ית דאטה',
+//     department: 'חטיבת הדאטה',
+//     location: 'מרוחק',
+//     matchPercent: 84,
+//     matchLevel: 'התאמה טובה',
+//     matchColor: 'accent-dark',
+//     category: 'טכנולוגיה',
+//     categoryColor: 'bg-blue-100 text-blue-800',
+//     postedTime: 'פורסם היום',
+//     description: 'אנו מחפשים אנליסט/ית דאטה לניתוח נתונים עסקיים.',
+//     responsibilities: [
+//       'ניתוח נתונים והפקת תובנות.',
+//       'בניית דשבורדים ב-Tableau/Power BI.',
+//       'עבודה עם SQL ו-Python.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 2+ שנים בניתוח דאטה', status: 'success', note: 'תואם' },
+//       { text: 'שליטה ב-SQL ו-Python', status: 'success', note: 'תואם' }
+//     ],
+//     isOpen: true
+//   },
+//   {
+//     id: 6,
+//     title: 'מנהל/ת פרויקטים',
+//     department: 'חטיבת תפעול',
+//     location: 'חיפה | היברידי',
+//     matchPercent: 68,
+//     matchLevel: 'התאמה בינונית',
+//     matchColor: 'secondary',
+//     category: 'לוגיסטיקה',
+//     categoryColor: 'bg-orange-100 text-orange-800',
+//     postedTime: 'פורסם לפני שבוע',
+//     description: 'אנו מחפשים מנהל/ת פרויקטים לניהול פרויקטים תפעוליים.',
+//     responsibilities: [
+//       'ניהול פרויקטים מקצה לקצה.',
+//       'תיאום בין צוותים.',
+//       'ניהול לוחות זמנים ותקציבים.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 3+ שנים בניהול פרויקטים', status: 'warning', note: 'פער - שנתיים ניסיון' }
+//     ],
+//     isOpen: false
+//   },
+//   {
+//     id: 7,
+//     title: 'מנהל/ת מוצר',
+//     department: 'חטיבת מוצר',
+//     location: 'תל אביב | היברידי',
+//     matchPercent: 79,
+//     matchLevel: 'התאמה טובה',
+//     matchColor: 'accent-dark',
+//     category: 'טכנולוגיה',
+//     categoryColor: 'bg-blue-100 text-blue-800',
+//     postedTime: 'פורסם לפני 5 ימים',
+//     description: 'אנו מחפשים מנהל/ת מוצר להובלת אסטרטגיית המוצר.',
+//     responsibilities: [
+//       'הגדרת חזון ואסטרטגיה.',
+//       'עבודה עם צוותי פיתוח ועיצוב.',
+//       'ניתוח שוק ומתחרים.'
+//     ],
+//     requirements: [
+//       { text: 'ניסיון של 3+ שנים בניהול מוצר', status: 'success', note: 'תואם' }
+//     ],
+//     isOpen: true
+//   }
+// ];
 
 interface JobsPageProps {
   positionsData?: any[];
@@ -254,7 +255,8 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState<boolean>(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState<boolean>(false);
   const [selectedSort, setSelectedSort] = useState<string>('התאמה הגבוהה ביותר');
-  const [jobsData, setJobsData] = useState<Job[]>(allJobsData);
+  // const [jobsData, setJobsData] = useState<Job[]>(allJobsData);
+  const [jobsData, setJobsData] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const sortOptions = ['התאמה הגבוהה ביותר', 'החדשות ביותר'];
@@ -265,7 +267,8 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
       // Transform API data to match Job interface
       const transformedJobs: Job[] = positionsData.map((job: any, index: number) => ({
         id: job.profile_id || index + 1,
-        title: job.profile_name || 'תפקיד',
+        title: allPositions.find((p: any) => p.position_id === job.position_id)?.position_name || job.profile_name || 'תפקיד',
+        subtitle: job.profile_name || 'תפקיד',
         department: 'מחלקת טכנולוגיה',
         location: 'ישראל',
         matchPercent: Math.floor(job.score),
@@ -294,13 +297,13 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
       setIsLoading(false);
     } else {
       // Use fallback static data if no positions data
-      setJobsData(allJobsData);
+      setJobsData(jobsData);
       setIsLoading(false);
     }
   }, [positionsData]);
 
   // Get all unique categories
-  const allCategories = Array.from(new Set(allJobsData.map(job => job.category))).sort();
+  // const allCategories = Array.from(new Set(allJobsData.map(job => job.category))).sort();
   const getCategoryLabel = (value: string) => {
     if (value === 'all') return 'כל הקטגוריות';
     const count = jobsData.filter(job => job.category === value).length;
@@ -346,6 +349,7 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
       const query = searchQuery.trim().toLowerCase();
       jobs = jobs.filter(job =>
         job.title.toLowerCase().includes(query) ||
+        job.subtitle?.toLowerCase().includes(query) ||
         job.department.toLowerCase().includes(query) ||
         job.category.toLowerCase().includes(query) ||
         job.location.toLowerCase().includes(query)
@@ -602,6 +606,8 @@ export const JobsPage = ({ positionsData = [], allPositions = [] }: JobsPageProp
                       <div className="flex items-center gap-2 mb-2 ">
                         <h3 className="font-bold text-primary text-md">{job.title}</h3>
                       </div>
+                      <p className="text-neutral-dark font-bold text-sm mb-2">{job.subtitle}</p>
+
                       <p className="items-center text-sm text-neutral-dark mb-1 gap-2 flex flex-row align-center">
                         <span
                           className={`bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-pill ${job.categoryColor} font-semibold`}>{job.category}</span>
