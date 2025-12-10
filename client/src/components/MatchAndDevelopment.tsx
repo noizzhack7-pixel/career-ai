@@ -231,7 +231,9 @@ export const MatchAndDevelopment = ({
             )}
 
             {Array.isArray(employeeData?.liked_positions) && employeeData.liked_positions.map((position: any, idx: number) => {
+              console.log(position)
               const title = position.position_name || position.title || position.name || `משרה ${idx + 1}`;
+              const subtitle = position.profile_name || position.subtitle || `משרה ${idx + 1}`;
               const category = position.category || 'טכנולוגיה';
               const description = position.profile_description || position.description || '';
               const location = position.location || position.work_model || 'ישראל';
@@ -271,14 +273,14 @@ export const MatchAndDevelopment = ({
                             {targetRoleId === posId ? 'תפקיד יעד' : 'סמן כתפקיד יעד'}
                           </button>
                         </div>
-                        <p className={`mb-3 ${targetRoleId === posId ? 'text-white/80' : 'text-neutral-medium'}`}>חטיבת טכנולוגיות | מחלקת פיתוח Backend</p>
+                        <p className={`mb-3 ${targetRoleId === posId ? 'text-white/80' : 'text-neutral-medium'}`}>{subtitle}</p>
                         <div className={`text-sm leading-relaxed ${targetRoleId === posId ? 'text-white/90' : 'text-neutral-dark'}`}>
                           <p>{description}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-4">
-                        <div className="flex flex-col items-center gap-2">
-                          <MatchScore score={matchScore} compact={true} showScore={true} />
+                        <div className={`flex flex-col items-center gap-2 `}>
+                          <MatchScore score={matchScore} compact={true} showScore={true} isWhite={targetRoleId === posId} />
                         </div>
                       </div>
                     </div>

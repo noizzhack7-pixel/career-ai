@@ -288,7 +288,7 @@ export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allP
       // Transform API data to match Job interface
       const transformedJobs: Job[] = positionsData.map((job: any, index: number) => ({
         id: job.profile_id || index + 1,
-        title: job.profile_name || 'תפקיד',
+        title: job.position_name || 'תפקיד',
         subtitle: job.profile_name || 'תפקיד',
         department: 'מחלקת טכנולוגיה',
         location: 'ישראל',
@@ -509,11 +509,11 @@ export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allP
       {/* Header and Filter Bar */}
       <div className="flex-shrink-0 mb-6">
         <div className="flex items-center justify-between mb-4 px-2">
-          <h2 id="jobs-count" className="text-xl font-bold text-primary">
+          <h2 id="jobs-count" className="text-xl font-bold text-primary" style={{ marginTop: '-1.5rem' }}>
             {jobsData.length} משרות בארגון
             {/* {currentView === 'open' ? `מציג ${filteredJobs.length} משרות פתוחות` : '156 משרות בארגון'} */}
           </h2>
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm" style={{ marginTop: '-1.5rem' }}>
             <span className="font-semibold">מיין לפי:</span>
             <div className="relative">
               <button
@@ -688,7 +688,7 @@ export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allP
                       <div className="flex items-center gap-2 mb-2 ">
                         <h3 className="font-bold text-primary text-md">{job.title}</h3>
                       </div>
-                      <p className="text-neutral-dark font-bold text-sm mb-2">{job.subtitle}</p>
+                      <p className="text-neutral-dark font-bold text-sm mb-2 ">{job.subtitle}</p>
 
                       <p className="items-center text-sm text-neutral-dark mb-1 gap-2 flex flex-row align-center">
                         <span
@@ -741,6 +741,7 @@ export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allP
                           </div>
                         )}
                       </div>
+                      <span className="text-primary mb-2 flex">{selectedJob.subtitle}</span>
                       <div className="flex items-center gap-3 text-sm text-neutral-medium">
                         <span className="flex items-center gap-1.5"><Building className="text-primary w-4 h-4" />{selectedJob.department}</span>
                         <span className="flex items-center gap-1.5"><MapPin className="text-primary w-4 h-4" />{selectedJob.location}</span>
