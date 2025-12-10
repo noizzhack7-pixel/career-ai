@@ -3,6 +3,7 @@ import React from 'react';
 interface MatchScoreProps {
   score: number;
   compact?: boolean;
+  isWhite?: boolean;
   // Legacy props
   size?: number;
   colorClass?: string;
@@ -13,6 +14,7 @@ interface MatchScoreProps {
 
 export const MatchScore = ({
   score,
+  isWhite = false,
   compact = false,
   showScore = false
 }: MatchScoreProps) => {
@@ -78,7 +80,7 @@ export const MatchScore = ({
       {/* Text Label */}
       <div className="absolute inset-0 flex flex-col justify-center items-center text-center leading-tight">
         {showScore ? (
-          <span className="text-xs text-neutral-600">{score}%</span>
+          <span className={`text-s ${isWhite ? 'color:white' : 'text-neutral-600'}`}>{score}%</span>
         ) : (
           compact ? (
             <span className="text-[10px] text-neutral-dark whitespace-nowrap">{secondLine}</span>
