@@ -277,8 +277,8 @@ export const MatchAndDevelopment = ({
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="flex flex-col items-center gap-2">
-                          <MatchScore score={matchScore} compact={true} showScore={true} />
+                    <div className={`flex flex-col items-center gap-2 `}>
+                          <MatchScore score={matchScore} compact={true} showScore={true} isWhite={targetRoleId === posId} />
                     </div>
                   </div>
                 </div>
