@@ -50,6 +50,11 @@ export const LikedJobsSummary: React.FC<LikedJobsSummaryProps> = ({ onNavigate, 
                   <h5 className="font-bold text-neutral-dark group-hover:text-primary transition-colors line-clamp-1 text-sm" title={title}>{title}</h5>
                   <Heart className="w-4 h-4 text-pink-500 fill-pink-500 flex-shrink-0" />
                 </div>
+                {job.profile_name && (
+                  <p className="text-xs text-neutral-medium line-clamp-1 mb-2" title={job.profile_name}>{job.profile_name}</p>
+                )}
+
+
                 <div className="text-xs text-neutral-medium mb-3.5">
                   <div className="flex items-center gap-1.5">
                     <Building2 className="w-3.5 h-3.5 text-neutral-400" />

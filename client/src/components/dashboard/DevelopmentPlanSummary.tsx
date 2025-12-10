@@ -28,12 +28,13 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
           <div className="bg-white p-5 rounded-card border border-neutral-light shadow-sm space-y-5">
             <div className="flex justify-between items-start">
               <div className="flex flex-row items-center gap-3">
-                <h4 className="font-bold text-lg text-primary-dark">{selectedJob.profile_name || selectedJob?.extra?.profile_name || 'משרה'}</h4>
+                <h4 className="font-bold text-lg text-primary-dark">{selectedJob.position_name}</h4>
                 <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-pill">
                   התאמה: {Math.floor(selectedJob.score)}%
                 </span>
                 {/* <p className="text-sm text-neutral-medium mt-1">R&D Department · תל אביב (ישראל)</p> */}
               </div>
+
               <div className="flex flex-row items-end gap-3">
 
                 {/* <button className="flex items-center gap-1.5 text-neutral-400 hover:text-pink-500 transition-colors group cursor-pointer">
@@ -41,7 +42,9 @@ export const DevelopmentPlanSummary: React.FC<DevelopmentPlanSummaryProps> = ({ 
                   <span className="text-xs font-medium">124</span>
                 </button> */}
               </div>
+
             </div>
+            <h4 className="text-sm font-bold mt-1 flex" style={{ marginTop: '-1rem' }}>{selectedJob.profile_name}</h4>
 
             <div>
               {allPositions && allPositions.length > 0 && (
