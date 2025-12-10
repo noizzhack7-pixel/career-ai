@@ -1,13 +1,14 @@
 from __future__ import annotations
 import os
-from typing import List, Optional, Literal, Dict, Any
+from typing import List, Optional, Literal, Dict, Any, Union
+from xml.etree.ElementTree import indent
 
 from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel, Field
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from typing import cast
-
+from collections import Counter
 # LLM (LangChain)
 try:
     from langchain_openai import ChatOpenAI  # type: ignore
@@ -31,13 +32,6 @@ router = APIRouter(prefix="/smart", tags=["smart"])
 # -------------------------------------------------------------------
 # MODELS
 # -------------------------------------------------------------------
-class MatchResult(BaseModel):
-    candidate_id: Optional[int] = None
-    position_id: Optional[int] = None
-    profile_id: Optional[int] = None
-    name: Optional[str] = None
-    score: float
-    extra: Optional[Dict[str, Any]] = None
 
 
 class SkillGap(BaseModel):
@@ -46,6 +40,29 @@ class SkillGap(BaseModel):
     required_level: int
     gap: int
     status: Literal["strength", "meet", "upskill", "missing"]
+
+
+class SkillGapForProfile(BaseModel):
+    candidate_id: int
+    profile_id: int
+    candidate_name: Optional[str]
+    hard_skill_gaps: List[SkillGap]
+    soft_skill_gaps: List[SkillGap]
+    summary: Dict[str, Any]
+
+
+class MatchResult(BaseModel):
+    candidate_id: int
+    position_id: int
+    profile_id: int
+    category: str
+    category_colour: Literal["red", "blue", "green", "yellow", "orange"] | None
+    score: float
+    profile_name: str
+    profile_description: str
+    position_name: str
+    gaps: Optional[SkillGapForProfile] = None
+    experience_match: Optional[SkillGapForProfile] = None
 
 
 class SkillGapResponse(BaseModel):
@@ -57,10 +74,12 @@ class SkillGapResponse(BaseModel):
     soft_skill_gaps: List[SkillGap]
     summary: Dict[str, Any]
 
+
 class Course(BaseModel):
     name: str
     id: int
     description: str
+
 
 class LearningRecommendationModel(BaseModel):
     plan: str
@@ -70,9 +89,60 @@ class LearningRecommendationModel(BaseModel):
 class LearningRecommendationResponse(BaseModel):
     plan: str
     courses: List[Course]
+
+
 # -------------------------------------------------------------------
 # HELPERS
 # -------------------------------------------------------------------
+
+
+def get_skill_gaps_by_candidate_and_profiles(
+    candidate_id: int,
+    profiles: List[Dict]
+) -> Dict[int, SkillGapForProfile]:
+    """
+    profiles: list of RPC rows (at least profile_id, profile_name, position_id, etc.)
+    We will fetch the full profile from DB to get hard_skills / soft_skills.
+    """
+    candidate = _get_candidate(candidate_id)
+    responses: Dict[int, SkillGapForProfile] = {}
+
+    cand_hard = _parse_skills(candidate.get("hard_skills"))
+    cand_soft = _parse_skills(candidate.get("soft_skills"))
+
+    for profile_row in profiles:
+        profile_id = profile_row["profile_id"]
+
+        # 🔹 fetch full profile with skills from DB
+        full_profile = _get_profile(profile_id)
+
+        req_hard = _parse_skills(full_profile.get("hard_skills"))
+        req_soft = _parse_skills(full_profile.get("soft_skills"))
+
+        hard_gaps = _analyze_skill_gaps(cand_hard, req_hard)
+        soft_gaps = _analyze_skill_gaps(cand_soft, req_soft)
+
+        summary = {
+            "total_required_hard": len(req_hard),
+            "total_required_soft": len(req_soft),
+            "hard_status_counts": dict(Counter(g.status for g in hard_gaps)),
+            "soft_status_counts": dict(Counter(g.status for g in soft_gaps)),
+            "profile_id": profile_id,
+            "profile_name": full_profile.get("profile_name"),
+        }
+
+        responses[profile_id] = SkillGapForProfile(
+            candidate_id=candidate_id,
+            profile_id=profile_id,
+            candidate_name=f'{candidate.get("first_name")} {candidate.get("last_name")}' or None,
+            hard_skill_gaps=hard_gaps,
+            soft_skill_gaps=soft_gaps,
+            summary=summary,
+        )
+
+    return responses
+
+
 def _normalize_minmax(scores: List[float]) -> List[float]:
     """
     Normalize any list of real values to [0,1] while preserving order.
@@ -87,7 +157,7 @@ def _normalize_minmax(scores: List[float]) -> List[float]:
     if max_s == min_s:  # avoid division by zero; all equal
         return [0.5] * len(scores)
 
-    return [((s - min_s) / (max_s - min_s))*100 for s in scores]
+    return [((s - min_s) / (max_s - min_s)) * 100 for s in scores]
 
 
 def _get_candidate(candidate_id: int):
@@ -225,6 +295,26 @@ def _get_profiles_for_position(position_id: int) -> List[Dict[str, Any]]:
     return resp.data or []
 
 
+def get_position_category(supabase: Client, position_id: int) -> Optional[str]:
+    """
+    Given a position_id, return its category from the positions table.
+    """
+    resp = (
+        supabase
+        .table("positions")
+        .select("category")
+        .eq("position_id", position_id)
+        .single()
+        .execute()
+    )
+    print(resp.data)
+
+    if not resp.data:
+        return None
+
+    return resp.data.get("category")
+
+
 # -------------------------------------------------------------------
 # SMART ENDPOINTS (RPC POWERED)
 # -------------------------------------------------------------------
@@ -251,7 +341,7 @@ def get_top_candidates_for_position(
     scores = [row["score"] for row in rows]
     norm_scores = _normalize_minmax(scores)
 
-    results = []
+    results: List[MatchResult] = []
     for row, norm_score in zip(rows, norm_scores):
         # fetch full profile to get description & skills
         profile = _get_profile(row["profile_id"])
@@ -261,16 +351,12 @@ def get_top_candidates_for_position(
                 candidate_id=row["candidate_id"],
                 position_id=position_id,
                 profile_id=row["profile_id"],
-                name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
+                category="",  # no category here in this endpoint
+                category_colour=None,
                 score=norm_score,
-                extra={
-                    # requested extra data
-                    "profile_name": profile.get("profile_name"),
-                    "position_name": position.get("position_name"),
-                    "description": profile.get("description"),
-                    "hard_skills": profile.get("hard_skills"),
-                    "soft_skills": profile.get("soft_skills"),
-                },
+                profile_name=profile.get("profile_name"),
+                profile_description=profile.get("description"),
+                position_name=position.get("position_name"),
             )
         )
 
@@ -297,14 +383,22 @@ def get_similar_candidates(
     scores = [row["score"] for row in rows]
     norm_scores = _normalize_minmax(scores)
 
-    return [
-        MatchResult(
-            candidate_id=row["candidate_id"],
-            name=f"{row.get('first_name', '')} {row.get('last_name', '')}".strip(),
-            score=norm_score,
+    results: List[MatchResult] = []
+    for row, norm_score in zip(rows, norm_scores):
+        results.append(
+            MatchResult(
+                candidate_id=row["candidate_id"],
+                position_id=0,
+                profile_id=0,
+                category="",
+                category_colour=None,
+                score=norm_score,
+                profile_name="",
+                profile_description="",
+                position_name="",
+            )
         )
-        for row, norm_score in zip(rows, norm_scores)
-    ]
+    return results
 
 
 # 3️⃣ Top positions for a candidate (candidate → profiles → positions)
@@ -316,38 +410,44 @@ def get_top_positions_for_candidate(
     # validate candidate exists
     _ = _get_candidate(candidate_id)
 
+    colours = ["red", "blue", "green", "yellow", "orange"]
     rpc = supabase.rpc(
         "match_positions_for_candidate",
         {"p_candidate_id": candidate_id, "p_limit": limit},
     ).execute()
 
     rows = rpc.data or []
+    for profile in rows:
+        category = get_position_category(supabase, profile["position_id"]) or None
+        if category:
+            profile["category"] = category
 
     # ---- normalize scores to [0,1] while preserving order ----
     scores = [row["score"] for row in rows]
     norm_scores = _normalize_minmax(scores)
 
     results: List[MatchResult] = []
+
+    gaps = get_skill_gaps_by_candidate_and_profiles(candidate_id=candidate_id, profiles=rows)
+
     for row, norm_score in zip(rows, norm_scores):
         # row: profile_id, position_id, profile_name, position_name, score
         profile = _get_profile(row["profile_id"])
-        position = _get_position(row["position_id"])
+        category = get_position_category(supabase, profile["position_id"]) or ""
 
         results.append(
             MatchResult(
                 candidate_id=candidate_id,
                 position_id=row["position_id"],
                 profile_id=row["profile_id"],
-                name=row.get("position_name") or row.get("profile_name"),
+                category=category,
+                category_colour=colours[row["position_id"] % 5],
+                profile_name=row.get("profile_name"),
+                profile_description=profile.get("description"),
+                position_name=row.get("position_name"),
                 score=norm_score,
-                extra={
-                    # requested extra data per matching position
-                    "profile_name": profile.get("profile_name"),
-                    "position_name": position.get("position_name"),
-                    "description": profile.get("description"),
-                    "hard_skills": profile.get("hard_skills"),
-                    "soft_skills": profile.get("soft_skills"),
-                },
+                gaps=gaps.get(row["profile_id"]),
+                experience_match=gaps.get(row["profile_id"]),
             )
         )
 
@@ -381,17 +481,15 @@ def get_similar_positions(
 
         results.append(
             MatchResult(
+                candidate_id=0,
                 position_id=row["position_id"],
                 profile_id=row["profile_id"],
-                name=row.get("position_name") or row.get("profile_name"),
+                category="",
+                category_colour=None,
                 score=norm_score,
-                extra={
-                    "profile_name": profile.get("profile_name"),
-                    "position_name": position.get("position_name"),
-                    "description": profile.get("description"),
-                    "hard_skills": profile.get("hard_skills"),
-                    "soft_skills": profile.get("soft_skills"),
-                },
+                profile_name=profile.get("profile_name"),
+                profile_description=profile.get("description"),
+                position_name=position.get("position_name"),
             )
         )
 
@@ -409,19 +507,17 @@ def get_skill_gaps(
     candidate = _get_candidate(candidate_id)
     position = _get_position(position_id)
 
+    # All profiles for this position
+    profiles = _get_profiles_for_position(position_id)
+
     cand_name = f"{candidate.get('first_name', '')} {candidate.get('last_name', '')}".strip()
     pos_name = position["position_name"]
-
     # Candidate skills
     cand_hard = _parse_skills(candidate.get("hard_skills"))
     cand_soft = _parse_skills(candidate.get("soft_skills"))
 
-    # All profiles for this position
-    profiles = _get_profiles_for_position(position_id)
     if not profiles:
         raise HTTPException(status_code=404, detail="No profiles found for this position")
-
-    from collections import Counter
 
     responses: List[SkillGapResponse] = []
 
@@ -559,20 +655,21 @@ def get_learning_recommendations(employee_number: int, profile_id: int):
             gaps_block("Hard skill gaps", hard_gaps),
             gaps_block("Soft skill gaps", soft_gaps),
             "\n" + courses_block,
-
             "\nInstructions:",
             "- Create a short plan (3-5 bullets) prioritizing the most impactful upskilling steps.",
-            "You must explain which gaps the courses help to reduce in order to meet the profiles requirements."
+            "You must explain which gaps the courses help to reduce in order to meet the profiles requirements.",
             "- Select 1-3 course IDs that directly help close the most important gaps.",
             "- Prefer beginner/intermediate where gaps are large; advanced for strengths only when useful.",
-            "respond ONLY in Hebrew!"
+            "respond ONLY in Hebrew!",
         ]
     )
 
     prompt = ChatPromptTemplate.from_template("{input}")
     print(full_prompt)
     chain = prompt | structured_llm
-    rec: LearningRecommendationModel = cast(LearningRecommendationModel, chain.invoke({"input": full_prompt}))
+    rec: LearningRecommendationModel = cast(
+        LearningRecommendationModel, chain.invoke({"input": full_prompt})
+    )
 
     # 6) Map ids back to Course objects and build response
     selected_courses: List[Course] = []
