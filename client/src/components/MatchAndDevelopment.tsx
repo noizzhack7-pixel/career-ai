@@ -26,7 +26,8 @@ import {
   SlidersHorizontal,
   BarChart,
   GraduationCap,
-  Star
+  Star,
+  Check
 } from 'lucide-react';
 
 
@@ -187,6 +188,108 @@ export const MatchAndDevelopment = ({ onNavigate, employeeData, positionsData }:
                 </div>
               </div>
             </div>
+
+            {employeeData?.liked_positions?.map((position: any) => (
+              <div
+                key={position.id}
+                id={`job-card-${position.id}`}
+                className={
+                  targetRoleId === position.id
+                    ? 'destPosition bg-gradient-to-br from-primary to-accent-dark text-white rounded-card shadow-panel border-2 border-accent-light'
+                    : 'rounded-card shadow-card hover:shadow-panel transition-shadow border-2 cursor-pointer bg-white border-transparent hover:border-primary/30'
+                }
+              >
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className={`text-2xl font-bold ${targetRoleId === position.id ? 'text-white' : 'text-primary'}`}>
+                          {position.title}
+                        </h3>
+                        <span className="bg-category-tech/20 text-category-tech px-3 py-1 rounded-pill text-xs font-bold">
+                          {position.category}
+                        </span>
+                        <button className="text-rose-500 hover:text-rose-600 transition-colors" title="הסר מהמועדפים">
+                          <Heart className="w-6 h-6 fill-current" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTargetRoleId(targetRoleId === position.id ? null : position.id);
+                          }}
+                          className={`cursor-pointer flex items-center gap-1.5 px-3 py-1 rounded-pill text-xs font-bold transition-colors ${targetRoleId === position.id ? 'bg-white/20 text-white border border-white/30' : 'bg-primary text-white'
+                            }`}
+                        >
+                          {targetRoleId === position.id ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              תפקיד יעד
+                            </>
+                          ) : (
+                            <>
+                              <Target className="w-3 h-3" />
+                              הגדר כיעד
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <p className={`text-sm mb-4 ${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-dark'}`}>
+                        {position.description}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <MapPin className={`w-4 h-4 ${targetRoleId === position.id ? 'text-white/80' : 'text-accent-dark'}`} />
+                          <span className={`${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-medium'}`}>מיקום:</span>
+                          <span className={`font-semibold ${targetRoleId === position.id ? 'text-white' : 'text-neutral-dark'}`}>
+                            {position.location}
+                          </span>
+                        </div>
+                        <div className="w-px h-4 bg-neutral-medium"></div>
+                        <div className="flex items-center gap-2">
+                          <Briefcase className={`w-4 h-4 ${targetRoleId === position.id ? 'text-white/80' : 'text-accent-dark'}`} />
+                          <span className={`${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-medium'}`}>משרה:</span>
+                          <span className={`font-semibold ${targetRoleId === position.id ? 'text-white' : 'text-neutral-dark'}`}>
+                            {position.employment_type}
+                          </span>
+                        </div>
+                        <div className="w-px h-4 bg-neutral-medium"></div>
+                        <div className="flex items-center gap-2">
+                          <BarChart className={`w-4 h-4 ${targetRoleId === position.id ? 'text-white/80' : 'text-accent-dark'}`} />
+                          <span className={`${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-medium'}`}>רמה:</span>
+                          <span className={`font-semibold ${targetRoleId === position.id ? 'text-white' : 'text-neutral-dark'}`}>
+                            {position.level}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <img
+                      src={position.company_logo}
+                      alt={position.company_name}
+                      className="w-16 h-16 rounded-full border-2 border-neutral-light"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm ${targetRoleId === position.id ? 'text-white/80' : 'text-neutral-medium'}`}>
+                        פורסם:
+                      </span>
+                      <span className={`text-sm font-semibold ${targetRoleId === position.id ? 'text-white' : 'text-neutral-dark'}`}>
+                        {position.posted_date}
+                      </span>
+                    </div>
+                    {/* <button
+                      onClick={() => onNavigate?.("job-details", position.id)}
+                      className={`flex items-center gap-1.5 text-sm font-semibold ${targetRoleId === position.id ? 'text-white hover:underline' : 'text-primary hover:underline'
+                        }`}
+                    >
+                      לפרטי המשרה
+                      <ArrowLeft className="w-3 h-3" />
+                    </button> */}
+                  </div>
+                </div>
+              </div>
+            ))}
+
 
             {/* Job Card 1 */}
             <div id="job-card-1" className={targetRoleId === 1 ? 'destPosition bg-gradient-to-br from-primary to-accent-dark text-white rounded-card shadow-panel border-2 border-accent-light' : 'rounded-card shadow-card hover:shadow-panel transition-shadow border-2 cursor-pointer bg-white border-transparent hover:border-primary/30'}>

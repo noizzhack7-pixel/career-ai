@@ -98,24 +98,33 @@ export default function App() {
 
     const fetchAppData = async () => {
       try {
-        // Fetch both employee data and positions in parallel
-        const [employeeResponse, positionsResponse] = await Promise.all([
-          fetch("http://localhost:8000/api/v1/employees/me"),
-          fetch("http://localhost:8000/api/v1/positions/matching")
-        ]);
-
+        // First fetch employee data
+        const employeeResponse = await fetch("http://localhost:8000/api/v1/employees/me");
         const employeeJson = await employeeResponse.json();
         console.log("employees/me response:", employeeJson);
         setEmployeeData(employeeJson);
+        setIsLoading(false);
+
+        // Then fetch positions using the employee ID (after loading is done)
+        const candidateId = employeeJson?.id || 1001;
+        const [positionsResponse] = await Promise.all([
+          // const [positionsResponse, topPositionsResponse] = await Promise.all([
+          fetch("http://localhost:8000/api/v1/positions/matching"),
+          // fetch(``)
+        ]);
 
         if (positionsResponse.ok) {
           const positionsJson = await positionsResponse.json();
-          console.log("positions/matching response:", positionsJson);
+          // console.log("positions/matching response:", positionsJson);
           setPositionsData(positionsJson);
         }
+
+        const positionsDataJson = await fetch(`http://localhost:8000/api/v1/smart/positions/top?candidate_id=${candidateId}&limit=60`);
+        const positionsData = await positionsDataJson.json();
+        console.log("positions/top response:", positionsData);
+
       } catch (error) {
         console.error("Error fetching app data:", error);
-      } finally {
         setIsLoading(false);
       }
     };

@@ -58,7 +58,7 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
       clearInterval(interval);
       clearTimeout(timeout);
     };
-  }, []);
+  }, [isScanning]);
 
   return (
     <section id="matching-opportunities" className="bg-white rounded-card shadow-card overflow-hidden min-h-[500px] flex flex-col">
@@ -68,17 +68,19 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
             <h2 className="text-xl font-bold text-primary mb-1">משרות מותאמות עבורך</h2>
             <p className="text-neutral-medium text-sm">על בסיס הכישורים הקשים והרכים שלך · בחר/י משרה לצפייה בתוכנית פיתוח מותאמת</p>
           </div>
-          <button
-            onClick={() => onNavigate?.('jobs')}
-            className="text-primary hover:underline font-semibold text-sm flex items-center gap-2 h-[44px] px-5 rounded-button cursor-pointer hover:border-primary transition-colors"
-          >
-            צפה בכל ההזדמנויות ({positionsData.length} משרות)
-            <ArrowLeft className="w-4 h-4" />
-          </button>
+          {!isScanning && (
+            <button
+              onClick={() => onNavigate?.('jobs')}
+              className="text-primary hover:underline font-semibold text-sm flex items-center gap-2 h-[44px] px-5 rounded-button cursor-pointer hover:border-primary transition-colors"
+            >
+              צפה בכל ההזדמנויות
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="p-6 flex-1 relative bg-neutral-50/50">
+      <div className="p-6 flex-1 relative bg-neutral-50/50 flex flex-col" style={{ minHeight: '400px' }}>
         <AnimatePresence mode="wait">
           {isScanning ? (
             <motion.div
@@ -102,9 +104,17 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.5 }}
                 />
 
-                {/* Center Icon */}
-                <div className="relative z-10 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 text-primary">
-                  <ScanSearch className="w-8 h-8 animate-pulse" />
+                {/* Center Video */}
+                <div className="relative p-5 z-10 w-24 h-24 rounded-full flex items-center justify-center overflow-hidden">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  >
+                    <source src="/loading.mp4" type="video/mp4" />
+                  </video>
                 </div>
               </div>
 
@@ -123,7 +133,8 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
           ) : (
             <motion.div
               key="results"
-              className="grid grid-cols-1 md:grid-cols-3 gap-5"
+              className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch flex-1"
+              style={{ height: '100%', alignItems: 'stretch' }}
               initial="hidden"
               animate="visible"
               variants={{
@@ -142,7 +153,8 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
                     key={position.id}
                     onClick={() => onJobSelect?.({ index: index, ...position })}
                     variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                    className={`relative border ${selectedJobId === position.id ? 'border-primary shadow-panel ring-1 ring-primary' : 'border-neutral-light'} rounded-card p-6 hover:border-primary hover:shadow-panel transition-all cursor-pointer bg-white group hover:-translate-y-1 duration-300 flex flex-col h-full`}
+                    style={{ height: '100%' }}
+                    className={`relative border ${selectedJobId === position.id ? 'border-primary shadow-panel ring-1 ring-primary' : 'border-neutral-light'} rounded-card p-6 hover:border-primary hover:shadow-panel transition-all cursor-pointer bg-white group hover:-translate-y-1 duration-300 flex flex-col`}
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex flex-col gap-1">
