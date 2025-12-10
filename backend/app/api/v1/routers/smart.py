@@ -10,12 +10,10 @@ from dotenv import load_dotenv
 from typing import cast
 from collections import Counter
 # LLM (LangChain)
-try:
-    from langchain_openai import ChatOpenAI  # type: ignore
-    from langchain_core.prompts import ChatPromptTemplate  # type: ignore
-except Exception:  # pragma: no cover - optional dependency at runtime
-    ChatOpenAI = None  # type: ignore
-    ChatPromptTemplate = None  # type: ignore
+
+from langchain_openai import ChatOpenAI  # type: ignore
+from langchain_core.prompts import ChatPromptTemplate  # type: ignore
+
 
 load_dotenv()
 
@@ -595,10 +593,9 @@ def get_learning_recommendations(employee_number: int, profile_id: int):
             continue
     print(id_to_course)
     # 4) Prepare LLM
-    if ChatOpenAI is None or ChatPromptTemplate is None:
-        raise HTTPException(status_code=500, detail="LLM dependencies are not available on server")
 
     openai_key = os.environ.get("OPENAI_API_KEY")
+    print(f"OpenAI API key: {openai_key}")
     if not openai_key:
         raise HTTPException(status_code=500, detail="OPENAI_API_KEY is not configured")
 

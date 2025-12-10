@@ -181,11 +181,11 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
 
                     {/* <p className="text-sm text-neutral-dark mb-4 leading-relaxed">{position.description || 'תיאור משרה לא זמין.'}</p> */}
 
-                    {((position.gaps || position?.extra?.hard_skills) && (position?.extra?.hard_skills || position?.extra?.hard_skills.length > 0).length > 0) && (
+                    {((position.gaps?.hard_skill_gaps)) && (
                       <div className="mb-4 bg-neutral-extralight rounded-card p-4">
                         <p className="text-xs font-bold text-neutral-dark mb-2">דרישות עיקריות:</p>
                         <div className="space-y-1.5">
-                          {(position.gaps || position?.extra?.hard_skills).slice(0, 3).map((gap: any, index: number) => (
+                          {(position.gaps?.hard_skill_gaps).slice(0, 3).map((gap: any, index: number) => (
                             <div key={index} className="flex items-start gap-2 text-xs">
                               <Circle className="text-neutral-dark w-1.5 h-1.5 mt-1 fill-current" />
                               <span className="text-neutral-dark">{gap.skill} - {gap.gap <= 0 ? 'יש' : 'אין'}

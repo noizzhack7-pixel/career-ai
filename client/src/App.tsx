@@ -120,7 +120,7 @@ export default function App() {
         // Then fetch additional positions data (after loading is done)
         const candidateId = employeeJson?.id || 1001;
         // const positionsResponse = await fetch("http://localhost:8000/api/v1/positions/matching");
-        const positionsResponse = await fetch(`http://localhost:8000/api/v1/smart/positions/top?candidate_id=${candidateId}&limit=3`);
+        const positionsResponse = await fetch(`http://localhost:8000/api/v1/smart/positions/top?candidate_id=${candidateId}&limit=10`);
 
         if (positionsResponse.ok) {
           const positionsJson = await positionsResponse.json();

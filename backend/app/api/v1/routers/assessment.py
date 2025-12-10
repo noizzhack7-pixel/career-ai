@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Header
 from typing import Optional
-from backend.app.models.Assessment import AssessmentQuestion, AssessmentSubmission, AssessmentResult
-from backend.app.services.assessment import assessment_service
+from app.models.Assessment import AssessmentQuestion, AssessmentSubmission, AssessmentResult
+from app.services.assessment import assessment_service
 
 
 
