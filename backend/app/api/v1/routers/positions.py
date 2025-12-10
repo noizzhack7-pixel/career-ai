@@ -109,7 +109,13 @@ async def get_all_positions():
     if client:
         try:
             resp = client.table("positions").select("*").execute()
-            return resp.data or []
+            data = resp.data or []
+            # Remove embedding field from each position
+            if isinstance(data, list):
+                for pos in data:
+                    if isinstance(pos, dict):
+                        pos.pop("embedding", None)
+            return data
         except Exception as exc:
             print(f"[positions] Supabase fetch all failed: {exc}")
     return []

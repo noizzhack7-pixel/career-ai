@@ -184,12 +184,11 @@ class EmployeeProfile(BaseModel):
 
 
 # Position assignment payloads
-class PositionEntry(BaseModel):
-    position_id: str
-
-
 class EmployeePositionsUpdate(BaseModel):
-    positions: List[PositionEntry]
+    # Accept either an array of objects or a single object; keep legacy "positions" key too.
+    liked_positions: List[dict] | dict | None = None
+    positions: List[dict] | dict | None = None
+    star_position: dict | None = None
 
 
 def load_json_file(filename: str) -> dict:
@@ -410,40 +409,16 @@ async def get_employee(employee_number: int):
         if current_position_record and "position_name" in current_position_record:
             employee["current_position_name"] = current_position_record.get("position_name")
 
-        # Resolve star_position full record
-        star_position_id = employee.get("star_position")
-        star_position_record = fetch_position(star_position_id)
-        if star_position_record:
-            employee["star_position"] = star_position_record
-
-        # Resolve liked_positions array of full records
+        # star_position is now stored as an object; do not re-fetch from positions
+        # liked_positions is now stored as array of objects; keep as-is (parse string JSON if needed)
         liked_raw = employee.get("liked_positions")
-        liked_ids: list = []
-        if isinstance(liked_raw, list):
-            # Accept array of ids or array of objects { position_id, position_name?, ... }
-            for item in liked_raw:
-                if isinstance(item, dict) and "position_id" in item:
-                    liked_ids.append(item.get("position_id"))
-                else:
-                    liked_ids.append(item)
-        elif isinstance(liked_raw, str):
+        if isinstance(liked_raw, str):
             try:
                 parsed = json.loads(liked_raw)
-                if isinstance(parsed, list):
-                    for item in parsed:
-                        if isinstance(item, dict) and "position_id" in item:
-                            liked_ids.append(item.get("position_id"))
-                        else:
-                            liked_ids.append(item)
+                liked_raw = parsed if isinstance(parsed, list) else []
             except Exception:
-                liked_ids = []
-
-        liked_records = []
-        for pid in liked_ids:
-            pos = fetch_position(pid)
-            if pos:
-                liked_records.append(pos)
-        employee["liked_positions"] = liked_records
+                liked_raw = []
+        employee["liked_positions"] = liked_raw if isinstance(liked_raw, list) else []
 
         return employee
     except HTTPException:
@@ -468,14 +443,29 @@ async def update_employee(employee_number: int, employee: Employee):
 @router.post("/{employee_number}/positions", response_model=dict)
 async def update_employee_positions(employee_number: int, payload: EmployeePositionsUpdate):
     """
-    Update the employee's positions JSONB array with position_id entries only.
+    Update liked_positions and star_position as provided (no shape enforced).
+    Supports:
+    - liked_positions: list or single object
+    - positions: list or single object (legacy compat)
     """
     client = supabase
     if not client:
         raise HTTPException(status_code=500, detail="Supabase client is not initialized.")
 
     try:
-        update_payload = {"liked_positions": [pos.position_id for pos in payload.positions]}
+        # Normalize liked_positions / positions payload
+        liked_payload = payload.liked_positions if payload.liked_positions is not None else payload.positions
+        if liked_payload is None:
+            liked_positions = []
+        elif isinstance(liked_payload, list):
+            liked_positions = liked_payload
+        else:
+            liked_positions = [liked_payload]
+
+        update_payload = {
+            "liked_positions": liked_positions,
+            "star_position": payload.star_position,
+        }
         resp = (
             client.table("employees")
             .update(update_payload)
