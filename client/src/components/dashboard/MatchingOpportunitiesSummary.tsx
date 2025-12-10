@@ -16,7 +16,7 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
   scanTrigger = 0,
   onJobSelect,
   selectedJobId,
-  positionsData
+  positionsData,
 }) => {
   const [isScanning, setIsScanning] = useState(true);
   const [scanText, setScanText] = useState('מנתח פרופיל אישי...');
@@ -146,51 +146,49 @@ export const MatchingOpportunitiesSummary: React.FC<MatchingOpportunitiesSummary
               }}
             >
               {positionsData
-                ?.sort((a: any, b: any) => b.match_percentage - a.match_percentage)
+                ?.sort((a: any, b: any) => b.score - a.score)
                 .slice(0, 3)
                 .map((position: any, index: number) => (
                   <motion.div
-                    key={position.id}
+                    key={index}
                     onClick={() => onJobSelect?.({ index: index, ...position })}
                     variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
                     style={{ height: '100%' }}
-                    className={`relative border ${selectedJobId === position.id ? 'border-primary shadow-panel ring-1 ring-primary' : 'border-neutral-light'} rounded-card p-6 hover:border-primary hover:shadow-panel transition-all cursor-pointer bg-white group hover:-translate-y-1 duration-300 flex flex-col`}
+                    className={`relative border ${selectedJobId === position.profile_id ? 'border-primary shadow-panel ring-1 ring-primary' : 'border-neutral-light'} rounded-card p-6 hover:border-primary hover:shadow-panel transition-all cursor-pointer bg-white group hover:-translate-y-1 duration-300 flex flex-col`}
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex flex-col gap-1">
-                        <h3 className="font-bold text-lg text-primary">{position.title}</h3>
-                        <div className="flex items-center gap-3">
-                          <span className="bg-primary/10 text-primary text-xs px-3 py-1.5 rounded-pill font-bold border border-primary/20 flex items-center gap-1 w-fit">
-                            <Laptop className="w-3 h-3" />
-                            {position.category || 'כללי'}
-                          </span>
-                          {index === 1 && (
-                            <span className="text-sm font-bold text-status-success">משרה בפרסום</span>
-                          )}
-                        </div>
-                      </div>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-bold text-lg text-primary min-h-[56px] line-clamp-2">{position.profile_name || position.extra.profile_name}</h3>
                       <div className="shrink-0">
-                        <MatchScore score={position.match_percentage} compact={true} showScore={true} />
+                        <MatchScore score={Math.floor(position.score)} compact={true} showScore={true} />
                       </div>
                     </div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="bg-primary/10 text-primary text-xs px-3 py-1.5 rounded-pill font-bold border border-primary/20 flex items-center gap-1 w-fit">
+                        <Laptop className="w-3 h-3" />
+                        {position.category || 'כללי'}
+                      </span>
+                      {index === 1 && (
+                        <span className="text-sm font-bold text-status-success">משרה בפרסום</span>
+                      )}
+                    </div>
 
-                    <p className="text-neutral-medium text-sm mb-3">{position.division || 'לא צוין'} | {
+                    <p className="text-neutral-medium text-sm mb-3"> {
                       position.category === 'טכנולוגיה' ? 'מחלקת פיתוח' :
                         position.category === 'כספים' ? 'מחלקת חשבות' :
                           position.category === 'משאבי אנוש' ? 'מחלקת גיוס' :
                             'מחלקה כללית'
                     }</p>
 
-                    <p className="text-sm text-neutral-dark mb-4 leading-relaxed">{position.description || 'תיאור משרה לא זמין.'}</p>
+                    {/* <p className="text-sm text-neutral-dark mb-4 leading-relaxed">{position.description || 'תיאור משרה לא זמין.'}</p> */}
 
-                    {position.requirements && position.requirements.length > 0 && (
+                    {((position.gaps?.hard_skill_gaps)) && (
                       <div className="mb-4 bg-neutral-extralight rounded-card p-4">
                         <p className="text-xs font-bold text-neutral-dark mb-2">דרישות עיקריות:</p>
                         <div className="space-y-1.5">
-                          {position.requirements.slice(0, 3).map((req: any, index: number) => (
+                          {(position.gaps?.hard_skill_gaps).slice(0, 3).map((gap: any, index: number) => (
                             <div key={index} className="flex items-start gap-2 text-xs">
                               <Circle className="text-neutral-dark w-1.5 h-1.5 mt-1 fill-current" />
-                              <span className="text-neutral-dark">{req.skill} - {req.status}
+                              <span className="text-neutral-dark">{gap.skill} - {gap.gap <= 0 ? 'יש' : 'אין'}
                                 {/* {req.status === 'יש' ? (
                                   <CheckCircle className="w-4 h-4 text-status-success flex-shrink-0" />
                                 ) : (
