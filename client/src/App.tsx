@@ -68,21 +68,42 @@ const AppLoader = () => (
     dir="rtl"
     className="bg-neutral-extralight font-heebo text-neutral-dark min-h-screen flex items-center justify-center"
   >
-    <div className="flex flex-col items-center gap-4">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="w-32 h-32 object-contain"
-      >
-        <source src="/loading.mp4" type="video/mp4" />
-      </video>
-      <img
-        src="/logo_text.png"
-        alt="GO-PRO"
-        className="h-8 object-contain"
-      />
+    <style>{`
+      @keyframes radar-ping {
+        0% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(2); opacity: 0; }
+      }
+      .radar-ripple {
+        animation: radar-ping 1.5s ease-out infinite;
+      }
+      .radar-ripple-delayed {
+        animation: radar-ping 1.5s ease-out infinite;
+        animation-delay: 0.5s;
+      }
+    `}</style>
+    {/* Radar Animation Container - wraps both video and logo */}
+    <div className="relative w-64 h-64 flex items-center justify-center">
+      {/* Ripple effects - centered using inset-0 */}
+      <div className="absolute inset-0 border-2 border-primary/30 rounded-full radar-ripple" />
+      <div className="absolute inset-0 border-2 border-primary/20 rounded-full radar-ripple-delayed" />
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center gap-4">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-32 h-32 object-contain"
+        >
+          <source src="/loading.mp4" type="video/mp4" />
+        </video>
+        <img
+          src="/logo_text.png"
+          alt="GO-PRO"
+          className="h-8 object-contain"
+        />
+      </div>
     </div>
   </div>
 );

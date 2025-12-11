@@ -15,7 +15,7 @@ supabase = get_supabase_client()
 DATA_DIR = Path(__file__).parent.parent.parent.parent.parent / "data"
 
 # Hardcoded mock employee ID
-MOCK_EMPLOYEE_NUMBER = 1001
+MOCK_EMPLOYEE_NUMBER = 6425
 
 
 # =====================

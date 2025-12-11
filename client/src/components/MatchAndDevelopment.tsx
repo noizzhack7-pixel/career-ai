@@ -1,5 +1,6 @@
 import React from 'react';
 import { MatchScore } from './MatchScore';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Filter,
   ListChecks,
@@ -27,7 +28,9 @@ import {
   BarChart,
   GraduationCap,
   Star,
-  Check
+  Check,
+  Sparkles,
+  CheckCircle2
 } from 'lucide-react';
 
 
@@ -50,6 +53,7 @@ export const MatchAndDevelopment = ({
   const [targetRoleId, setTargetRoleId] = React.useState<number | null>(null);
   const [loadingRecommendations, setLoadingRecommendations] = React.useState<number | null>(null);
   const [recommendations, setRecommendations] = React.useState<Record<number, any>>({});
+  const [scanText, setScanText] = React.useState('מנתח את הפרופיל שלך...');
   const [salaryWarningIdx] = React.useState(() =>
     Math.floor(Math.random() * (employeeData?.liked_positions?.length || 1))
   );
@@ -74,6 +78,31 @@ export const MatchAndDevelopment = ({
     return () => window.removeEventListener('scroll', handleScroll, true);
   }, []);
 
+  // Cycle through scan texts when loading
+  React.useEffect(() => {
+    if (loadingRecommendations === null) return;
+
+    const scanSteps = [
+      'מנתח את הפרופיל שלך...',
+      'בודק התאמת מיומנויות...',
+      'בונה תוכנית למידה מותאמת...',
+      'מחפש קורסים רלוונטיים...',
+      'כמעט סיימנו...'
+    ];
+
+    let stepIndex = 0;
+    setScanText(scanSteps[0]);
+
+    const interval = setInterval(() => {
+      stepIndex++;
+      if (stepIndex < scanSteps.length) {
+        setScanText(scanSteps[stepIndex]);
+      }
+    }, 1200);
+
+    return () => clearInterval(interval);
+  }, [loadingRecommendations]);
+
   const toggleDevelopmentPlan = async (jobId: number, profileId: number) => {
     // If already expanded, just collapse
     if (expandedJobId === jobId) {
@@ -81,25 +110,32 @@ export const MatchAndDevelopment = ({
       return;
     }
 
-    // Expand and fetch recommendations if not already loaded
+    // Expand and fetch recommendations (always fetch fresh data)
     setExpandedJobId(jobId);
 
-    if (!recommendations[jobId]) {
-      setLoadingRecommendations(jobId);
-      try {
-        const response = await fetch(
-          `http://localhost:8000/api/v1/smart/learning_recommendations?employee_number=${employeeNumber}&profile_id=${profileId}`,
-          { method: 'POST' }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setRecommendations(prev => ({ ...prev, [jobId]: data }));
-        }
-      } catch (error) {
-        console.error('Failed to fetch learning recommendations', error);
-      } finally {
-        setLoadingRecommendations(null);
+    // Scroll to the development plan section after a short delay to allow DOM to update
+    setTimeout(() => {
+      const element = document.getElementById(`development-plan-${jobId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+    }, 100);
+
+    // Always call the API for fresh recommendations
+    setLoadingRecommendations(jobId);
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/v1/smart/learning_recommendations?employee_number=${employeeNumber}&profile_id=${profileId}`,
+        { method: 'POST' }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setRecommendations(prev => ({ ...prev, [jobId]: data }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch learning recommendations', error);
+    } finally {
+      setLoadingRecommendations(null);
     }
   };
 
@@ -384,6 +420,7 @@ export const MatchAndDevelopment = ({
 
                     {expandedJobId === posId && (
                       <div
+                        id={`development-plan-${posId}`}
                         className="mt-6 border-t border-neutral-light pt-6 animate-in slide-in-from-top-4 duration-300 cursor-default"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -394,20 +431,51 @@ export const MatchAndDevelopment = ({
                           </h3>
 
                           {loadingRecommendations === posId ? (
-                            <div className="flex flex-col items-center justify-center py-8 gap-4">
-                              <div className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden">
-                                <video
-                                  autoPlay
-                                  loop
-                                  muted
-                                  playsInline
-                                  className="w-full h-full object-cover"
-                                >
-                                  <source src="/loading.mp4" type="video/mp4" />
-                                </video>
+                            <div className="flex flex-col items-center justify-center py-10 gap-6">
+                              {/* Radar Animation */}
+                              <div className="relative w-28 h-28 flex items-center justify-center">
+                                {/* Ripples */}
+                                <motion.div
+                                  className="absolute inset-0 border-2 border-primary/30 rounded-full"
+                                  animate={{ scale: [1, 2], opacity: [1, 0] }}
+                                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                                />
+                                <motion.div
+                                  className="absolute inset-0 border-2 border-primary/30 rounded-full"
+                                  animate={{ scale: [1, 1.5], opacity: [1, 0] }}
+                                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.5 }}
+                                />
+
+                                {/* Center Video */}
+                                <div className="relative z-10 w-20 h-20 rounded-full flex items-center justify-center overflow-hidden">
+                                  <video
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    className="w-full h-full object-cover p-2"
+                                  >
+                                    <source src="/loading.mp4" type="video/mp4" />
+                                  </video>
+                                </div>
                               </div>
-                              <p className="text-sm text-neutral-medium">טוען המלצות...</p>
-                              <p className="text-xs text-neutral-400">מחשב את מסלול הפיתוח המותאם עבורך</p>
+
+                              {/* Animated Scanning Text */}
+                              <AnimatePresence mode="wait">
+                                <motion.div
+                                  key={scanText}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -10 }}
+                                  className="flex flex-col items-center gap-2"
+                                >
+                                  <p className="text-base font-bold text-primary flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4" />
+                                    {scanText}
+                                  </p>
+                                  <p className="text-xs text-neutral-400">מחשב את מסלול הפיתוח המותאם עבורך</p>
+                                </motion.div>
+                              </AnimatePresence>
                             </div>
                           ) : recommendations[posId] ? (
                             <div className="space-y-6">

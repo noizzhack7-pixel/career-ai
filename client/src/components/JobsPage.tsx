@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MatchScore } from './MatchScore';
 import { Tooltip } from './Tooltip';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
   MapPin,
@@ -19,7 +20,8 @@ import {
   Map as MapIcon, // re-aliased to avoid conflict
   ChevronDown,
   Heart,
-  XCircle
+  XCircle,
+  Sparkles
 } from 'lucide-react';
 
 interface Job {
@@ -491,24 +493,91 @@ export const JobsPage = ({ positionsData = [], employeeData, onLikedChange, allP
     }
   };
 
+  // Loading scan text animation
+  const [scanText, setScanText] = useState('טוען משרות...');
+  const isLoadingJobs = jobsData.length === 0;
+
+  // Cycle through scan texts when loading
+  useEffect(() => {
+    if (!isLoadingJobs) return;
+
+    const scanSteps = [
+      'טוען משרות...',
+      'מנתח הזדמנויות קריירה...',
+      'מחשב התאמות אישיות...',
+      'מחפש את ההזדמנויות הטובות ביותר...',
+      'כמעט סיימנו...'
+    ];
+
+    let stepIndex = 0;
+    setScanText(scanSteps[0]);
+
+    const interval = setInterval(() => {
+      stepIndex++;
+      if (stepIndex < scanSteps.length) {
+        setScanText(scanSteps[stepIndex]);
+      } else {
+        stepIndex = 0;
+        setScanText(scanSteps[0]);
+      }
+    }, 1200);
+
+    return () => clearInterval(interval);
+  }, [isLoadingJobs]);
+
   // Show loading state while data is being fetched
-  if (jobsData.length === 0) {
+  if (isLoadingJobs) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="fixed inset-0 top-20 flex items-center justify-center pointer-events-none">
+        <style>{`
+          @keyframes radar-ping-jobs {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+          }
+          .radar-ripple-jobs {
+            animation: radar-ping-jobs 1.5s ease-out infinite;
+          }
+          .radar-ripple-jobs-delayed {
+            animation: radar-ping-jobs 1.5s ease-out infinite;
+            animation-delay: 0.5s;
+          }
+        `}</style>
         <div className="flex flex-col items-center gap-4">
-          <div style={{ width: '10rem', height: '10rem' }} className="rounded-full flex items-center justify-center overflow-hidden">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover p-3"
-            >
-              <source src="/loading.mp4" type="video/mp4" />
-            </video>
+          {/* Radar Animation Container - circle around video only */}
+          <div className="relative w-48 h-48 flex items-center justify-center">
+            {/* Ripple effects - circular */}
+            <div className="absolute inset-0 border-2 border-primary/30 rounded-full radar-ripple-jobs" />
+            <div className="absolute inset-0 border-2 border-primary/20 rounded-full radar-ripple-jobs-delayed" />
+
+            {/* Video */}
+            <div className="relative z-10 w-40 h-40 rounded-full flex items-center justify-center overflow-hidden">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover p-3"
+              >
+                <source src="/loading.mp4" type="video/mp4" />
+              </video>
+            </div>
           </div>
-          <p className="text-base font-semibold text-neutral-medium">טוען משרות...</p>
-          <p className="text-sm text-neutral-500">מאתרים את ההזדמנויות המתאימות עבורך</p>
+          {/* Animated Scanning Text */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={scanText}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex flex-col items-center gap-2"
+            >
+              <p className="text-base font-bold text-primary flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                {scanText}
+              </p>
+              <p className="text-sm text-neutral-500">מאתרים את ההזדמנויות המתאימות עבורך</p>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     );
