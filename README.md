@@ -516,3 +516,23 @@ Use these scripts to create realistic employees and profiles for demos.
 ## 📄 License
 
 TBD — add a license file appropriate for your project.
+
+Download files:
+https://fromsmash.com/goprofilesnoizz25
+
+לינק לתקיים בחומרים בדרייב (לוגו, סרט, מצגת)[
+https://drive.google.com/drive/folders/1zJzPNVLD7UO240pMRQFByVVICaQ8Q1ZG?usp=drive_link
+
+לינק לUX PILOT  - מערכת מש"א
+
+https://uxpilot.ai/s/fb5db94a934faa441c886e0e4219a016
+
+לינק לפיגמה - מערכת עובדים
+
+https://www.figma.com/make/KGE78PwvW1hgeGqapSR4HY/User-Profile-Page?node-id=0-1&t=2WfSfP8GjiSHfSYi-1
+
+לינק לפיגמה - מטבעות
+https://www.figma.com/design/AeadbEmYtmjOQIt2wzC3si/Untitled?node-id=0-1&t=xJU5Z7v6MPMoet4j-1
+
+סרטון תפקידים:
+https://drive.google.com/file/d/1NTCW4sVJm8rQAnE6Gb7hUnA6un-ty1gT/view?usp=sharing
